@@ -1,4 +1,6 @@
-# WORK IN PROGRESS - PLEASE DO NOT USE THIS UNFINISHE LIBRARY YET
+# WORK IN PROGRESS
+# PLEASE DO NOT USE THIS UNFINISHED LIBRARY
+# UNTIL THIS NOTICE IS REMOVED
 
 # INA219 and INA226
 <img src="https://github.com/SV-Zanshin/INA226/blob/master/Images/INA226.jpg" width="175" align="right"/>_Arduino_ library to access multiple INA219 and INA226 High-Side/Low-Side Bi-Directional I2C Current and Power Monitor.  Texas Instruments produces this family of power monitors and the series is described at on their product page at [INA219](http://www.ti.com/product/INA219) and [INA226](http://www.ti.com/product/INA226).
