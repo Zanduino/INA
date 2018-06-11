@@ -68,27 +68,28 @@ void setup() {                                                                //
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);                                      // Bus/shunt measured continuously  //
 } // of method setup()                                                        //                                  //
 /*******************************************************************************************************************
-** This is the main program for the Arduino IDE, it is called in an infinite loop. The INA measurements are    **
+** This is the main program for the Arduino IDE, it is called in an infinite loop. The INA measurements are       **
 ** run in a simple infinite loop                                                                                  **
 *******************************************************************************************************************/
 void loop() {                                                                 // Main program loop                //
   static uint16_t loopCounter = 0;                                            // Count the number of iterations   //
-  Serial.print(F("# Type   BusV   ShuntmV   BusmA    BusmW\n"));
-  Serial.print(F("= ====== ======= ======== ======== ======\n"));
-  for (uint8_t i=0;i<devicesFound;i++) {                                     // Loop through all devices found   //
-    Serial.print(i+1); Serial.print(F(" "));
-    if (INA.getDeviceType(i)==INA219) Serial.print(F("INA219 "));
-                                 else Serial.print(F("INA226 "));
-    Serial.print((float)INA.getBusMilliVolts(true,i)/1000.0,4);                      //                                  //
+  Serial.print(F("# Type   BusV    ShuntmV  BusmA     BusmW\n"));             // Display the header lines         //
+  Serial.print(F("= ====== ======= ======== ========= ========\n"));          //                                  //
+  for (uint8_t i=0;i<devicesFound;i++) {                                      // Loop through all devices found   //
+    Serial.print(i+1); Serial.print(F(" "));                                  //                                  //
+    if      (INA.getDeviceType(i)==INA219) Serial.print(F("INA219 "));        //                                  //
+    else if (INA.getDeviceType(i)==INA226) Serial.print(F("INA226 "));        //                                  //
+    else                                   Serial.print(F("INA??? "));        //                                  //
+    Serial.print((float)INA.getBusMilliVolts(true,i)/1000.0,4);               //                                  //
     Serial.print(F("V "));                                                    //                                  //
     Serial.print((float)INA.getShuntMicroVolts(true,i)/1000.0,3);             // Convert to millivolts            //
-    Serial.print(F("mV "));                                    //                                  //
+    Serial.print(F("mV "));                                                   //                                  //
     Serial.print((float)INA.getBusMicroAmps(i)/1000.0,4);                     // Convert to milliamp              //
-    Serial.print(F("mA "));                                    //                                  //
+    Serial.print(F("mA "));                                                   //                                  //
     Serial.print((float)INA.getBusMicroWatts(i)/1000.0,4);                    // Convert to milliwatts            //
-    Serial.print(F("mW\n"));                                                //                                  //
+    Serial.print(F("mW\n"));                                                  //                                  //
   } // of for-next each device loop                                           //                                  //
-  Serial.print(F("\n")  );                                                  //                                  //
+  Serial.print(F("\n")  );                                                    //                                  //
   delay(5000);                                                                // Wait 5 seconds for next reading  //
   Serial.print(F("Loop iteration ")  );                                       //                                  //
   Serial.print(++loopCounter);                                                //                                  //

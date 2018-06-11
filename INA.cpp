@@ -41,35 +41,32 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
             ina.busVoltage_LSB   = INA226_BUS_VOLTAGE_LSB;                    // Set to hardcoded value           //
             ina.shuntVoltage_LSB = INA226_SHUNT_VOLTAGE_LSB;                  // Set to hardcoded value           //
             ina.current_LSB      = (uint64_t)maxBusAmps*1000000000/32767;     // Get the best possible LSB in nA  //
-            ina.calibration      = (uint64_t)51200000/((uint64_t)ina.current_LSB*// Compute calibration register     //
-                                   (uint64_t)microOhmR / (uint64_t)100000);   // using 64 bit numbers throughout  //
+            ina.calibration      = (uint64_t)51200000/((uint64_t)ina.current_LSB*// Compute calibration register  //
+                                   (uint64_t)microOhmR/(uint64_t)100000);     // using 64 bit numbers throughout  //
             ina.power_LSB        = (uint32_t)25*ina.current_LSB;              // Fixed multiplier for INA219      //
-
           } else {                                                            //                                  //
             ina.type             = INA219;                                    // Set to an INA219                 //
-            ina.busVoltage_LSB   = INA219_BUS_VOLTAGE_LSB;                      // Set to hardcoded value           //
+            ina.busVoltage_LSB   = INA219_BUS_VOLTAGE_LSB;                    // Set to hardcoded value           //
             ina.shuntVoltage_LSB = INA219_SHUNT_VOLTAGE_LSB;                  // Set to hardcoded value           //
-            ina.current_LSB = (uint64_t)maxBusAmps*1000000000/32767;                    // Get the best possible LSB in nA  //
-            ina.calibration = (uint64_t)51200000 / ((uint64_t)ina.current_LSB *         // Compute calibration register     //
-                              (uint64_t)microOhmR / (uint64_t)100000);                  // using 64 bit numbers throughout  //
-            ina.power_LSB   = (uint32_t)25*ina.current_LSB;                             // Fixed multiplier for INA219      //
-
-          } // of if-then-else INA226 or INA219                               //                                  //            
+            ina.current_LSB = (uint64_t)maxBusAmps*1000000000/32767;          // Get the best possible LSB in nA  //
+            ina.calibration = (uint64_t)409600000/((uint64_t)ina.current_LSB* // Compute calibration register     //
+                              (uint64_t)microOhmR/(uint64_t)100000);          // using 64 bit numbers throughout  //
+            ina.power_LSB   = (uint32_t)25*4*ina.current_LSB;                 // Fixed multiplier for INA219      //
+          } // of if-then-else INA226 or INA219                               //                                  //
           writeWord(INA_CALIBRATION_REGISTER,ina.calibration,deviceAddress);  // Write the calibration value      //
           ina.address       = deviceAddress;                                  // Store device address             //
           ina.operatingMode = B111;                                           // Default to continuous mode       //
           #ifdef debug_Mode                                                   // Display values when debugging    //
             Serial.print(F("Address    = ")); Serial.println(ina.address);    //                                  //
-            Serial.print(F("Type       = ")); 
-            if (ina.type==INA219) 
-              Serial.println(F("INA219")); 
-            else
-              Serial.println(F("INA226"));       //                                  //
-            Serial.print(F("BusV_LSB   = ")); Serial.println(ina.busVoltage_LSB);       //                                  //
-            Serial.print(F("ShuntV_LSB = ")); Serial.println(ina.shuntVoltage_LSB);       //                                  //
-            Serial.print(F("current_LSB= ")); Serial.println(ina.current_LSB);//                                  //
-            Serial.print(F("calibration= ")); Serial.println(ina.calibration);//                                  //
-            Serial.print(F("power_LSB  = ")); Serial.println(ina.power_LSB);  //                                  //
+            Serial.print(F("Type       = "));                                 //                                  //
+            if      (ina.type==INA219) Serial.println(F("INA219"));           //                                  //
+            else if (ina.type==INA219) Serial.println(F("INA226"));           //                                  //
+            else                       Serial.println(F("INA???"));           //                                  //
+            Serial.print(F("BusV_LSB   = "));Serial.println(ina.busVoltage_LSB);//                                //
+            Serial.print(F("ShuntV_LSB = "));Serial.println(ina.shuntVoltage_LSB);//                              //
+            Serial.print(F("current_LSB= "));Serial.println(ina.current_LSB); //                                  //
+            Serial.print(F("calibration= "));Serial.println(ina.calibration); //                                  //
+            Serial.print(F("power_LSB  = "));Serial.println(ina.power_LSB);   //                                  //
             Serial.print(F("\n"));                                            //                                  //
           #endif                                                              // end of conditional compile code  //
           if ((_DeviceCount*sizeof(ina))<EEPROM.length()) {                   // If there's space left in EEPROM  //
@@ -99,19 +96,19 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
 /*******************************************************************************************************************
 ** Method getBusMicroAmps retrieves the computed current in microamps.                                            **
 *******************************************************************************************************************/
-int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {           //                                  //
+int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {              //                                  //
   inaDet ina;                                                                 // Hold device details in structure //
   EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
   int32_t microAmps = readWord(INA_CURRENT_REGISTER,ina.address);             // Get the raw value                //
 //Serial.print("*");Serial.print(microAmps);Serial.print("*");
-  microAmps = (int64_t)microAmps*ina.current_LSB/10000;                // Convert to microamps             //
+  microAmps = (int64_t)microAmps*ina.current_LSB/10000;                       // Convert to microamps             //
   return(microAmps);                                                          // return computed microamps        //
 } // of method getBusMicroAmps()                                              //                                  //
 
 /*******************************************************************************************************************
 ** Method getBusMicroWatts retrieves the computed power in milliwatts                                             **
 *******************************************************************************************************************/
-int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {          //                                  //
+int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {             //                                  //
   inaDet ina;                                                                 // Hold device details in structure //
   EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
   int32_t microWatts = readWord(INA_POWER_REGISTER,ina.address);              // Get the raw value                //
@@ -121,8 +118,8 @@ int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {          //   
 /*******************************************************************************************************************
 ** Method setBusConversion specifies the conversion rate (see datasheet for 8 distinct values) for the bus        **
 *******************************************************************************************************************/
-void INA_Class::setBusConversion(uint8_t convTime,                         // Set timing for Bus conversions   //
-                                    const uint8_t deviceNumber ) {            //                                  //
+void INA_Class::setBusConversion(uint8_t convTime,                            // Set timing for Bus conversions   //
+                                 const uint8_t deviceNumber ) {               //                                  //
   inaDet ina;                                                                 // Hold device details in structure //
   EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
   int16_t configRegister;                                                     // Store configuration register     //
@@ -139,7 +136,7 @@ void INA_Class::setBusConversion(uint8_t convTime,                         // Se
 /*******************************************************************************************************************
 ** Method setShuntConversion specifies the conversion rate (see datasheet for 8 distinct values) for the shunt    **
 *******************************************************************************************************************/
-void INA_Class::setShuntConversion(uint8_t convTime,                       // Set timing for Bus conversions   //
+void INA_Class::setShuntConversion(uint8_t convTime,                          // Set timing for Bus conversions   //
                                       const uint8_t deviceNumber ) {          //                                  //
   inaDet ina;                                                                 // Hold device details in structure //
   EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
@@ -345,7 +342,7 @@ void INA_Class::setAlertPinOnConversion(const bool alertState,                //
 ** Method setAveraging sets the hardware averaging for the different devices                                      **
 *******************************************************************************************************************/
 void INA_Class::setAveraging(const uint16_t averages,                         // Set the number of averages taken //
-const uint8_t deviceNumber ) {                   //                                  //
+                             const uint8_t deviceNumber ) {                   //                                  //
   uint8_t averageIndex;                                                       // Store indexed value for register //
   int16_t configRegister;                                                     // Configuration register contents  //
   inaDet ina;                                                                 // Hold device details in structure //
@@ -364,7 +361,7 @@ const uint8_t deviceNumber ) {                   //                             
         else                     averageIndex =  8;                           //                                  //
         configRegister &= ~INA219_CONFIG_AVG_MASK;                            // zero out the averages part       //
         configRegister |= (uint16_t)averageIndex << 7;                        // shift in the averages to register//
-        } else {                                                                //                                  //
+        } else {                                                              //                                  //
         if      (averages>=1024) averageIndex = 7;                            // setting depending upon range     //
         else if (averages>= 512) averageIndex = 6;                            //                                  //
         else if (averages>= 256) averageIndex = 5;                            //                                  //

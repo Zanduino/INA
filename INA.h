@@ -43,7 +43,7 @@
   #define debug_Mode                                                          // Comment out when not needed      //
   #define INA__Class_h                                                        // Define the name inside guard code//
   /*****************************************************************************************************************
-  ** Declare structures used in the class                                                                         **
+  ** Declare structures and enumerated types used in the class                                                    **
   *****************************************************************************************************************/
   typedef struct {                                                            // Structure of values per device   //
     uint8_t  address;                                                         // I2C Address of device            //
@@ -55,7 +55,9 @@
     uint32_t power_LSB;                                                       // Wattage LSB                      //
     uint8_t  operatingMode;                                                   // Default continuous mode operation//
   } inaDet; // of structure                                                   //                                  //
-  enum ina_Type { INA219, INA226, UNKNOWN };
+  enum ina_Type { INA219,                                                     // INA219. 8-Pin                    //
+                  INA226,                                                     // INA226. 10-Pin                   //
+                  UNKNOWN };                                                  //                                  //
   /*****************************************************************************************************************
   ** Declare constants used in the class                                                                          **
   *****************************************************************************************************************/
@@ -69,21 +71,20 @@
   const uint8_t  INA_MASK_ENABLE_REGISTER     =      6;                       // Not found on INA219              //
   const uint8_t  INA_MANUFACTURER_ID_REGISTER =   0xFE;                       // Not found on INA219              //
   const uint16_t INA_RESET_DEVICE             = 0x8000;                       // Write to configuration to reset  //
+                                                                              //==================================//
                                                                               // Device-specific values           //
+                                                                              //==================================//
   const uint16_t INA219_BUS_VOLTAGE_LSB       =    400;                       // LSB in uV *100 4.00mV            //
   const uint16_t INA226_BUS_VOLTAGE_LSB       =    125;                       // LSB in uV *100 1.25mV            //
   const uint16_t INA219_SHUNT_VOLTAGE_LSB     =    100;                       // LSB in uV *10  10.0uV            //
   const uint16_t INA226_SHUNT_VOLTAGE_LSB     =     25;                       // LSB in uV *10  2.5uV             //
-
   const uint16_t INA219_CONFIG_AVG_MASK       = 0x0780;                       // Bits 7-10                        //
   const uint16_t INA226_CONFIG_AVG_MASK       = 0x0E00;                       // Bits 9-11                        //
-
-
+                                                                              //==================================//
   const uint16_t INA_CONFIG_BUS_TIME_MASK     = 0x01C0;                       // Bits 6-8                         //
   const uint16_t INA_CONFIG_SHUNT_TIME_MASK   = 0x0038;                       // Bits 3-5                         //
   const uint16_t INA_CONVERSION_READY_MASK    = 0x0080;                       // Bit 4                            //
   const uint16_t INA_CONFIG_MODE_MASK         = 0x0007;                       // Bits 0-3                         //
-
   const uint8_t  INA_MODE_TRIGGERED_SHUNT     =   B001;                       // Triggered shunt, no bus          //
   const uint8_t  INA_MODE_TRIGGERED_BUS       =   B010;                       // Triggered bus, no shunt          //
   const uint8_t  INA_MODE_TRIGGERED_BOTH      =   B011;                       // Triggered bus and shunt          //
@@ -128,6 +129,6 @@
       void     writeWord(const uint8_t addr, const uint16_t data,             // Write two bytes to an I2C address//
                          const uint8_t deviceAddress);                        //                                  //
       uint8_t  _TransmissionStatus = 0;                                       // Return code for I2C transmission //
-      uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected       //
+      uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
   }; // of INA_Class definition                                               //                                  //
 #endif                                                                        //----------------------------------//
