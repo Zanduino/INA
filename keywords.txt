@@ -1,0 +1,30 @@
+﻿###################################
+# Syntax Coloring Map for library #
+###################################
+
+################################
+# Classes/Datatypes (KEYWORD1) #
+################################
+INA_Class	KEYWORD1
+
+####################################
+# Methods and Functions (KEYWORD2) #
+####################################
+begin	KEYWORD2
+getBusMilliVolts	KEYWORD2
+getShuntMicroVolts	KEYWORD2
+getBusMicroAmps	KEYWORD2
+getBusMicroWatts	KEYWORD2
+reset	KEYWORD2
+setMode	KEYWORD2
+setAveraging	KEYWORD2
+setBusConversion	KEYWORD2
+setShuntConversion	KEYWORD2
+setAlertPinOnConversion	KEYWORD2
+waitForConversion	KEYWORD2
+
+########################
+# Constants (LITERAL1) #
+########################
+
+
