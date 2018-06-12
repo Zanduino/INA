@@ -1,18 +1,22 @@
-# WORK IN PROGRESS
-# PLEASE DO NOT USE THIS UNFINISHED LIBRARY UNTIL THIS NOTICE IS REMOVED
+# WORK IN PROGRESS - PLEASE DO NOT USE THIS UNFINISHED LIBRARY UNTIL THIS NOTICE IS REMOVED
 #
 # INA219 and INA226
-<img src="https://github.com/SV-Zanshin/INA226/blob/master/Images/INA226.jpg" width="175" align="right"/>_Arduino_ library to access multiple INA219 and INA226 High-Side/Low-Side Bi-Directional I2C Current and Power Monitor.  Texas Instruments produces this family of power monitors and the series is described at on their product page at [INA219](http://www.ti.com/product/INA219) and [INA226](http://www.ti.com/product/INA226).
-## INA219 vs INA226
-Several breakout boards, tutorials and libraries exist for the INA219, which is the "little brother" to this INA226 chip. While the pin 
-layout is similar, with the INA219 having 8 pins and the INA226 having 2 more pins, the internal configuration settings and registers are 
-different and require the functions and methods in this library to access.
+<img src="https://github.com/SV-Zanshin/INA226/blob/master/Images/INA226.jpg" width="175" align="right"/>_Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors.  Texas Instruments produces this family of power monitors and the library supports the following devices:
+
+| Device                                      | Max V | Package   | Description | Tested |
+| ------------------------------------------- | ------| --------- | ----------- | ------ |
+| [INA219](http://www.ti.com/product/INA219) ([datasheet](http://www.ti.com/lit/ds/symlink/ina219.pdf))  | 28V   | SOT-23 8p |             | Yes    |
+| [INA226](http://www.ti.com/product/INA226) ([datasheet](http://www.ti.com/lit/ds/symlink/ina226.pdf)) | 36V   | VSSOP 10p |             | Yes    |
+
+
+
 ## Hardware layout
-The [INA219 datasheet](http://www.ti.com/lit/ds/symlink/ina219.pdf) and [INA226 datasheet](http://www.ti.com/lit/ds/symlink/ina226.pdf) have examples of how to hook up the respective packages. Each package is a small VSSOP and I used a blank breakout board, some solder paste, a frying pan, desoldering braid, a magnifying glass and quite a bit of time to set up the first breadboard example for the INA226. I've since seen breakout boards available on the web but since only a few external components are necessary apart from connecting the 10 pins of the INA226 I'll remain with self-build.
+The packages are small and a lot of work to solder, but fortunately there are now several sources for breakout boards for the various devices which are worth it in time savings. My first test with a INA226 involved a blank breakout board, some solder paste, a frying pan, desoldering braid, a magnifying glass and quite a bit of time to set up the first breadboard.
 ## Library description
-The library locates all INA219 and INA226 devices on the I2C chain. Each unit can be individually configured with 4 setup parameters describing the expected voltage, shunt / resistor values which then set the internal configuration registers is ready to begin accurate measurements.  The details of how to setup the library along with all of the publicly available methods can be found on the [INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
+The library locates all INA2xx devices on the I2C chain. Each unit can be individually configured with 2 setup parameters describing the expected maximum voltage, shunt/resistor values which then set the internal configuration registers is ready to begin accurate measurements.  The details of how to setup the library along with all of the publicly available methods can be found on the [INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
+
 Great lengths have been taken to avoid the use of floating point in the library. To keep the original level of precision without loss but to allow the full range of voltages and amperes to be returned the amperage results are returned as 32-bit integers.
 
-The INA226 has a dedicated interrupt pin which can be used to trigger pin-change interrupts on the Arduino and the examples contain a program that measures readings using this output pin so that the Arduino can perform other concurrent tasks while still retrieving measurements.
+Since the functionality differs between the supported devices there are some functions which will only work for certain devices.
 
 ![Zanshin Logo](https://www.sv-zanshin.com/r/images/site/gif/zanshinkanjitiny.gif) <img src="https://www.sv-zanshin.com/r/images/site/gif/zanshintext.gif" width="75"/>
