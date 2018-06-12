@@ -7,9 +7,9 @@
 | ------------------------------------------- | ------| --------- | -------- |------------ | ------ |
 | [INA219](http://www.ti.com/product/INA219) ([datasheet](http://www.ti.com/lit/ds/symlink/ina219.pdf))  | 28V   | SOT-23 8p | 320/160/80/40±mV |            | Yes    |
 | [INA226](http://www.ti.com/product/INA226) ([datasheet](http://www.ti.com/lit/ds/symlink/ina226.pdf)) | 36V   | VSSOP 10p | ±81.92mV |            | Yes    |
-| [INA250](http://www.ti.com/product/INA250) ([datasheet](http://www.ti.com/lit/ds/symlink/ina250.pdf)) | 36V   | ?? | ±mV | Integrated 2 mΩ shunt, 15A, programmable gain           | ---    |
-| [INA253](http://www.ti.com/product/INA253) ([datasheet](http://www.ti.com/lit/ds/symlink/ina253.pdf)) | 36V   | ?? | ±mV | Integrated 2 mΩ shunt, 15A           | ---    |
-| [INA260](http://www.ti.com/product/INA260) ([datasheet](http://www.ti.com/lit/ds/symlink/ina260.pdf)) | 36V   | TSSOP 16p | ±V |Integratetd 2 mΩ shunt, 15A  Integrated shunt           | ---    |
+| [INA250](http://www.ti.com/product/INA250) ([datasheet](http://www.ti.com/lit/ds/symlink/ina250.pdf)) | 36V   | TSSOP 16p | n.a. | 2 mΩ shunt, 15A, programmable gain           | ---    |
+| [INA253](http://www.ti.com/product/INA253) ([datasheet](http://www.ti.com/lit/ds/symlink/ina253.pdf)) | 90V   | TSSOP 20 | n.a. | 2 mΩ shunt, 15A           | ---    |
+| [INA260](http://www.ti.com/product/INA260) ([datasheet](http://www.ti.com/lit/ds/symlink/ina260.pdf)) | 40V   | TSSOP 16p | n.a. | 2 mΩ shunt, 15A             | ---    |
 | [INA230](http://www.ti.com/product/INA230) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 28   | QFN 16p | ±81.92mV |           | ---    |
 | [INA210](http://www.ti.com/product/INA210) ([datasheet](http://www.ti.com/lit/ds/symlink/ina210.pdf)) | 26V   | ?? | ±mV |200V/V gain           | ---    |
 | [INA211](http://www.ti.com/product/INA211) ([datasheet](http://www.ti.com/lit/ds/symlink/ina211.pdf)) | 26V   | ?? | ±mV |500V/V gain           | ---    |
