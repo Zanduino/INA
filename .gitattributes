@@ -4,12 +4,13 @@
 # Arduino library                                                                        #
 ##########################################################################################
 examples/ linguist-documentation=false
+*.c linguist-language=Arduino
 *.ino linguist-language=Arduino
+*.pde linguist-language=Arduino
 *.c linguist-language=Arduino
 *.h linguist-language=Arduino
 *.cpp linguist-language=Arduino
-*.cpp linguist-language=c++
-*.h linguist-language=Arduino
+#*.cpp linguist-language=c++
 
 # Auto detect text files and perform LF normalization
 * text=auto
