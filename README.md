@@ -5,7 +5,7 @@
 
 | Device                                      | Max V | Package   | Shunt mV | Description | Tested |
 | ------------------------------------------- | ------| --------- | -------- |------------ | ------ |
-| [INA219](http://www.ti.com/product/INA219) ([datasheet](http://www.ti.com/lit/ds/symlink/ina219.pdf))  | 28V   | SOT-23 8p | ±mV |            | Yes    |
+| [INA219](http://www.ti.com/product/INA219) ([datasheet](http://www.ti.com/lit/ds/symlink/ina219.pdf))  | 28V   | SOT-23 8p | 320/160/80/40±mV |            | Yes    |
 | [INA226](http://www.ti.com/product/INA226) ([datasheet](http://www.ti.com/lit/ds/symlink/ina226.pdf)) | 36V   | VSSOP 10p | ±81.92mV |            | Yes    |
 | [INA250](http://www.ti.com/product/INA250) ([datasheet](http://www.ti.com/lit/ds/symlink/ina250.pdf)) | 36V   | ?? | ±mV | Integrated 2 mΩ shunt, 15A, programmable gain           | ---    |
 | [INA253](http://www.ti.com/product/INA253) ([datasheet](http://www.ti.com/lit/ds/symlink/ina253.pdf)) | 36V   | ?? | ±mV | Integrated 2 mΩ shunt, 15A           | ---    |
