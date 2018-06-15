@@ -69,7 +69,11 @@
   const uint8_t  INA_CURRENT_REGISTER         =      4;                       //                                  //
   const uint8_t  INA_CALIBRATION_REGISTER     =      5;                       //                                  //
   const uint8_t  INA_MASK_ENABLE_REGISTER     =      6;                       // Not found on INA219              //
-  const uint8_t  INA_MANUFACTURER_ID_REGISTER =   0xFE;                       // Not found on INA219              //
+  const uint8_t  INA_MANUFACTURER_ID_REGISTER = 0x5449;                       // Not found on INA219              //
+  const uint8_t  INA260_DIE_ID_REGISTER       = 0x2270;
+  const uint8_t  INA226_DIE_ID_REGISTER       = 0x2260;
+
+
   const uint16_t INA_RESET_DEVICE             = 0x8000;                       // Write to configuration to reset  //
                                                                               //==================================//
                                                                               // Device-specific values           //
