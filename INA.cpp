@@ -25,7 +25,6 @@ INA_Class::~INA_Class() {}                                                    //
 uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            // Class initializer                //
                             const uint32_t microOhmR,                         //                                  //
                             const uint8_t deviceNumber ) {                    //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
   uint16_t originalRegister,tempRegister;                                     // Stores 16-bit register contents  //
   if (_DeviceCount==0) {                                                      // Enumerate devices in first call  //
     Wire.begin();                                                             // Start the I2C wire subsystem     //
@@ -44,13 +43,13 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
             delay(I2C_DELAY);                                                 // Wait for INA to finish resetting //
             tempRegister = readWord(0x0B,deviceAddress);                      // Read the INA209 high-register    //
             if (tempRegister!=1) {                                            // Register 0xB doesn't exist INA219//
-              ina.type             = INA219;                                  // Set to an INA219                 //
-              ina.busVoltage_LSB   = INA219_BUS_VOLTAGE_LSB;                  // Set to hard-coded value          //
-              ina.shuntVoltage_LSB = INA219_SHUNT_VOLTAGE_LSB;                // Set to hard-coded value          //
-              ina.current_LSB = (uint64_t)maxBusAmps*1000000000/32767;        // Get the best possible LSB in nA  //
-              ina.calibration = (uint64_t)409600000/((uint64_t)ina.current_LSB*// Compute calibration register    //
-                                (uint64_t)microOhmR/(uint64_t)100000);        // using 64 bit numbers throughout  //
-              ina.power_LSB   = (uint32_t)25*4*ina.current_LSB;               // Fixed multiplier for INA219      //
+              ina.type                = INA219;                               // Set to an INA219                 //
+              strcpy(ina.deviceName,"INA219");                                // Set string                       //
+              ina.busVoltage_LSB      = INA219_BUS_VOLTAGE_LSB;               // Set to hard-coded value          //
+              ina.shuntVoltage_LSB    = INA219_SHUNT_VOLTAGE_LSB;             // Set to hard-coded value          //
+              ina.current_LSB         = (uint64_t)maxBusAmps*1000000000/32767;// Get the best possible LSB in nA  //
+              ina.calibConst          = 4096;                                 // Device specific constant         //
+              ina.powerConstant       = 20;                                   // Device specific constant         //
               // Determine which programmable gain to use so that there is no chance of an overflow; yet giving   //
               // the best possible accuracy                                                                       //
               uint16_t maxShuntmV = maxBusAmps*microOhmR/1000;                // Compute maximum shunt millivolts //
@@ -58,12 +57,9 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
               else if (maxShuntmV<=80)  ina.programmableGain = 1;             // gain x2 for +- 80mV              //
               else if (maxShuntmV<=160) ina.programmableGain = 2;             // gain x4 for +- 160mV             //
               else                      ina.programmableGain = 3;             // default gain x8 for +- 320mV     //
-Serial.println(0x399F>>INA_PG_FIRST_BIT,BIN);
               tempRegister  = 0x399F & INA_CONFIG_PG_MASK;                    // Zero out the programmable gain   //
-Serial.println(tempRegister>>INA_PG_FIRST_BIT,BIN);
               tempRegister |= ina.programmableGain<<INA_PG_FIRST_BIT;         // Overwrite the new values         //
               writeWord(INA_CONFIGURATION_REGISTER,tempRegister,deviceAddress);// Write new value to config reg   //
-Serial.println(tempRegister>>INA_PG_FIRST_BIT,BIN);
             } else {                                                          //                                  //
               ina.type             = INA209;                                  // Set to an INA209                 //
               /************************                                       //                                  //
@@ -75,57 +71,66 @@ Serial.println(tempRegister>>INA_PG_FIRST_BIT,BIN);
               tempRegister = readWord(INA_DIE_ID_REGISTER,deviceAddress);     // Read the INA209 high-register    //
               if (tempRegister==INA226_DIE_ID_VALUE) {                        // We've identified an INA226       //
                 ina.type             = INA226;                                // Set to an INA226                 //
+                strcpy(ina.deviceName,"INA226");                              // Set string                       //
                 ina.busVoltage_LSB   = INA226_BUS_VOLTAGE_LSB;                // Set to hard-coded value          //
                 ina.shuntVoltage_LSB = INA226_SHUNT_VOLTAGE_LSB;              // Set to hard-coded value          //
                 ina.current_LSB      = (uint64_t)maxBusAmps*1000000000/32767; // Get the best possible LSB in nA  //
-                ina.calibration      = (uint64_t)51200000/((uint64_t)ina.current_LSB*// Compute calibration rgstr //
-                                       (uint64_t)microOhmR/(uint64_t)100000); // using 64 bit numbers throughout  //
-                ina.power_LSB        = (uint32_t)25*ina.current_LSB;          // Constant multiplier for INA226   //
+                ina.calibConst       = 512;                                   // Device specific constant         //
+                ina.powerConstant    = 25;                                    // Device specific constant         //
                 ina.programmableGain = 0;                                     // Programmable gain not used       //
               } else {                                                        //                                  //
                 if (tempRegister!=0) {                                        // If register exists,              //
-                  ina.type = INA230;                                          // Set to an INA230 due to register //
+                  ina.type       = INA230;                                    // Set to an INA230 due to register //
+                  strcpy(ina.deviceName,"INA230");                            // Set string                       //
                   /************************                                   //                                  //
                   ** NOT IMPLEMENTED YET **                                   //                                  //
                   ************************/                                   //                                  //
                 } else {                                                      //                                  //
-                  ina.type = INA231;                                          // Set to an INA231 as no register  //
+                  ina.type       = INA231;                                    // Set to an INA231 as no register  //
+                  strcpy(ina.deviceName,"INA231");                            // Set string                       //
                 } // of if-then-else a INA230 or INA231                       //                                  //
               } // of if-then-else an INA226                                  //                                  //
             } else {                                                          //                                  //
               if (tempRegister==0x6127) {                                     // INA260                           //
-                ina.type = INA260;                                            // Set to an INA260                 //
+                ina.type       = INA260;                                      // Set to an INA260                 //
+                strcpy(ina.deviceName,"INA260");                              // Set string                       //
                 /************************                                     //                                  //
                 ** NOT IMPLEMENTED YET **                                     //                                  //
                 ************************/                                     //                                  //
               } else {                                                        //                                  //
                 if (tempRegister==0x7127) {                                   // INA3221                          //
-                  ina.type = INA3221;                                         // Set to an INA3221                //
+                  ina.type       = INA3221;                                   // Set to an INA3221                //
+                  strcpy(ina.deviceName,"IN3221");                            // Set string                       //
                   /************************                                   //                                  //
                   ** NOT IMPLEMENTED YET **                                   //                                  //
                   ************************/                                   //                                  //
                 } else {                                                      //                                  //
-                  ina.type = UNKNOWN;                                         //                                  //
+                  ina.type       = UNKNOWN;                                   //                                  //
+                  strcpy(ina.deviceName,"UNKNWN");                            // Set string                       //
                 } // of if-then-else it is an INA3221                         //                                  //
               } // of if-then-else it is an INA260                            //                                  //
             } // of if-then-else it is an INA226, INA230, INA231              //                                  //
           } // of if-then-else it is an INA209, INA219, INA220                //                                  //
+          ina.calibration = (uint64_t)ina.calibConst*(uint64_t)100000// Compute calibration register     //
+                            /((uint64_t)ina.current_LSB*(uint64_t)microOhmR/  // using 64 bit numbers throughout  //
+                            (uint64_t)100000);                                //                                  //
+          ina.power_LSB   = (uint32_t)ina.powerConstant*ina.current_LSB;      // Fixed multiplier per device      //
           writeWord(INA_CALIBRATION_REGISTER,ina.calibration,deviceAddress);  // Write the calibration value      //
           delay(I2C_DELAY);                                                   // Wait for INA to finish resetting //
           ina.address       = deviceAddress;                                  // Store device address             //
           ina.operatingMode = B111;                                           // Default to continuous mode       //
           #ifdef debug_Mode                                                   // Display values when debugging    //
             Serial.print(F("Address    = ")); Serial.println(ina.address);    //                                  //
-            Serial.print(F("Type       = "));                                 //                                  //
-            if      (ina.type==INA219) Serial.println(F("INA219"));           //                                  //
-            else if (ina.type==INA219) Serial.println(F("INA226"));           //                                  //
-            else                       Serial.println(F("INA???"));           //                                  //
+            Serial.print(F("Type       = ")); Serial.println(ina.type);       //                                  //
+            Serial.print(F("Name       = ")); Serial.println(ina.deviceName); //                                  //
             Serial.print(F("BusV_LSB   = "));Serial.println(ina.busVoltage_LSB);//                                //
             Serial.print(F("ShuntV_LSB = "));Serial.println(ina.shuntVoltage_LSB);//                              //
             Serial.print(F("current_LSB= "));Serial.println(ina.current_LSB); //                                  //
             Serial.print(F("calibration= "));Serial.println(ina.calibration); //                                  //
             Serial.print(F("power_LSB  = "));Serial.println(ina.power_LSB);   //                                  //
             Serial.print(F("Gain       = "));Serial.println(ina.programmableGain);//                              //
+            Serial.print(F("Calib.Const= "));Serial.println(ina.calibConst);//                           //
+            Serial.print(F("Power Const= "));Serial.println(ina.powerConstant);//                                 //
             Serial.print(F("\n"));                                            //                                  //
           #endif                                                              // end of conditional compile code  //
           if ((_DeviceCount*sizeof(ina))<EEPROM.length()) {                   // If there's space left in EEPROM  //
@@ -133,7 +138,7 @@ Serial.println(tempRegister>>INA_PG_FIRST_BIT,BIN);
             _DeviceCount++;                                                   // Increment the device counter     //
           } // of if-then the values will fit into EEPROM                     //                                  //
           if (ina.type == INA219) {
-            uint16_t tempBusmV = getBusMilliVolts(true,_DeviceCount-1);       // Get the voltage on the bus       //            
+            uint16_t tempBusmV = getBusMilliVolts(true,_DeviceCount-1);         // Get the voltage on the bus       //            
             if (tempBusmV > 20 && tempBusmV < 16000) {                        // If we have a voltage             //
               tempRegister=readWord(INA_CONFIGURATION_REGISTER,deviceAddress);// Read the newly reset register    //
               bitClear(tempRegister,INA_BRNG_BIT);                            // set to 0 for 0-16 volts          //
@@ -164,8 +169,7 @@ Serial.println(tempRegister>>INA_PG_FIRST_BIT,BIN);
 ** Method getBusMicroAmps retrieves the computed current in microamps.                                            **
 *******************************************************************************************************************/
 int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {              //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
-  EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
+  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to "ina" struct      //
   int32_t microAmps = readWord(INA_CURRENT_REGISTER,ina.address);             // Get the raw value                //
   microAmps = (int64_t)microAmps*ina.current_LSB/1000;                        // Convert to microamps             //
   return(microAmps);                                                          // return computed microamps        //
@@ -175,8 +179,7 @@ int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {              //
 ** Method getBusMicroWatts retrieves the computed power in milliwatts                                             **
 *******************************************************************************************************************/
 int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {             //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
-  EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
+  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to "ina" struct      //
   int32_t microWatts = readWord(INA_POWER_REGISTER,ina.address);              // Get the raw value                //
           microWatts = (int64_t)microWatts*ina.power_LSB/1000;                // Convert to milliwatts            //
   return(microWatts);                                                         // return computed milliwatts       //
@@ -186,11 +189,10 @@ int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {             //
 *******************************************************************************************************************/
 void INA_Class::setBusConversion(uint8_t convTime,                            // Set timing for Bus conversions   //
                                  const uint8_t deviceNumber ) {               //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
-  EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
   int16_t configRegister;                                                     // Store configuration register     //
   for(uint8_t i=0;i<_DeviceCount;i++) {                                       // Loop for each device found       //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
+      readInafromEEPROM(i);                                                   // Load EEPROM to "ina" struct      //
       if (convTime>7) convTime=7;                                             // Use maximum value allowed        //
       configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);      // Get the current register         //
       configRegister &= ~INA_CONFIG_BUS_TIME_MASK;                            // zero out the Bus conversion part //
@@ -204,11 +206,10 @@ void INA_Class::setBusConversion(uint8_t convTime,                            //
 *******************************************************************************************************************/
 void INA_Class::setShuntConversion(uint8_t convTime,                          // Set timing for Bus conversions   //
                                       const uint8_t deviceNumber ) {          //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
-  EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
   int16_t configRegister;                                                     // Store configuration register     //
   for(uint8_t i=0;i<_DeviceCount;i++) {                                       // Loop for each device found       //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
+      readInafromEEPROM(i);                                                   // Load EEPROM to "ina" struct      //
       if (convTime>7) convTime=7;                                             // Use maximum value allowed        //
       configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);      // Get the current register         //
       configRegister &= ~INA_CONFIG_SHUNT_TIME_MASK;                          // zero out the Bus conversion part //
@@ -282,21 +283,51 @@ void INA_Class::writeWord(const uint8_t addr, const uint16_t data,            //
   _TransmissionStatus = Wire.endTransmission();                               // Close transmission               //
 } // of method writeWord()                                                    //                                  //
 /*******************************************************************************************************************
+** Method readInafromEEPROM retrieves the device structure to the global "ina" from EEPROM                        **
+*******************************************************************************************************************/
+void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //                                  //
+  static uint8_t currentINA = UINT8_MAX;                                      // Stores current INA device number //
+  if (deviceNumber!=currentINA) {                                             // Only read EEPROM if necessary    //
+    EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                  // Read EEPROM values               //
+    currentINA = deviceNumber;                                                // Store new current value          //
+/*
+          Serial.print(F("Device     = ")); Serial.println(deviceNumber);    //                                  //
+          Serial.print(F("Address    = ")); Serial.println(ina.address);    //                                  //
+          Serial.print(F("Type       = ")); Serial.println(ina.deviceName); //                                  //
+          Serial.print(F("BusV_LSB   = "));Serial.println(ina.busVoltage_LSB);//                                //
+          Serial.print(F("ShuntV_LSB = "));Serial.println(ina.shuntVoltage_LSB);//                              //
+          Serial.print(F("current_LSB= "));Serial.println(ina.current_LSB); //                                  //
+          Serial.print(F("calibration= "));Serial.println(ina.calibration); //                                  //
+          Serial.print(F("power_LSB  = "));Serial.println(ina.power_LSB);   //                                  //
+          Serial.print(F("Gain       = "));Serial.println(ina.programmableGain);//                              //
+          Serial.print(F("Calib.Const= "));Serial.println(ina.calibConst);//                           //
+          Serial.print(F("Power Const= "));Serial.println(ina.powerConstant);//                                 //
+          Serial.print(F("\n"));                                            //                                  //
+*/
+  } // of if-then we have a new device                                        //                                  //
+  return;                                                                     // return nothing                   //
+} // of method readInafromEEPROM()                                            //                                  //
+/*******************************************************************************************************************
 ** Method getDeviceType retrieves the device type from EEPROM                                                     **
 *******************************************************************************************************************/
 uint8_t INA_Class::getDeviceType(const uint8_t deviceNumber) {                //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
-  EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
+  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to "ina" struct      //
   return(ina.type);                                                           // return device type number        //
 } // of method getDeviceType()                                                //                                  //
+/*******************************************************************************************************************
+** Method getDeviceName retrieves the device name from EEPROM                                                     **
+*******************************************************************************************************************/
+char * INA_Class::getDeviceName(const uint8_t deviceNumber) {                 //                                  //
+  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to "ina" struct      //
+  return(ina.deviceName);                                                     // return device type number        //
+} // of method getDeviceName()                                                //                                  //
 /*******************************************************************************************************************
 ** Method getBusMilliVolts retrieves the bus voltage measurement                                                  **
 *******************************************************************************************************************/
 uint16_t INA_Class::getBusMilliVolts(const bool    waitSwitch,                //                                  //
                                      const uint8_t deviceNumber) {            //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
-  EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
-  if (waitSwitch) waitForConversion();                                        // wait for conversion to complete  //
+  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to "ina" struct      //
+  if (waitSwitch) waitForConversion(deviceNumber);                            // wait for conversion to complete  //
   uint16_t busVoltage = readWord(INA_BUS_VOLTAGE_REGISTER,ina.address);       // Get the raw value and apply      //
   if (ina.type==INA219) busVoltage = busVoltage >> 3;                         // INA219 3 are LSB unused, so shift//
   busVoltage = (uint32_t)busVoltage*ina.busVoltage_LSB/100;                   // conversion to get milliVolts     //
@@ -311,9 +342,8 @@ uint16_t INA_Class::getBusMilliVolts(const bool    waitSwitch,                //
 *******************************************************************************************************************/
 int32_t INA_Class::getShuntMicroVolts(const bool waitSwitch,                  //                                  //
                                       const uint8_t deviceNumber) {           //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
-  EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
-  if (waitSwitch) waitForConversion();                                        // wait for conversion to complete  //
+  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to "ina" struct      //
+  if (waitSwitch) waitForConversion(deviceNumber);                            // wait for conversion to complete  //
   int32_t shuntVoltage = readWord(INA_SHUNT_VOLTAGE_REGISTER,ina.address);    // Get the raw value                //
   shuntVoltage = shuntVoltage*ina.shuntVoltage_LSB/10;                        // Convert to microvolts            //
   if (!bitRead(ina.operatingMode,2) && bitRead(ina.operatingMode,0)) {        // If triggered and shunt active    //
@@ -326,11 +356,10 @@ int32_t INA_Class::getShuntMicroVolts(const bool waitSwitch,                  //
 ** Method reset resets the INA using the first bit in the configuration register                                  **
 *******************************************************************************************************************/
 void INA_Class::reset(const uint8_t deviceNumber) {                           // Reset the INA                    //
-  inaDet ina;                                                                 // Hold device details in structure //
   int16_t configRegister;                                                     // Hold configuration register      //
   for(uint8_t i=0;i<_DeviceCount;i++) {                                       // Loop for each device found       //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
-      EEPROM.get(i*sizeof(ina),ina);                                          // Read EEPROM values               //
+      readInafromEEPROM(i);                                                   // Load EEPROM to "ina" struct      //
       writeWord(INA_CONFIGURATION_REGISTER,0x8000,ina.address);               // Set most significant bit         //
     } // of if this device needs to be set                                    //                                  //
   } // for-next each device loop                                              //                                  //
@@ -340,9 +369,7 @@ void INA_Class::reset(const uint8_t deviceNumber) {                           //
 ** Method getMode returns the current monitoring mode of the device selected                                      **
 *******************************************************************************************************************/
 uint8_t INA_Class::getMode(const uint8_t deviceNumber ) {                     // Return the monitoring mode       //
-  inaDet ina;                                                                 // Hold device details in structure //
-  uint8_t tempDevice = deviceNumber+1;                                        // Temporary device number storage  //
-  EEPROM.get(tempDevice*sizeof(ina),ina);                                     // Read EEPROM values               //
+  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to "ina" struct      //
   return(ina.operatingMode);                                                  // Return stored value              //
 } // of method getMode()                                                      //                                  //
 /*******************************************************************************************************************
@@ -350,15 +377,14 @@ uint8_t INA_Class::getMode(const uint8_t deviceNumber ) {                     //
 ** to the default startup mode.                                                                                   **
 *******************************************************************************************************************/
 void INA_Class::setMode(const uint8_t mode,const uint8_t deviceNumber ) {     // Set the monitoring mode          //
-  inaDet ina;                                                                 // Hold device details in structure //
   int16_t configRegister;                                                     // Hold configuration register      //
   for(uint8_t i=0;i<_DeviceCount;i++) {                                       // Loop for each device found       //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
-      EEPROM.get(i*sizeof(ina),ina);                                          // Read EEPROM values               //
+      readInafromEEPROM(i);                                                   // Load EEPROM to "ina" struct      //
       configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);      // Get the current register         //
       configRegister &= ~INA_CONFIG_MODE_MASK;                                // zero out the mode bits           //
       ina.operatingMode = B00001111 & mode;                                   // Mask off unused bits             //
-      EEPROM.put((i%_DeviceCount)*sizeof(ina),ina);                           // Write new EEPROM values          //
+      EEPROM.put(i*sizeof(ina),ina);                                          // Write new EEPROM values          //
       configRegister |= ina.operatingMode;                                    // shift in the mode settings       //
       writeWord(INA_CONFIGURATION_REGISTER,configRegister,ina.address);       // Save new value                   //
     } // of if this device needs to be set                                    //                                  //
@@ -370,13 +396,12 @@ void INA_Class::setMode(const uint8_t mode,const uint8_t deviceNumber ) {     //
 *******************************************************************************************************************/
 void INA_Class::waitForConversion(const uint8_t deviceNumber) {               // Wait for current conversion      //
   uint16_t cvBits = 0;                                                        //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
-  EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
   for(uint8_t i=0;i<_DeviceCount;i++) {                                       // Loop for each device found       //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
+      readInafromEEPROM(i);                                                   // Load EEPROM to "ina" struct      //
       cvBits = 0;                                                             //                                  //
       while(cvBits==0) {                                                      // Loop until the value is set      //
-        if (ina.type=INA219)                                                  // INA219 and INA226 are different  //
+        if (ina.type==INA219)                                                 // INA219 and INA226 are different  //
           cvBits = readWord(INA_BUS_VOLTAGE_REGISTER,ina.address)|2;          // Bit 2 set denotes ready          //
         else                                                                  //                                  //
           cvBits = readWord(INA_MASK_ENABLE_REGISTER,ina.address)&(uint16_t)8;//                                  //
@@ -390,12 +415,11 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber) {               //
 *******************************************************************************************************************/
 void INA_Class::setAlertPinOnConversion(const bool alertState,                // Enable pin change on conversion  //
                                         const uint8_t deviceNumber ) {        //                                  //
-  inaDet ina;                                                                 // Hold device details in structure //
   uint16_t alertRegister;                                                     // Hold the alert register          //
   for(uint8_t i=0;i<_DeviceCount;i++) {                                       // Loop for each device found       //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
-      EEPROM.get(i*sizeof(ina),ina);                                          // Read EEPROM values               //
-      if ( ina.type = INA226) {                                               // Only set register for INA226s    //
+      readInafromEEPROM(i);                                                   // Load EEPROM to "ina" struct      //
+      if ( ina.type == INA226) {                                              // Only set register for INA226s    //
         alertRegister = readWord(INA_MASK_ENABLE_REGISTER,ina.address);       // Get the current register         //
         if (!alertState) alertRegister &= ~((uint16_t)1<<10);                 // zero out the alert bit           //
                     else alertRegister |= (uint16_t)(1<<10);                  // turn on the alert bit            //
@@ -411,12 +435,11 @@ void INA_Class::setAveraging(const uint16_t averages,                         //
                              const uint8_t deviceNumber ) {                   //                                  //
   uint8_t averageIndex;                                                       // Store indexed value for register //
   int16_t configRegister;                                                     // Configuration register contents  //
-  inaDet ina;                                                                 // Hold device details in structure //
   for(uint8_t i=0;i<_DeviceCount;i++) {                                       // Loop for each device found       //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
-      EEPROM.get(i*sizeof(ina),ina);                                          // Read EEPROM values               //
+      readInafromEEPROM(i);                                                   // Load EEPROM to "ina" struct      //
       configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);      // Get the current register         //
-      if (ina.type=INA219) {                                                  // Settings different for INA219|226//
+      if (ina.type==INA219) {                                                 // Settings different for INA219|226//
         if      (averages>= 128) averageIndex = 15;                           //                                  //
         else if (averages>=  64) averageIndex = 14;                           //                                  //
         else if (averages>=  32) averageIndex = 13;                           //                                  //
@@ -427,7 +450,7 @@ void INA_Class::setAveraging(const uint16_t averages,                         //
         else                     averageIndex =  8;                           //                                  //
         configRegister &= ~INA219_CONFIG_AVG_MASK;                            // zero out the averages part       //
         configRegister |= (uint16_t)averageIndex << 7;                        // shift in the averages to register//
-        } else {                                                              //                                  //
+      } else {                                                                //                                  //
         if      (averages>=1024) averageIndex = 7;                            // setting depending upon range     //
         else if (averages>= 512) averageIndex = 6;                            //                                  //
         else if (averages>= 256) averageIndex = 5;                            //                                  //

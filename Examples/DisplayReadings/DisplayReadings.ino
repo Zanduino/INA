@@ -73,14 +73,11 @@ void setup() {                                                                //
 *******************************************************************************************************************/
 void loop() {                                                                 // Main program loop                //
   static uint16_t loopCounter = 0;                                            // Count the number of iterations   //
-  Serial.print(F("# Type   Bus V   Shunt mV Bus mA    Bus mW\n"));             // Display the header lines         //
+  Serial.print(F("# Type   Bus V   Shunt mV Bus mA    Bus mW\n"));            // Display the header lines         //
   Serial.print(F("= ====== ======= ======== ========= ========\n"));          //                                  //
   for (uint8_t i=0;i<devicesFound;i++) {                                      // Loop through all devices found   //
     Serial.print(i+1); Serial.print(F(" "));                                  //                                  //
-    if      (INA.getDeviceType(i)==INA219)  Serial.print(F("INA219 "));       //                                  //
-    else if (INA.getDeviceType(i)==INA226)  Serial.print(F("INA226 "));       //                                  //
-    else if (INA.getDeviceType(i)==UNKNOWN) Serial.print(F("UNKNWN "));       //                                  //
-    else                           Serial.print(INA.getDeviceType(i));        //                                  //
+    Serial.print(INA.getDeviceName(i)); Serial.print(F(" "));                 //                                  //
     Serial.print((float)INA.getBusMilliVolts(true,i)/1000.0,4);               //                                  //
     Serial.print(F("V "));                                                    //                                  //
     Serial.print((float)INA.getShuntMicroVolts(true,i)/1000.0,3);             // Convert to millivolts            //

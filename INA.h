@@ -55,6 +55,9 @@
     uint32_t power_LSB;                                                       // Wattage LSB                      //
     uint8_t  programmableGain;                                                // Only on some devices             //
     uint8_t  operatingMode;                                                   // Default continuous mode operation//
+    uint16_t calibConst;                                                      // Device specific calibration const//
+    uint16_t powerConstant;                                                   // Device specific calibration const//
+    char     deviceName[7];                                                   // Device name as a character array //
   } inaDet; // of structure                                                   //                                  //
   enum ina_Type { INA209,                                                     // TSSOP-16, multiple gain          //
                   INA219,                                                     // SOT-23, multiple gain            //
@@ -93,10 +96,10 @@
                                                                               // Device-specific values           //
                                                                               //==================================//
   const uint16_t INA219_BUS_VOLTAGE_LSB       =    400;                       // LSB in uV *100 4.00mV            //
-  const uint16_t INA226_BUS_VOLTAGE_LSB       =    125;                       // LSB in uV *100 1.25mV            //
   const uint16_t INA219_SHUNT_VOLTAGE_LSB     =    100;                       // LSB in uV *10  10.0uV            //
-  const uint16_t INA226_SHUNT_VOLTAGE_LSB     =     25;                       // LSB in uV *10  2.5uV             //
   const uint16_t INA219_CONFIG_AVG_MASK       = 0x0780;                       // Bits 7-10                        //
+  const uint16_t INA226_BUS_VOLTAGE_LSB       =    125;                       // LSB in uV *100 1.25mV            //
+  const uint16_t INA226_SHUNT_VOLTAGE_LSB     =     25;                       // LSB in uV *10  2.5uV             //
   const uint16_t INA226_CONFIG_AVG_MASK       = 0x0E00;                       // Bits 9-11                        //
                                                                               //==================================//
   const uint16_t INA_CONFIG_BUS_TIME_MASK     = 0x01C0;                       // Bits 6-8                         //
@@ -127,6 +130,7 @@
       int32_t  getBusMicroAmps(const uint8_t deviceNumber=0);                 // Retrieve micro-amps              //
       int32_t  getBusMicroWatts(const uint8_t deviceNumber=0);                // Retrieve micro-watts             //
       uint8_t  getDeviceType(const uint8_t deviceNumber=0);                   // Retrieve device type             //
+      char *   getDeviceName(const uint8_t deviceNumber=0);                   // Retrieve device name as char[7]  //
       void     reset(const uint8_t deviceNumber=0);                           // Reset the device                 //
       void     setMode(const uint8_t mode,const uint8_t devNumber=UINT8_MAX); // Set the monitoring mode          //
       uint8_t  getMode(const uint8_t devNumber=UINT8_MAX);                    // Get the monitoring mode          //
@@ -146,7 +150,9 @@
                          const uint8_t deviceAddress);                        //                                  //
       void     writeWord(const uint8_t addr, const uint16_t data,             // Write two bytes to an I2C address//
                          const uint8_t deviceAddress);                        //                                  //
+      void     readInafromEEPROM(const uint8_t deviceNumber);                 // Retrieve structure from EEPROM   //
       uint8_t  _TransmissionStatus = 0;                                       // Return code for I2C transmission //
       uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
+      inaDet   ina;                                                           // Declare a single global value    //
   }; // of INA_Class definition                                               //                                  //
 #endif                                                                        //----------------------------------//
