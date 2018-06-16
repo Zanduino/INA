@@ -26,34 +26,92 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
                             const uint32_t microOhmR,                         //                                  //
                             const uint8_t deviceNumber ) {                    //                                  //
   inaDet ina;                                                                 // Hold device details in structure //
-  uint16_t tempRegister;                                                      // Stores 16-bit register contents  //
+  uint16_t originalRegister,tempRegister;                                     // Stores 16-bit register contents  //
   if (_DeviceCount==0) {                                                      // Enumerate devices in first call  //
     Wire.begin();                                                             // Start the I2C wire subsystem     //
     for(uint8_t deviceAddress = 64;deviceAddress<79;deviceAddress++) {        // Loop for each possible address   //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //
       if (Wire.endTransmission() == 0) {                                      // by checking the return error     //
+        originalRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);// Save original register settings  //
         writeWord(INA_CONFIGURATION_REGISTER,INA_RESET_DEVICE,deviceAddress); // Forces INAs to reset             //
         delay(I2C_DELAY);                                                     // Wait for INA to finish resetting //
         tempRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);    // Read the newly reset register    //
-        if ((tempRegister&INA_RESET_DEVICE)==0) {                             // INAs will reset MSb              //
-          if (readWord(INA_MANUFACTURER_ID_REGISTER,deviceAddress)==0x5449) { // Check hard-coded manufacturerId  //
-            ina.type             = INA226;                                    // Set to an INA226                 //
-            ina.busVoltage_LSB   = INA226_BUS_VOLTAGE_LSB;                    // Set to hard-coded value          //
-            ina.shuntVoltage_LSB = INA226_SHUNT_VOLTAGE_LSB;                  // Set to hard-coded value          //
-            ina.current_LSB      = (uint64_t)maxBusAmps*1000000000/32767;     // Get the best possible LSB in nA  //
-            ina.calibration      = (uint64_t)51200000/((uint64_t)ina.current_LSB*// Compute calibration register  //
-                                   (uint64_t)microOhmR/(uint64_t)100000);     // using 64 bit numbers throughout  //
-            ina.power_LSB        = (uint32_t)25*ina.current_LSB;              // Fixed multiplier for INA219      //
+        if (tempRegister==INA_RESET_DEVICE ){                                 // If the register isn't reset then //
+           writeWord(INA_CONFIGURATION_REGISTER,originalRegister,deviceAddress);// this is not an an INA          //
+        } else {                                                              // otherwise we know it is an INA   //
+          if (tempRegister==0x399F) {                                         // INA209, INA219, INA220           //
+            writeWord(0x0B,1,deviceAddress);                                  // Write value to INA209 power reg  //
+            delay(I2C_DELAY);                                                 // Wait for INA to finish resetting //
+            tempRegister = readWord(0x0B,deviceAddress);                      // Read the INA209 high-register    //
+            if (tempRegister!=1) {                                            // Register 0xB doesn't exist INA219//
+              ina.type             = INA219;                                  // Set to an INA219                 //
+              ina.busVoltage_LSB   = INA219_BUS_VOLTAGE_LSB;                  // Set to hard-coded value          //
+              ina.shuntVoltage_LSB = INA219_SHUNT_VOLTAGE_LSB;                // Set to hard-coded value          //
+              ina.current_LSB = (uint64_t)maxBusAmps*1000000000/32767;        // Get the best possible LSB in nA  //
+              ina.calibration = (uint64_t)409600000/((uint64_t)ina.current_LSB*// Compute calibration register    //
+                                (uint64_t)microOhmR/(uint64_t)100000);        // using 64 bit numbers throughout  //
+              ina.power_LSB   = (uint32_t)25*4*ina.current_LSB;               // Fixed multiplier for INA219      //
+              // Determine which programmable gain to use so that there is no chance of an overflow; yet giving   //
+              // the best possible accuracy                                                                       //
+              uint16_t maxShuntmV = maxBusAmps*microOhmR/1000;                // Compute maximum shunt millivolts //
+              if      (maxShuntmV<=40)  ina.programmableGain = 0;             // gain x1 for +- 40mV              //
+              else if (maxShuntmV<=80)  ina.programmableGain = 1;             // gain x2 for +- 80mV              //
+              else if (maxShuntmV<=160) ina.programmableGain = 2;             // gain x4 for +- 160mV             //
+              else                      ina.programmableGain = 3;             // default gain x8 for +- 320mV     //
+Serial.println(0x399F>>INA_PG_FIRST_BIT,BIN);
+              tempRegister  = 0x399F & INA_CONFIG_PG_MASK;                    // Zero out the programmable gain   //
+Serial.println(tempRegister>>INA_PG_FIRST_BIT,BIN);
+              tempRegister |= ina.programmableGain<<INA_PG_FIRST_BIT;         // Overwrite the new values         //
+              writeWord(INA_CONFIGURATION_REGISTER,tempRegister,deviceAddress);// Write new value to config reg   //
+Serial.println(tempRegister>>INA_PG_FIRST_BIT,BIN);
+            } else {                                                          //                                  //
+              ina.type             = INA209;                                  // Set to an INA209                 //
+              /************************                                       //                                  //
+              ** NOT IMPLEMENTED YET **                                       //                                  //
+              ************************/                                       //                                  //
+            } // of if-then a INA219/INA220 or a INA209                       //                                  //
           } else {                                                            //                                  //
-            ina.type             = INA219;                                    // Set to an INA219                 //
-            ina.busVoltage_LSB   = INA219_BUS_VOLTAGE_LSB;                    // Set to hard-coded value          //
-            ina.shuntVoltage_LSB = INA219_SHUNT_VOLTAGE_LSB;                  // Set to hard-coded value          //
-            ina.current_LSB = (uint64_t)maxBusAmps*1000000000/32767;          // Get the best possible LSB in nA  //
-            ina.calibration = (uint64_t)409600000/((uint64_t)ina.current_LSB* // Compute calibration register     //
-                              (uint64_t)microOhmR/(uint64_t)100000);          // using 64 bit numbers throughout  //
-            ina.power_LSB   = (uint32_t)25*4*ina.current_LSB;                 // Fixed multiplier for INA219      //
-          } // of if-then-else INA226 or INA219                               //                                  //
+            if (tempRegister==0x4127) {                                       // INA226, INA230, INA231           //
+              tempRegister = readWord(INA_DIE_ID_REGISTER,deviceAddress);     // Read the INA209 high-register    //
+              if (tempRegister==INA226_DIE_ID_VALUE) {                        // We've identified an INA226       //
+                ina.type             = INA226;                                // Set to an INA226                 //
+                ina.busVoltage_LSB   = INA226_BUS_VOLTAGE_LSB;                // Set to hard-coded value          //
+                ina.shuntVoltage_LSB = INA226_SHUNT_VOLTAGE_LSB;              // Set to hard-coded value          //
+                ina.current_LSB      = (uint64_t)maxBusAmps*1000000000/32767; // Get the best possible LSB in nA  //
+                ina.calibration      = (uint64_t)51200000/((uint64_t)ina.current_LSB*// Compute calibration rgstr //
+                                       (uint64_t)microOhmR/(uint64_t)100000); // using 64 bit numbers throughout  //
+                ina.power_LSB        = (uint32_t)25*ina.current_LSB;          // Constant multiplier for INA226   //
+                ina.programmableGain = 0;                                     // Programmable gain not used       //
+              } else {                                                        //                                  //
+                if (tempRegister!=0) {                                        // If register exists,              //
+                  ina.type = INA230;                                          // Set to an INA230 due to register //
+                  /************************                                   //                                  //
+                  ** NOT IMPLEMENTED YET **                                   //                                  //
+                  ************************/                                   //                                  //
+                } else {                                                      //                                  //
+                  ina.type = INA231;                                          // Set to an INA231 as no register  //
+                } // of if-then-else a INA230 or INA231                       //                                  //
+              } // of if-then-else an INA226                                  //                                  //
+            } else {                                                          //                                  //
+              if (tempRegister==0x6127) {                                     // INA260                           //
+                ina.type = INA260;                                            // Set to an INA260                 //
+                /************************                                     //                                  //
+                ** NOT IMPLEMENTED YET **                                     //                                  //
+                ************************/                                     //                                  //
+              } else {                                                        //                                  //
+                if (tempRegister==0x7127) {                                   // INA3221                          //
+                  ina.type = INA3221;                                         // Set to an INA3221                //
+                  /************************                                   //                                  //
+                  ** NOT IMPLEMENTED YET **                                   //                                  //
+                  ************************/                                   //                                  //
+                } else {                                                      //                                  //
+                  ina.type = UNKNOWN;                                         //                                  //
+                } // of if-then-else it is an INA3221                         //                                  //
+              } // of if-then-else it is an INA260                            //                                  //
+            } // of if-then-else it is an INA226, INA230, INA231              //                                  //
+          } // of if-then-else it is an INA209, INA219, INA220                //                                  //
           writeWord(INA_CALIBRATION_REGISTER,ina.calibration,deviceAddress);  // Write the calibration value      //
+          delay(I2C_DELAY);                                                   // Wait for INA to finish resetting //
           ina.address       = deviceAddress;                                  // Store device address             //
           ina.operatingMode = B111;                                           // Default to continuous mode       //
           #ifdef debug_Mode                                                   // Display values when debugging    //
@@ -67,13 +125,23 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
             Serial.print(F("current_LSB= "));Serial.println(ina.current_LSB); //                                  //
             Serial.print(F("calibration= "));Serial.println(ina.calibration); //                                  //
             Serial.print(F("power_LSB  = "));Serial.println(ina.power_LSB);   //                                  //
+            Serial.print(F("Gain       = "));Serial.println(ina.programmableGain);//                              //
             Serial.print(F("\n"));                                            //                                  //
           #endif                                                              // end of conditional compile code  //
           if ((_DeviceCount*sizeof(ina))<EEPROM.length()) {                   // If there's space left in EEPROM  //
             EEPROM.put(_DeviceCount*sizeof(ina),ina);                         // Add the structure                //
             _DeviceCount++;                                                   // Increment the device counter     //
           } // of if-then the values will fit into EEPROM                     //                                  //
-        } // of if-then we have an INA                                        //                                  //
+          if (ina.type == INA219) {
+            uint16_t tempBusmV = getBusMilliVolts(true,_DeviceCount-1);       // Get the voltage on the bus       //            
+            if (tempBusmV > 20 && tempBusmV < 16000) {                        // If we have a voltage             //
+              tempRegister=readWord(INA_CONFIGURATION_REGISTER,deviceAddress);// Read the newly reset register    //
+              bitClear(tempRegister,INA_BRNG_BIT);                            // set to 0 for 0-16 volts          //
+              writeWord(INA_CONFIGURATION_REGISTER,tempRegister,deviceAddress);// Write new value to config reg   //
+              delay(I2C_DELAY);                                               // Wait for INA to finish resetting //
+            } // set the range to 0-16V rather than the default 0-32 for more accurate readings                   //
+          } // if-then the bus voltage can be set                             //                                  //
+        } // of if-then-else we have an INA-Type device                       //                                  //
       } // of if-then we have a device                                        //                                  //
     } // for-next each possible I2C address                                   //                                  //
   } // of if-then first call with no devices found                            //                                  //
@@ -89,8 +157,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
     writeWord(INA_CALIBRATION_REGISTER,ina.calibration,ina.address);          // Write the calibration value      //
   } // of if-then-else set one or all devices                                 //                                  //
 */
-  
-  
+    
   return _DeviceCount;                                                        // Return number of devices found   //
 } // of method begin()                                                        //                                  //
 /*******************************************************************************************************************
@@ -100,8 +167,7 @@ int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {              //
   inaDet ina;                                                                 // Hold device details in structure //
   EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                    // Read EEPROM values               //
   int32_t microAmps = readWord(INA_CURRENT_REGISTER,ina.address);             // Get the raw value                //
-//Serial.print("*");Serial.print(microAmps);Serial.print("*");
-  microAmps = (int64_t)microAmps*ina.current_LSB/10000;                       // Convert to microamps             //
+  microAmps = (int64_t)microAmps*ina.current_LSB/1000;                        // Convert to microamps             //
   return(microAmps);                                                          // return computed microamps        //
 } // of method getBusMicroAmps()                                              //                                  //
 

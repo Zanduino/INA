@@ -53,10 +53,20 @@
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //
     uint32_t current_LSB;                                                     // Amperage LSB                     //
     uint32_t power_LSB;                                                       // Wattage LSB                      //
+    uint8_t  programmableGain;                                                // Only on some devices             //
     uint8_t  operatingMode;                                                   // Default continuous mode operation//
   } inaDet; // of structure                                                   //                                  //
-  enum ina_Type { INA219,                                                     // INA219. 8-Pin                    //
-                  INA226,                                                     // INA226. 10-Pin                   //
+  enum ina_Type { INA209,                                                     // TSSOP-16, multiple gain          //
+                  INA219,                                                     // SOT-23, multiple gain            //
+                  INA220,                                                     // VSSOP-10, multiple gain          //
+                  INA226,                                                     // VSSOP-10                         //
+                  INA230,                                                     // QFN-16                           //
+                  INA231,                                                     // DSBGA-12                         //
+                  INA233,                                                     // VSSOP-10                         //
+                  INA250,                                                     // TSSOP-16, integrated shunt       //
+                  INA253,                                                     // TSSOP-20, integrated shunt       //
+                  INA260,                                                     // TSSOP-16, integrated shunt       //
+                  INA3221,                                                    // VQFN-16                          //
                   UNKNOWN };                                                  //                                  //
   /*****************************************************************************************************************
   ** Declare constants used in the class                                                                          **
@@ -68,10 +78,14 @@
   const uint8_t  INA_POWER_REGISTER           =      3;                       //                                  //
   const uint8_t  INA_CURRENT_REGISTER         =      4;                       //                                  //
   const uint8_t  INA_CALIBRATION_REGISTER     =      5;                       //                                  //
-  const uint8_t  INA_MASK_ENABLE_REGISTER     =      6;                       // Not found on INA219              //
-  const uint8_t  INA_MANUFACTURER_ID_REGISTER = 0x5449;                       // Not found on INA219              //
-  const uint8_t  INA260_DIE_ID_REGISTER       = 0x2270;
-  const uint8_t  INA226_DIE_ID_REGISTER       = 0x2260;
+  const uint8_t  INA_MASK_ENABLE_REGISTER     =      6;                       // Not found on all devices         //
+  const uint8_t  INA_ALERT_LIMIT_REGISTER     =      7;                       // Not found on all devices         //
+  const uint8_t  INA_MANUFACTURER_ID_REGISTER =   0xFE;                       // Not found on all devices         //
+  const uint8_t  INA_DIE_ID_REGISTER          =   0xFF;                       // Not found on all devices         //
+  const uint8_t  INA_BRNG_BIT                 =     13;                       // Bit for BRNG in config register  //
+  const uint16_t  INA_CONFIG_PG_MASK          = 0xE7FF;                       // Bits 11-12                       //
+  const uint8_t  INA_PG_FIRST_BIT             =     11;
+  const uint16_t INA226_DIE_ID_VALUE          = 0x2260;
 
 
   const uint16_t INA_RESET_DEVICE             = 0x8000;                       // Write to configuration to reset  //
