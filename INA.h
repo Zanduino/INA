@@ -47,7 +47,7 @@
   *****************************************************************************************************************/
   typedef struct {                                                            // Structure of values per device   //
     uint8_t  address;                                                         // I2C Address of device            //
-    uint8_t  type;                                                            // 0 for 219, 1 for 226             //
+    uint8_t  type;                                                            // see enumerated "ina_Type"        //
     uint16_t calibration;                                                     // Calibration register value       //
     uint16_t shuntVoltage_LSB;                                                // Device dependent LSB factor      //
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //

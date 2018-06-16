@@ -38,16 +38,16 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
         if ((tempRegister&INA_RESET_DEVICE)==0) {                             // INAs will reset MSb              //
           if (readWord(INA_MANUFACTURER_ID_REGISTER,deviceAddress)==0x5449) { // Check hard-coded manufacturerId  //
             ina.type             = INA226;                                    // Set to an INA226                 //
-            ina.busVoltage_LSB   = INA226_BUS_VOLTAGE_LSB;                    // Set to hardcoded value           //
-            ina.shuntVoltage_LSB = INA226_SHUNT_VOLTAGE_LSB;                  // Set to hardcoded value           //
+            ina.busVoltage_LSB   = INA226_BUS_VOLTAGE_LSB;                    // Set to hard-coded value          //
+            ina.shuntVoltage_LSB = INA226_SHUNT_VOLTAGE_LSB;                  // Set to hard-coded value          //
             ina.current_LSB      = (uint64_t)maxBusAmps*1000000000/32767;     // Get the best possible LSB in nA  //
             ina.calibration      = (uint64_t)51200000/((uint64_t)ina.current_LSB*// Compute calibration register  //
                                    (uint64_t)microOhmR/(uint64_t)100000);     // using 64 bit numbers throughout  //
             ina.power_LSB        = (uint32_t)25*ina.current_LSB;              // Fixed multiplier for INA219      //
           } else {                                                            //                                  //
             ina.type             = INA219;                                    // Set to an INA219                 //
-            ina.busVoltage_LSB   = INA219_BUS_VOLTAGE_LSB;                    // Set to hardcoded value           //
-            ina.shuntVoltage_LSB = INA219_SHUNT_VOLTAGE_LSB;                  // Set to hardcoded value           //
+            ina.busVoltage_LSB   = INA219_BUS_VOLTAGE_LSB;                    // Set to hard-coded value          //
+            ina.shuntVoltage_LSB = INA219_SHUNT_VOLTAGE_LSB;                  // Set to hard-coded value          //
             ina.current_LSB = (uint64_t)maxBusAmps*1000000000/32767;          // Get the best possible LSB in nA  //
             ina.calibration = (uint64_t)409600000/((uint64_t)ina.current_LSB* // Compute calibration register     //
                               (uint64_t)microOhmR/(uint64_t)100000);          // using 64 bit numbers throughout  //
