@@ -6,8 +6,8 @@
 | Device                                      | Max V | Package   | Shunt mV | Description | Tested |
 | ------------------------------------------- | ------| --------- | -------- |------------ | ------ |
 | [INA219](http://www.ti.com/product/INA219) ([datasheet](http://www.ti.com/lit/ds/symlink/ina219.pdf))  | 26V   | SOT-23 8p | ±40,±80,±160,±320mV |            | Yes    |
-| [INA220](http://www.ti.com/product/INA220) ([datasheet](http://www.ti.com/lit/ds/symlink/ina220.pdf)) | 26V   | VSSOP 10p | ±40,±80,±160,±320mV | Detected as INA219, identical  | --- |
-| [INA220-Q1](http://www.ti.com/product/INA220-Q1) ([datasheet](http://www.ti.com/lit/ds/symlink/ina220-Q1.pdf)) | 26V   | VSSOP 10p | ±40,±80,±160,±320mV | Detected as INA219, identical | --- |
+| [INA220](http://www.ti.com/product/INA220) ([datasheet](http://www.ti.com/lit/ds/symlink/ina220.pdf)) | 26V   | VSSOP 10p | ±40,±80,±160,±320mV | identical to INA219  | INA219 |
+| [INA220-Q1](http://www.ti.com/product/INA220-Q1) ([datasheet](http://www.ti.com/lit/ds/symlink/ina220-Q1.pdf)) | 26V   | VSSOP 10p | ±40,±80,±160,±320mV | Identical to INA219 | INA219 |
 | [INA226](http://www.ti.com/product/INA226) ([datasheet](http://www.ti.com/lit/ds/symlink/ina226.pdf)) | 36V   | VSSOP 10p | ±81.92mV |            | Yes    |
 | [INA230](http://www.ti.com/product/INA230) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 28   | QFN 16p | ±81.92mV |           | ---    |
 | [INA231](http://www.ti.com/product/INA231) ([datasheet](http://www.ti.com/lit/ds/symlink/ina231.pdf)) | 28   | DSBGA-12 | ±81.92mV |           | ---    |
