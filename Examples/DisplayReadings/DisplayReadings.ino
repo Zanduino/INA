@@ -18,10 +18,6 @@
 ** available EEPROM - ATmega328 UNO has 1024k so can support up to 10 devices but the ATmega168 only has 512 bytes**
 ** which limits it to supporting at most 5 INAs.                                                                  **
 **                                                                                                                **
-** The datasheet for the INA226 can be found at http://www.ti.com/lit/ds/symlink/INA226.pdf and that of the INA219**
-** is at http://www.ti.com/lit/ds/symlink/INA219.pdf. There are differences in allowed voltages and measurement   **
-** sensitivity between the INA226 and INA219 which can be looked up in the datasheets listed above.               **
-**                                                                                                                **
 ** This program is free software: you can redistribute it and/or modify it under the terms of the GNU General     **
 ** Public License as published by the Free Software Foundation, either version 3 of the License, or (at your      **
 ** option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY     **
@@ -31,7 +27,8 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.0  2018-06-10 https://github.com/SV-Zanshin Initial coding                                                 **
+** 1.0.0b 2018-06-17 https://github.com/SV-Zanshin INA219 and INA226 completed, including testing                 **
+** 1.0.0a 2018-06-10 https://github.com/SV-Zanshin Initial coding                                                 **
 **                                                                                                                **
 *******************************************************************************************************************/
 #include <INA.h>                                                              // INA Library                      //
@@ -62,9 +59,9 @@ void setup() {                                                                //
   Serial.print(F(" - Detected "));                                            //                                  //
   Serial.print(devicesFound);                                                 //                                  //
   Serial.println(F(" INA devices on the I2C bus"));                           //                                  //
-  INA.setAveraging(4);                                                        // Average each reading n-times     //
   INA.setBusConversion(7);                                                    // Maximum conversion time 8.244ms  //
   INA.setShuntConversion(7);                                                  // Maximum conversion time 8.244ms  //
+  INA.setAveraging(128);                                                      // Average each reading n-times     //
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);                                      // Bus/shunt measured continuously  //
 } // of method setup()                                                        //                                  //
 /*******************************************************************************************************************
@@ -78,9 +75,9 @@ void loop() {                                                                 //
   for (uint8_t i=0;i<devicesFound;i++) {                                      // Loop through all devices found   //
     Serial.print(i+1); Serial.print(F(" "));                                  //                                  //
     Serial.print(INA.getDeviceName(i)); Serial.print(F(" "));                 //                                  //
-    Serial.print((float)INA.getBusMilliVolts(true,i)/1000.0,4);               //                                  //
+    Serial.print((float)INA.getBusMilliVolts(i)/1000.0,4);                    //                                  //
     Serial.print(F("V "));                                                    //                                  //
-    Serial.print((float)INA.getShuntMicroVolts(true,i)/1000.0,3);             // Convert to millivolts            //
+    Serial.print((float)INA.getShuntMicroVolts(i)/1000.0,3);                  // Convert to millivolts            //
     Serial.print(F("mV "));                                                   //                                  //
     Serial.print((float)INA.getBusMicroAmps(i)/1000.0,4);                     // Convert to milliamp              //
     Serial.print(F("mA "));                                                   //                                  //
