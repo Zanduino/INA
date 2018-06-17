@@ -59,8 +59,8 @@ void setup() {                                                                //
   Serial.print(F(" - Detected "));                                            //                                  //
   Serial.print(devicesFound);                                                 //                                  //
   Serial.println(F(" INA devices on the I2C bus"));                           //                                  //
-  INA.setBusConversion(7);                                                    // Maximum conversion time 8.244ms  //
-  INA.setShuntConversion(7);                                                  // Maximum conversion time 8.244ms  //
+  INA.setBusConversion(8500);                                                 // Maximum conversion time 8.244ms  //
+  INA.setShuntConversion(8500);                                               // Maximum conversion time 8.244ms  //
   INA.setAveraging(128);                                                      // Average each reading n-times     //
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);                                      // Bus/shunt measured continuously  //
 } // of method setup()                                                        //                                  //
