@@ -82,7 +82,6 @@
   /*****************************************************************************************************************
   ** Declare constants used in the class                                                                          **
   *****************************************************************************************************************/
-  const uint8_t  I2C_DELAY                     =     10;                      // Microsecond delay on write       //
   const uint8_t  INA_CONFIGURATION_REGISTER    =      0;                      //==================================//
   const uint8_t  INA_SHUNT_VOLTAGE_REGISTER    =      1;                      // Values common to all INAs        //
   const uint8_t  INA_BUS_VOLTAGE_REGISTER      =      2;                      //==================================//
@@ -122,6 +121,7 @@
   const uint16_t INA226_CONFIG_BADC_MASK      = 0x01C0;                       // Bits 7-10  masked                //
   const uint16_t INA226_CONFIG_SADC_MASK      = 0x0018;                       // Bits 3-4                         //
                                                                               //==================================//
+  const uint8_t  I2C_DELAY                     =     10;                      // Microsecond delay on write       //
   /*****************************************************************************************************************
   ** Declare class header                                                                                         **
   *****************************************************************************************************************/

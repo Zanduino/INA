@@ -39,22 +39,21 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
            writeWord(INA_CONFIGURATION_REGISTER,originalRegister,deviceAddress);// this is not an an INA          //
         } else {                                                              // otherwise we know it is an INA   //
           if (tempRegister==0x399F) {                                         // INA219, INA220                   //
+            strcpy(ina.deviceName,"INA219");                                  // Set string                       //
             initINA219_INA220(maxBusAmps,microOhmR,_DeviceCount);             // perform initialization on device //
           } else {                                                            //                                  //
             if (tempRegister==0x4127) {                                       // INA226, INA230, INA231           //
               tempRegister = readWord(INA_DIE_ID_REGISTER,deviceAddress);     // Read the INA209 high-register    //
               if (tempRegister==INA226_DIE_ID_VALUE) {                        // We've identified an INA226       //
+                strcpy(ina.deviceName,"INA226");                              // Set string                       //
                 initINA226(maxBusAmps,microOhmR,_DeviceCount);                // perform initialization on device //
               } else {                                                        //                                  //
                 if (tempRegister!=0) {                                        // If register exists,              //
-                  ina.type       = INA230;                                    // Set to an INA230 due to register //
                   strcpy(ina.deviceName,"INA230");                            // Set string                       //
-                  /************************                                   //                                  //
-                  ** NOT IMPLEMENTED YET **                                   //                                  //
-                  ************************/                                   //                                  //
+                  initINA226(maxBusAmps,microOhmR,_DeviceCount);              // perform initialization on device //
                 } else {                                                      //                                  //
-                  ina.type       = INA231;                                    // Set to an INA231 as no register  //
                   strcpy(ina.deviceName,"INA231");                            // Set string                       //
+                  initINA226(maxBusAmps,microOhmR,_DeviceCount);              // perform initialization on device //
                 } // of if-then-else a INA230 or INA231                       //                                  //
               } // of if-then-else an INA226                                  //                                  //
             } else {                                                          //                                  //
@@ -112,7 +111,6 @@ void INA_Class::initINA219_INA220(const uint8_t maxBusAmps,                   //
                                   const uint32_t microOhmR,                   //                                  //
                                   const uint8_t deviceNumber) {               //                                  //
   ina.type                = INA219;                                           // Set to an INA219                 //
-  strcpy(ina.deviceName,"INA219");                                            // Set string                       //
   ina.busVoltage_LSB      = INA219_BUS_VOLTAGE_LSB;                           // Set to hard-coded value          //
   ina.shuntVoltage_LSB    = INA219_SHUNT_VOLTAGE_LSB;                         // Set to hard-coded value          //
   ina.calibConst          = 4096;                                             // Device specific constant         //
@@ -148,7 +146,6 @@ void INA_Class::initINA219_INA220(const uint8_t maxBusAmps,                   //
 void INA_Class::initINA226(const uint8_t maxBusAmps,const uint32_t microOhmR, // Set up INA226                    //
                            const uint8_t deviceNumber) {                      //                                  //
   ina.type             = INA226;                                              // Set to an INA226                 //
-  strcpy(ina.deviceName,"INA226");                                            // Set string                       //
   ina.busVoltage_LSB   = INA226_BUS_VOLTAGE_LSB;                              // Set to hard-coded value          //
   ina.shuntVoltage_LSB = INA226_SHUNT_VOLTAGE_LSB;                            // Set to hard-coded value          //
   ina.calibConst       = 512;                                                 // Device specific constant         //
@@ -417,8 +414,8 @@ bool INA_Class::AlertOnConversion(const bool alertState,                      //
       switch (ina.type) {                                                     // Select appropriate device        //
         case INA226 :                                                         // Devices that have an alert pin   //
           alertRegister = readWord(INA_MASK_ENABLE_REGISTER,ina.address);     // Get the current register         //
-          alertRegister &= INA_ALERT_MASK;                                    // Mask off all bits                // 
-          if (alertState) bitSet(alertRegister,INA_ALERT_CONVERSION_RDY_BIT); // Turn on the bit                 //
+          alertRegister &= INA_ALERT_MASK;                                    // Mask off all bits                //
+          if (alertState) bitSet(alertRegister,INA_ALERT_CONVERSION_RDY_BIT); // Turn on the bit                  //
           writeWord(INA_MASK_ENABLE_REGISTER,alertRegister,ina.address);      // Write register back to device    //
         break;                                                                //                                  //
         default : returnCode = false;                                         //                                  //
@@ -458,9 +455,9 @@ bool INA_Class::AlertOnShuntOverVoltage(const bool alertState,                //
   return(returnCode);                                                         // return the appropriate status    //
 } // of method AlertOnShuntOverVoltage                                        //                                  //
 /*******************************************************************************************************************
-** Method AlertOnShuntUnderVoltageConversion configures the INA devices which support this functionality to pull   **
-** the ALERT pin low when the shunt current goes below the value given in the parameter in millivolts. This call is**
-** ignored and returns false when called for an invalid device                                                    **
+** Method AlertOnShuntUnderVoltageConversion configures the INA devices which support this functionality to pull  **
+** the ALERT pin low when the shunt current goes below the value given in the parameter in millivolts. This call  **
+** is ignored and returns false when called for an invalid device                                                 **
 *******************************************************************************************************************/
 bool INA_Class::AlertOnShuntUnderVoltage(const bool alertState,               // Enable pin change on conversion  //
                                          const int32_t milliVolts,            //                                  //
