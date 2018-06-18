@@ -37,7 +37,11 @@
 ** 1.0.0a 2018-06-10 https://github.com/SV-Zanshin Initial coding began                                           **
 **                                                                                                                **
 *******************************************************************************************************************/
-#include "Arduino.h"                                                          // Arduino data type definitions    //
+#if ARDUINO >= 100                                                            // The Arduino IDE versions before  //
+  #include "Arduino.h"                                                        // 100 need to use the older library//
+#else                                                                         // rather than the new one          //
+  #include "WProgram.h"                                                       //                                  //
+#endif                                                                        //                                  //
 #ifndef INA_Class_h                                                           // Guard code definition            //
   #define debug_Mode                                                          // Comment out when not needed      //
   #define INA__Class_h                                                        // Define the name inside guard code//
