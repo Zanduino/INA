@@ -18,6 +18,51 @@
 INA_Class::INA_Class()  {}                                                    // Class constructor                //
 INA_Class::~INA_Class() {}                                                    // Unused class destructor          //
 /*******************************************************************************************************************
+** Private method readWord() reads 2 bytes from the specified address                                             **
+*******************************************************************************************************************/
+int16_t INA_Class::readWord(const uint8_t addr,const uint8_t deviceAddr) {    //                                  //
+  int16_t returnData;                                                         // Store return value               //
+  Wire.beginTransmission(deviceAddr);                                         // Address the I2C device           //
+  Wire.write(addr);                                                           // Send the register address to read//
+  Wire.endTransmission();                                                     // Close transmission               //
+  delayMicroseconds(I2C_DELAY);                                               // delay required for sync          //
+  Wire.requestFrom(deviceAddr, (uint8_t)2);                                   // Request 2 consecutive bytes      //
+  returnData = Wire.read();                                                   // Read the msb                     //
+  returnData = returnData<<8;                                                 // shift the data over              //
+  returnData|= Wire.read();                                                   // Read the lsb                     //
+  return returnData;                                                          // read it and return it            //
+} // of method readWord()                                                     //                                  //
+/*******************************************************************************************************************
+** Private method writeWord writes 2 byte to the specified address                                                **
+*******************************************************************************************************************/
+void INA_Class::writeWord(const uint8_t addr, const uint16_t data,            //                                  //
+                          const uint8_t deviceAddr) {                         //                                  //
+  Wire.beginTransmission(deviceAddr);                                         // Address the I2C device           //
+  Wire.write(addr);                                                           // Send register address to write   //
+  Wire.write((uint8_t)(data>>8));                                             // Write the first byte             //
+  Wire.write((uint8_t)data);                                                  // and then the second              //
+  Wire.endTransmission();                                                     // Close transmission               //
+  delayMicroseconds(I2C_DELAY);                                               // delay required for sync          //
+} // of method writeWord()                                                    //                                  //
+/*******************************************************************************************************************
+** Private method readInafromEEPROM retrieves the device structure to the global "ina" from EEPROM                **
+*******************************************************************************************************************/
+void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //                                  //
+  static uint8_t currentINA = UINT8_MAX;                                      // Stores current INA device number //
+  if (deviceNumber!=currentINA) {                                             // Only read EEPROM if necessary    //
+    EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                  // Read EEPROM values               //
+    currentINA = deviceNumber;                                                // Store new current value          //
+  } // of if-then we have a new device                                        //                                  //
+  return;                                                                     // return nothing                   //
+} // of method readInafromEEPROM()                                            //                                  //
+/*******************************************************************************************************************
+** Private method writeInatoEEPROM writes the "ina" structure to EEPROM                                          **
+*******************************************************************************************************************/
+void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {                //                                  //
+  EEPROM.put(deviceNumber*sizeof(ina),ina);                                   // Write the structure              //
+  return;                                                                     // return nothing                   //
+} // of method writeInatoEEPROM()                                             //                                  //
+/*******************************************************************************************************************
 ** Method begin() searches for possible devices and sets the INA Configuration details, without which meaningful  **
 ** readings cannot be made. If it is called without the option deviceNumber parameter then the settings are       **
 ** applied to all devices, otherwise just that specific device is targeted.                                       **
@@ -31,7 +76,8 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
     for(uint8_t deviceAddress = 64;deviceAddress<79;deviceAddress++) {        // Loop for each possible address   //
       ina.address = deviceAddress;                                            // Store device address             //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //
-      if (Wire.endTransmission() == 0) {                                      // by checking the return error     //
+      if (Wire.endTransmission() == 0 &&                                      // by checking the return error     //
+          (deviceNumber*sizeof(ina))<EEPROM.length()) {                       // and if the EEPROM has space      //
         originalRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);// Save original register settings  //
         writeWord(INA_CONFIGURATION_REGISTER,INA_RESET_DEVICE,deviceAddress); // Forces INAs to reset             //
         tempRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);    // Read the newly reset register    //
@@ -131,8 +177,7 @@ void INA_Class::initINA219_INA220(const uint8_t maxBusAmps,                   //
   uint16_t tempRegister = 0x399F & INA219_CONFIG_PG_MASK;                     // Zero out the programmable gain   //
   tempRegister |= ina.programmableGain<<INA219_PG_FIRST_BIT;                  // Overwrite the new values         //
   writeWord(INA_CONFIGURATION_REGISTER,tempRegister,ina.address);             // Write new value to config reg    //
-  if ((deviceNumber*sizeof(ina))<EEPROM.length())                             // If there's space left in EEPROM  //
-    EEPROM.put(deviceNumber*sizeof(ina),ina);                                 // Add the structure                //
+  writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
   uint16_t tempBusmV = getBusMilliVolts(deviceNumber);                        // Get the voltage on the bus       //
   if (tempBusmV > 20 && tempBusmV < 16000) {                                  // If we have a voltage             //
     bitClear(tempRegister,INA219_BRNG_BIT);                                   // set to 0 for 0-16 volts          //
@@ -158,8 +203,7 @@ void INA_Class::initINA226(const uint8_t maxBusAmps,const uint32_t microOhmR, //
                          (uint64_t)100000);                                   //                                  //
   ina.power_LSB        = (uint32_t)ina.powerConstant*ina.current_LSB;         // Fixed multiplier per device      //
   writeWord(INA_CALIBRATION_REGISTER,ina.calibration,ina.address);            // Write the calibration value      //
-  if ((deviceNumber*sizeof(ina))<EEPROM.length())                             // If there's space left in EEPROM  //
-    EEPROM.put(deviceNumber*sizeof(ina),ina);                                 // Add the structure                //
+  writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
   return;                                                                     // return to caller                 //
 } // of method initINA226()                                                   //                                  //
 /*******************************************************************************************************************
@@ -263,44 +307,6 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
   } // for-next each device loop                                              //                                  //
 } // of method setShuntConversion()                                           //                                  //
 /*******************************************************************************************************************
-** Method readWord reads 2 bytes from the specified address                                                       **
-*******************************************************************************************************************/
-int16_t INA_Class::readWord(const uint8_t addr,const uint8_t deviceAddr) {    //                                  //
-  int16_t returnData;                                                         // Store return value               //
-  Wire.beginTransmission(deviceAddr);                                         // Address the I2C device           //
-  Wire.write(addr);                                                           // Send the register address to read//
-  _TransmissionStatus = Wire.endTransmission();                               // Close transmission               //
-  delayMicroseconds(I2C_DELAY);                                               // delay required for sync          //
-  Wire.requestFrom(deviceAddr, (uint8_t)2);                                   // Request 2 consecutive bytes      //
-  returnData = Wire.read();                                                   // Read the msb                     //
-  returnData = returnData<<8;                                                 // shift the data over              //
-  returnData|= Wire.read();                                                   // Read the lsb                     //
-  return returnData;                                                          // read it and return it            //
-} // of method readWord()                                                     //                                  //
-/*******************************************************************************************************************
-** Method writeWord writes 2 byte to the specified address                                                        **
-*******************************************************************************************************************/
-void INA_Class::writeWord(const uint8_t addr, const uint16_t data,            //                                  //
-                          const uint8_t deviceAddr) {                         //                                  //
-  Wire.beginTransmission(deviceAddr);                                         // Address the I2C device           //
-  Wire.write(addr);                                                           // Send register address to write   //
-  Wire.write((uint8_t)(data>>8));                                             // Write the first byte             //
-  Wire.write((uint8_t)data);                                                  // and then the second              //
-  _TransmissionStatus = Wire.endTransmission();                               // Close transmission               //
-  delayMicroseconds(I2C_DELAY);                                               // delay required for sync          //
-} // of method writeWord()                                                    //                                  //
-/*******************************************************************************************************************
-** Method readInafromEEPROM retrieves the device structure to the global "ina" from EEPROM                        **
-*******************************************************************************************************************/
-void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //                                  //
-  static uint8_t currentINA = UINT8_MAX;                                      // Stores current INA device number //
-  if (deviceNumber!=currentINA) {                                             // Only read EEPROM if necessary    //
-    EEPROM.get((deviceNumber%_DeviceCount)*sizeof(ina),ina);                  // Read EEPROM values               //
-    currentINA = deviceNumber;                                                // Store new current value          //
-  } // of if-then we have a new device                                        //                                  //
-  return;                                                                     // return nothing                   //
-} // of method readInafromEEPROM()                                            //                                  //
-/*******************************************************************************************************************
 ** Method getDeviceType retrieves the device type from EEPROM                                                     **
 *******************************************************************************************************************/
 uint8_t INA_Class::getDeviceType(const uint8_t deviceNumber) {                //                                  //
@@ -369,7 +375,7 @@ void INA_Class::setMode(const uint8_t mode,const uint8_t deviceNumber ) {     //
       configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);      // Get the current register         //
       configRegister &= ~INA_CONFIG_MODE_MASK;                                // zero out the mode bits           //
       ina.operatingMode = B00001111 & mode;                                   // Mask off unused bits             //
-      EEPROM.put(i*sizeof(ina),ina);                                          // Write new EEPROM values          //
+      writeInatoEEPROM(i);                                                    // Store the structure to EEPROM    //
       configRegister |= ina.operatingMode;                                    // shift in the mode settings       //
       writeWord(INA_CONFIGURATION_REGISTER,configRegister,ina.address);       // Save new value                   //
     } // of if this device needs to be set                                    //                                  //
