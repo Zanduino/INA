@@ -5,13 +5,13 @@
 
 | Device                                      | Max V | Package   | Shunt mV | Description | Tested |
 | ------------------------------------------- | ------| --------- | -------- |------------ | ------ |
-| [INA219](http://www.ti.com/product/INA219) ([datasheet](http://www.ti.com/lit/ds/symlink/ina219.pdf))  | 26V   | SOT-23 8p | ±40,±80,±160,±320mV |            | Yes    |
+| [INA219](http://www.ti.com/product/INA219) ([datasheet](http://www.ti.com/lit/ds/symlink/ina219.pdf))  | 26V   | SOT-23 8p | ±40,±80,±160,±320mV |            | Yes |
 | [INA220](http://www.ti.com/product/INA220) ([datasheet](http://www.ti.com/lit/ds/symlink/ina220.pdf)) | 26V   | VSSOP 10p | ±40,±80,±160,±320mV | identical to INA219  | INA219 |
 | [INA220-Q1](http://www.ti.com/product/INA220-Q1) ([datasheet](http://www.ti.com/lit/ds/symlink/ina220-Q1.pdf)) | 26V   | VSSOP 10p | ±40,±80,±160,±320mV | Identical to INA219 | INA219 |
-| [INA226](http://www.ti.com/product/INA226) ([datasheet](http://www.ti.com/lit/ds/symlink/ina226.pdf)) | 36V   | VSSOP 10p | ±81.92mV |            | Yes    |
-| [INA230](http://www.ti.com/product/INA230) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 28   | QFN 16p | ±81.92mV |           | ---    |
-| [INA231](http://www.ti.com/product/INA231) ([datasheet](http://www.ti.com/lit/ds/symlink/ina231.pdf)) | 28   | DSBGA-12 | ±81.92mV |           | ---    |
-| [INA233](http://www.ti.com/product/INA233) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 36   | VSSOP 10p | ±81.92mV |           | ---    |
+| [INA226](http://www.ti.com/product/INA226) ([datasheet](http://www.ti.com/lit/ds/symlink/ina226.pdf)) | 36V   | VSSOP 10p | ±81.92mV |            | Yes |
+| [INA230](http://www.ti.com/product/INA230) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 28   | QFN 16p | ±81.92mV | Identical to INA226 | INA226 |
+| [INA231](http://www.ti.com/product/INA231) ([datasheet](http://www.ti.com/lit/ds/symlink/ina231.pdf)) | 28   | DSBGA-12 | ±81.92mV | Identical to INA226 | INA226 |
+| [INA233](http://www.ti.com/product/INA233) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 36   | VSSOP 10p | ±81.92mV | Identical to INA226 | INA226 |
 | [INA250](http://www.ti.com/product/INA250) ([datasheet](http://www.ti.com/lit/ds/symlink/ina250.pdf)) | 40V   | TSSOP 16p | n.a. | 2 mΩ shunt, ±15A, programmable gain           | ---    |
 | [INA253](http://www.ti.com/product/INA253) ([datasheet](http://www.ti.com/lit/ds/symlink/ina253.pdf)) | 90V   | TSSOP 20 | n.a. | 2 mΩ shunt, ±15A           | ---    |
 | [INA260](http://www.ti.com/product/INA260) ([datasheet](http://www.ti.com/lit/ds/symlink/ina260.pdf)) | 36V   | TSSOP 16p | n.a. | 2 mΩ shunt, ±15A             | ---    |
