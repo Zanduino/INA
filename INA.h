@@ -177,7 +177,6 @@
                                  const uint8_t deviceAddress);                //                                  //
       void     readInafromEEPROM(const uint8_t deviceNumber);                 // Retrieve structure from EEPROM   //
       void     writeInatoEEPROM (const uint8_t deviceNumber);                 // Write structure to EEPROM        //
-      uint8_t  getDeviceType    (const uint8_t deviceNumber=0);               // Retrieve device type             //
       void     initINA219_INA220(const uint8_t  maxBusAmps,                   // Initialize INA219 or INA220      //
                                  const uint32_t microOhmR,                    //                                  //
                                  const uint8_t  deviceNumber);                //                                  //
