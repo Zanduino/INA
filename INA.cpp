@@ -307,13 +307,6 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
   } // for-next each device loop                                              //                                  //
 } // of method setShuntConversion()                                           //                                  //
 /*******************************************************************************************************************
-** Method getDeviceType retrieves the device type from EEPROM                                                     **
-*******************************************************************************************************************/
-uint8_t INA_Class::getDeviceType(const uint8_t deviceNumber) {                //                                  //
-  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
-  return(ina.type);                                                           // return device type number        //
-} // of method getDeviceType()                                                //                                  //
-/*******************************************************************************************************************
 ** Method getDeviceName retrieves the device name from EEPROM                                                     **
 *******************************************************************************************************************/
 char * INA_Class::getDeviceName(const uint8_t deviceNumber) {                 //                                  //
