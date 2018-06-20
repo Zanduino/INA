@@ -135,25 +135,25 @@
     public:                                                                   // Publicly visible methods         //
       INA_Class();                                                            // Class constructor                //
       ~INA_Class();                                                           // Class destructor                 //
-      uint8_t  begin             (const uint8_t maxBusAmps,                   // Class initializer                //
+      uint8_t  begin             (const uint8_t  maxBusAmps,                  // Class initializer                //
                                   const uint32_t microOhmR,                   //                                  //
                                   const uint8_t  deviceNumber = UINT8_MAX );  //                                  //
-      void     setMode           (const uint8_t mode,                         // Set the monitoring mode          //
-                                  const uint8_t devNumber=UINT8_MAX);         //                                  //
+      void     setMode           (const uint8_t  mode,                        // Set the monitoring mode          //
+                                  const uint8_t  devNumber=UINT8_MAX);        //                                  //
       void     setAveraging      (const uint16_t averages,                    // Set the number of averages taken //
-                                  const uint8_t deviceNumber=UINT8_MAX);      //                                  //
+                                  const uint8_t  deviceNumber=UINT8_MAX);     //                                  //
       void     setBusConversion  (const uint32_t convTime,                    // Set timing for Bus conversions   //
-                                  const uint8_t deviceNumber=UINT8_MAX);      //                                  //
+                                  const uint8_t  deviceNumber=UINT8_MAX);     //                                  //
       void     setShuntConversion(const uint32_t convTime,                    // Set timing for Shunt conversions //
-                                  const uint8_t deviceNumber=UINT8_MAX);      //                                  //
-      uint16_t getBusMilliVolts  (const uint8_t deviceNumber=0);              // Retrieve Bus voltage in mV       //
-      int32_t  getShuntMicroVolts(const uint8_t deviceNumber=0);              // Retrieve Shunt voltage in uV     //
-      int32_t  getBusMicroAmps   (const uint8_t deviceNumber=0);              // Retrieve micro-amps              //
-      int32_t  getBusMicroWatts  (const uint8_t deviceNumber=0);              // Retrieve micro-watts             //
-      uint8_t  getDeviceType     (const uint8_t deviceNumber=0);              // Retrieve device type             //
-      char *   getDeviceName     (const uint8_t deviceNumber=0);              // Retrieve device name as char[7]  //
-      void     reset             (const uint8_t deviceNumber=0);              // Reset the device                 //
-      void     waitForConversion (const uint8_t deviceNumber=UINT8_MAX);      // wait for conversion to complete  //
+                                  const uint8_t  deviceNumber=UINT8_MAX);     //                                  //
+      uint16_t getBusMilliVolts  (const uint8_t  deviceNumber=0);             // Retrieve Bus voltage in mV       //
+      int32_t  getShuntMicroVolts(const uint8_t  deviceNumber=0);             // Retrieve Shunt voltage in uV     //
+      int32_t  getBusMicroAmps   (const uint8_t  deviceNumber=0);             // Retrieve micro-amps              //
+      int32_t  getBusMicroWatts  (const uint8_t  deviceNumber=0);             // Retrieve micro-watts             //
+      uint8_t  getDeviceType     (const uint8_t  deviceNumber=0);             // Retrieve device type             //
+      char *   getDeviceName     (const uint8_t  deviceNumber=0);             // Retrieve device name as char[7]  //
+      void     reset             (const uint8_t  deviceNumber=0);             // Reset the device                 //
+      void     waitForConversion (const uint8_t  deviceNumber=UINT8_MAX);     // wait for conversion to complete  //
       bool     AlertOnConversion (const bool alertState,                      // Enable pin change on conversion  //
                                   const uint8_t deviceNumber=UINT8_MAX);      //                                  //
       bool     AlertOnShuntOverVoltage (const bool alertState,                // Enable pin change on conversion  //
