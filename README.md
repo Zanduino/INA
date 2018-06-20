@@ -15,8 +15,6 @@
 | [INA250](http://www.ti.com/product/INA250) ([datasheet](http://www.ti.com/lit/ds/symlink/ina250.pdf)) | 36V | TSSOP 16p | n.a. | 2 mΩ shunt, ±15A, programmable gain           | ---    |
 | [INA253](http://www.ti.com/product/INA253) ([datasheet](http://www.ti.com/lit/ds/symlink/ina253.pdf)) | 80V | TSSOP 20 | n.a. | 2 mΩ shunt, ±15A           | ---    |
 | [INA260](http://www.ti.com/product/INA260) ([datasheet](http://www.ti.com/lit/ds/symlink/ina260.pdf)) | 36V | TSSOP 16p | n.a. | 2 mΩ shunt, ±15A             | ---    |
-| [INA3221](http://www.ti.com/product/INA3221) ([datasheet](http://www.ti.com/lit/ds/symlink/ina3221.pdf)) | 26V | VQFN(16) | 163.8mV |              | ---    |
-| [INA3221-Q1](http://www.ti.com/product/INA3221-Q1) ([datasheet](http://www.ti.com/lit/ds/symlink/ina3221-q1.pdf)) | 26V   | VQFN(16) | 163.8mV |         | ---    |
 
 ## Hardware layout
 The packages are small and a lot of work to solder, but fortunately there are now several sources for breakout boards for the various devices which are worth it in time savings. My first test with a INA226 involved a blank breakout board, some solder paste, a frying pan, desoldering braid, a magnifying glass and quite a bit of time to set up the first breadboard.
