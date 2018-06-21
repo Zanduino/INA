@@ -51,7 +51,7 @@ void setup() {                                                                //
   #ifdef  __AVR_ATmega32U4__                                                  // If we are a 32U4 processor, then //
     delay(2000);                                                              // wait 2 seconds for the serial    //
   #endif                                                                      // interface to initialize          //
-  Serial.print(F("\n\nDisplay INA Readings V1.0.0\n"));                       // Display program information      //
+  Serial.print(F("\n\nDisplay INA Readings V1.0.1\n"));                       // Display program information      //
   Serial.print(F(" - Searching & Initializing INA devices\n"));               // Display program information      //
   // The begin initializes the calibration for an expected ±1 Amps maximum current and for a 0.1Ohm resistor, and //
   // since no specific device is given as the 3rd parameter all devices are initially set to these values         //
@@ -63,6 +63,7 @@ void setup() {                                                                //
   INA.setShuntConversion(8500);                                               // Maximum conversion time 8.244ms  //
   INA.setAveraging(128);                                                      // Average each reading n-times     //
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);                                      // Bus/shunt measured continuously  //
+  INA.AlertOnBusOverVoltage(true,5000);
 } // of method setup()                                                        //                                  //
 /*******************************************************************************************************************
 ** This is the main program for the Arduino IDE, it is called in an infinite loop. The INA measurements are       **

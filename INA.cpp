@@ -77,7 +77,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
       ina.address = deviceAddress;                                            // Store device address             //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //
       if (Wire.endTransmission() == 0 &&                                      // by checking the return error     //
-          (deviceNumber*sizeof(ina))<EEPROM.length()) {                       // and if the EEPROM has space      //
+          (_DeviceCount*sizeof(ina))<EEPROM.length()) {                       // and if the EEPROM has space      //
         originalRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);// Save original register settings  //
         writeWord(INA_CONFIGURATION_REGISTER,INA_RESET_DEVICE,deviceAddress); // Forces INAs to reset             //
         tempRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);    // Read the newly reset register    //
