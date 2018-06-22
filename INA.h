@@ -12,13 +12,6 @@
 ** through the circuit.  This value, coupled with the voltage measurement, allows the Amperage and Wattage to be  **
 ** computed by the INA device and all of these values can be read using the industry standard I2C protocol.       **
 **                                                                                                                **
-** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated   **
-** documentation files (the "Software"), to deal in the Software without restriction, including without limitation**
-** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,   **
-** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:         **
-** The above copyright notice and this permission notice shall be included in all copies or substantial portions  **
-** of the Software.                                                                                               **
-**                                                                                                                **
 ** Although programming for the Arduino and in c/c++ is new to me, I'm a professional programmer and have learned,**
 ** over the years, that it is much easier to ignore superfluous comments than it is to decipher non-existent ones;**
 ** so both my comments and variable names tend to be verbose. The code is written to fit in the first 80 spaces   **
