@@ -12,7 +12,7 @@
 | [INA230](http://www.ti.com/product/INA230) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 28V | QFN 16p | ±81.92mV | Identical to INA226 | INA226 |
 | [INA231](http://www.ti.com/product/INA231) ([datasheet](http://www.ti.com/lit/ds/symlink/ina231.pdf)) | 28V | DSBGA-12 | ±81.92mV | Identical to INA226 | INA226 |
 | [INA233](http://www.ti.com/product/INA233) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 36V | VSSOP 10p | ±81.92mV | Identical to INA226 | INA226 |
-| [INA260](http://www.ti.com/product/INA260) ([datasheet](http://www.ti.com/lit/ds/symlink/ina260.pdf)) | 36V | TSSOP 16p | n.a. | 2 mΩ shunt, ±15A             | ---    |
+| [INA260](http://www.ti.com/product/INA260) ([datasheet](http://www.ti.com/lit/ds/symlink/ina260.pdf)) | 36V | TSSOP 16p | n.a. | 2 mΩ shunt, ±15A             | Yes |
 
 ## Hardware layout
 The packages are small and a lot of work to solder, but fortunately there are now several sources for breakout boards for the various devices which are worth it in time savings. My first test with a INA226 involved a blank breakout board, some solder paste, a frying pan, desoldering braid, a magnifying glass and quite a bit of time to set up the first breadboard.
