@@ -9,12 +9,14 @@
 ** option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY     **
 ** WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   **
 ** GNU General Public License for more details. You should have received a copy of the GNU General Public License **
-** along with this program.  If not, see <http://www.gnu.org/licenses/>.                                          **
+** along with this program (see https://github.com/SV-Zanshin/INA/blob/master/LICENSE).  If not, then use         **
+** <http://www.gnu.org/licenses/>.                                                                                **
 **                                                                                                                **
 *******************************************************************************************************************/
 #include "INA.h"                                                              // Include the header definition    //
 #include <Wire.h>                                                             // I2C Library definition           //
 #include <EEPROM.h>                                                           // Include the EEPROM library       //
+                                                                              //                                  //
 INA_Class::INA_Class()  {}                                                    // Class constructor                //
 INA_Class::~INA_Class() {}                                                    // Unused class destructor          //
 /*******************************************************************************************************************
