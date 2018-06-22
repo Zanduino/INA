@@ -65,16 +65,7 @@
     uint8_t  currentRegister;                                                 // Current Register                 //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
-  enum ina_Type { INA219,                                                     // SOT-23, SOIC-8, multiple gain    //
-                  INA226,                                                     // VSSOP-10                         //
-                  INA230,                                                     // QFN-16                           //
-                  INA231,                                                     // DSBGA-12                         //
-                  INA233,                                                     // VSSOP-10                         //
-                  INA250,                                                     // TSSOP-16, integrated shunt       //
-                  INA253,                                                     // TSSOP-20, integrated shunt       //
-                  INA260,                                                     // TSSOP-16, integrated shunt       //
-                  UNKNOWN };                                                  //                                  //
-                                                                              //                                  //
+  enum ina_Type { INA219,INA226,INA230,INA231,INA233,INA260,UNKNOWN };        // Supported distinct types         //
   enum ina_Mode { INA_MODE_SHUTDOWN,                                          // Device powered down              //
                   INA_MODE_TRIGGERED_SHUNT,                                   // Triggered shunt, no bus          //
                   INA_MODE_TRIGGERED_BUS,                                     // Triggered bus, no shunt          //
