@@ -63,6 +63,8 @@
     uint8_t  maxBusAmps;                                                      // Store initialization value       //
     uint32_t microOhmR;                                                       // Store initialization value       //
     char     deviceName[7];                                                   // Device name as a character array //
+    uint8_t  shuntVoltageRegister;                                            // Shunt Voltage Register           //
+    uint8_t  currentRegister;                                                 // Current Register                 //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
   enum ina_Type { INA219,                                                     // SOT-23, SOIC-8, multiple gain    //
@@ -74,7 +76,6 @@
                   INA250,                                                     // TSSOP-16, integrated shunt       //
                   INA253,                                                     // TSSOP-20, integrated shunt       //
                   INA260,                                                     // TSSOP-16, integrated shunt       //
-                  INA3221,                                                    // VQFN-16                          //
                   UNKNOWN };                                                  //                                  //
                                                                               //                                  //
   enum ina_Mode { INA_MODE_SHUTDOWN,                                          // Device powered down              //
@@ -89,10 +90,8 @@
   ** Declare constants used in the class                                                                          **
   *****************************************************************************************************************/
   const uint8_t  INA_CONFIGURATION_REGISTER     =      0;                     //==================================//
-  const uint8_t  INA_SHUNT_VOLTAGE_REGISTER     =      1;                     // Values common to all INAs        //
-  const uint8_t  INA_BUS_VOLTAGE_REGISTER       =      2;                     //==================================//
+  const uint8_t  INA_BUS_VOLTAGE_REGISTER       =      2;                     // Values common to all INAs        //
   const uint8_t  INA_POWER_REGISTER             =      3;                     //                                  //
-  const uint8_t  INA_CURRENT_REGISTER           =      4;                     //                                  //
   const uint8_t  INA_CALIBRATION_REGISTER       =      5;                     //                                  //
   const uint8_t  INA_MASK_ENABLE_REGISTER       =      6;                     // Not found on all devices         //
   const uint8_t  INA_ALERT_LIMIT_REGISTER       =      7;                     // Not found on all devices         //
@@ -111,6 +110,8 @@
                                                                               //==================================//
                                                                               // Device-specific values           //
                                                                               //==================================//
+  const uint8_t  INA219_SHUNT_VOLTAGE_REGISTER  =      1;                     // Shunt Voltage Register           //
+  const uint8_t  INA219_CURRENT_REGISTER        =      4;                     // Current Register                 //
   const uint16_t INA219_BUS_VOLTAGE_LSB         =    400;                     // LSB in uV *100 4.00mV            //
   const uint16_t INA219_SHUNT_VOLTAGE_LSB       =    100;                     // LSB in uV *10  10.0uV            //
   const uint16_t INA219_CONFIG_AVG_MASK         = 0x07F8;                     // Bits 3-6, 7-10                   //
@@ -120,12 +121,20 @@
   const uint8_t  INA219_BRNG_BIT                =     13;                     // Bit for BRNG in config register  //
   const uint8_t  INA219_PG_FIRST_BIT            =     11;                     // first bit of Programmable Gain   //
                                                                               //----------------------------------//
+  const uint8_t  INA226_SHUNT_VOLTAGE_REGISTER  =      1;                     // Shunt Voltage Register           //
+  const uint8_t  INA226_CURRENT_REGISTER        =      4;                     // Current Register                 //
   const uint16_t INA226_BUS_VOLTAGE_LSB         =    125;                     // LSB in uV *100 1.25mV            //
   const uint16_t INA226_SHUNT_VOLTAGE_LSB       =     25;                     // LSB in uV *10  2.5uV             //
   const uint16_t INA226_CONFIG_AVG_MASK         = 0x0E00;                     // Bits 9-11                        //
   const uint16_t INA226_DIE_ID_VALUE            = 0x2260;                     // Hard-coded Die ID for INA226     //
   const uint16_t INA226_CONFIG_BADC_MASK        = 0x01C0;                     // Bits 7-10  masked                //
   const uint16_t INA226_CONFIG_SADC_MASK        = 0x0018;                     // Bits 3-4                         //
+                                                                              //==================================//
+  const uint8_t  INA260_SHUNT_VOLTAGE_REGISTER  =      0;                     // Register doesn't exist on device //
+  const uint8_t  INA260_CURRENT_REGISTER        =      1;                     // Current Register                 //
+  const uint16_t INA260_BUS_VOLTAGE_LSB         =    125;                     // LSB in uV *100 1.25mV            //
+  const uint16_t INA260_CONFIG_BADC_MASK        = 0x01C0;                     // Bits 6-8  masked                 //
+  const uint16_t INA260_CONFIG_SADC_MASK        = 0x0038;                     // Bits 3-5  masked                 //
                                                                               //==================================//
   const uint8_t  I2C_DELAY                      =     10;                     // Microsecond delay on write       //
   /*****************************************************************************************************************
@@ -183,6 +192,7 @@
       void     initINA226       (const uint8_t maxBusAmps,                    // Initialize INA226                //
                                  const uint32_t microOhmR,                    //                                  //
                                  const uint8_t deviceNumber);                 //                                  //
+      void     initINA260       (const uint8_t maxBusAmps);                   //                                  //
       uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
       inaDet   ina;                                                           // Declare a single global value    //
   }; // of INA_Class definition                                               //                                  //
