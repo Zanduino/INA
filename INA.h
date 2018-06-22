@@ -41,7 +41,7 @@
   #include "WProgram.h"                                                       //                                  //
 #endif                                                                        //                                  //
 #ifndef INA_Class_h                                                           // Guard code definition            //
-  #define debug_Mode                                                          // Comment out when not needed      //
+  #undefine debug_Mode                                                        // #define or #undefine to switch   //
   #define INA__Class_h                                                        // Define the name inside guard code//
   /*****************************************************************************************************************
   ** Declare structures and enumerated types used in the class                                                    **
