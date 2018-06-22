@@ -27,6 +27,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.0  2018-06-22 https://github.com/SV-Zanshin Initial release                                                **
 ** 1.0.0b 2018-06-17 https://github.com/SV-Zanshin INA219 and INA226 completed, including testing                 **
 ** 1.0.0a 2018-06-10 https://github.com/SV-Zanshin Initial coding                                                 **
 **                                                                                                                **
@@ -51,7 +52,7 @@ void setup() {                                                                //
   #ifdef  __AVR_ATmega32U4__                                                  // If we are a 32U4 processor, then //
     delay(2000);                                                              // wait 2 seconds for the serial    //
   #endif                                                                      // interface to initialize          //
-  Serial.print(F("\n\nDisplay INA Readings V1.0.1\n"));                       // Display program information      //
+  Serial.print(F("\n\nDisplay INA Readings V1.0.0\n"));                       // Display program information      //
   Serial.print(F(" - Searching & Initializing INA devices\n"));               // Display program information      //
   // The begin initializes the calibration for an expected ±1 Amps maximum current and for a 0.1Ohm resistor, and //
   // since no specific device is given as the 3rd parameter all devices are initially set to these values         //
@@ -63,7 +64,7 @@ void setup() {                                                                //
   INA.setShuntConversion(8500);                                               // Maximum conversion time 8.244ms  //
   INA.setAveraging(128);                                                      // Average each reading n-times     //
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);                                      // Bus/shunt measured continuously  //
-  INA.AlertOnBusOverVoltage(true,5000);
+  INA.AlertOnBusOverVoltage(true,5000);                                       // Trigger alert if over 5V on bus  //
 } // of method setup()                                                        //                                  //
 /*******************************************************************************************************************
 ** This is the main program for the Arduino IDE, it is called in an infinite loop. The INA measurements are       **
