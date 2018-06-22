@@ -30,9 +30,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.0a 2018-06-10 https://github.com/SV-Zanshin Initial coding began                                           **
-https://github.com/SV-Zanshin Continued coding, tested on INA219 and INA226                  **
-** 1.0.0b 2018-06-17 https://github.com/SV-Zanshin Continued coding, tested on INA219 and INA226                  **
+** 1.0.0  2018-06-22 https://github.com/SV-Zanshin Initial release                                                **
 ** 1.0.0b 2018-06-17 https://github.com/SV-Zanshin Continued coding, tested on INA219 and INA226                  **
 ** 1.0.0a 2018-06-10 https://github.com/SV-Zanshin Initial coding began                                           **
 **                                                                                                                **
@@ -68,7 +66,6 @@ https://github.com/SV-Zanshin Continued coding, tested on INA219 and INA226     
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
   enum ina_Type { INA219,                                                     // SOT-23, SOIC-8, multiple gain    //
-                  //INA220,                                                   // Indistinguishable from INA219    //
                   INA226,                                                     // VSSOP-10                         //
                   INA230,                                                     // QFN-16                           //
                   INA231,                                                     // DSBGA-12                         //
