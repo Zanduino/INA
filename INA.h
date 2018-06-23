@@ -20,6 +20,7 @@
 ** printed in A4 landscape mode with correct pagination.                                                          **
 **                                                                                                                **
 ** GNU General Public License 3                                                                                   **
+** ============================                                                                                   **
 ** This program is free software: you can redistribute it and/or modify it under the terms of the GNU General     **
 ** Public License as published by the Free Software Foundation, either version 3 of the License, or (at your      **
 ** option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY     **
@@ -30,6 +31,8 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.2  2018-06-24 https://github.com/SV-Zanshin Fixed error on multiple devices with ina structure contents    **
+** 1.0.1  2018-06-23 https://github.com/SV-Zanshin Removed debug mode and code                                    **
 ** 1.0.0  2018-06-22 https://github.com/SV-Zanshin Initial release                                                **
 ** 1.0.0b 2018-06-17 https://github.com/SV-Zanshin Continued coding, tested on INA219 and INA226                  **
 ** 1.0.0a 2018-06-10 https://github.com/SV-Zanshin Initial coding began                                           **
@@ -41,7 +44,6 @@
   #include "WProgram.h"                                                       //                                  //
 #endif                                                                        //                                  //
 #ifndef INA_Class_h                                                           // Guard code definition            //
-  //#define debug_Mode                                                        // #define or #undefine to switch   //
   #define INA__Class_h                                                        // Define the name inside guard code//
   /*****************************************************************************************************************
   ** Declare structures and enumerated types used in the class                                                    **
@@ -65,7 +67,7 @@
     uint8_t  currentRegister;                                                 // Current Register                 //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
-  enum ina_Type { INA219,INA226,INA230,INA231,INA233,INA260,UNKNOWN };        // Supported distinct types         //
+  enum ina_Type { INA219,INA226,INA230,INA231,INA260,UNKNOWN };               // Supported distinct types         //
   enum ina_Mode { INA_MODE_SHUTDOWN,                                          // Device powered down              //
                   INA_MODE_TRIGGERED_SHUNT,                                   // Triggered shunt, no bus          //
                   INA_MODE_TRIGGERED_BUS,                                     // Triggered bus, no shunt          //
@@ -182,6 +184,7 @@
                                  const uint8_t deviceNumber);                 //                                  //
       void     initINA260       (const uint8_t maxBusAmps);                   //                                  //
       uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
+      uint8_t  _currentINA         = UINT8_MAX;                               // Stores current INA device number //
       inaDet   ina;                                                           // Declare a single global value    //
   }; // of INA_Class definition                                               //                                  //
 #endif                                                                        //----------------------------------//
