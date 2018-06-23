@@ -11,7 +11,6 @@ Texas Instruments produces this family of power monitors and the library support
 | [INA226](http://www.ti.com/product/INA226) ([datasheet](http://www.ti.com/lit/ds/symlink/ina226.pdf)) | 36V | VSSOP 10p | ±81.92mV |            | Yes |
 | [INA230](http://www.ti.com/product/INA230) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 28V | QFN 16p | ±81.92mV | Identical to INA226 | INA226 |
 | [INA231](http://www.ti.com/product/INA231) ([datasheet](http://www.ti.com/lit/ds/symlink/ina231.pdf)) | 28V | DSBGA-12 | ±81.92mV | Identical to INA226 | INA226 |
-| [INA233](http://www.ti.com/product/INA233) ([datasheet](http://www.ti.com/lit/ds/symlink/ina230.pdf)) | 36V | VSSOP 10p | ±81.92mV | Identical to INA226 | INA226 |
 | [INA260](http://www.ti.com/product/INA260) ([datasheet](http://www.ti.com/lit/ds/symlink/ina260.pdf)) | 36V | TSSOP 16p | n.a. | 2 mΩ shunt, ±15A             | Yes |
 
 ## Hardware layout
