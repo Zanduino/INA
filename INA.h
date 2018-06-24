@@ -31,8 +31,9 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.2  2018-06-24 https://github.com/SV-Zanshin Fixed error on multiple devices with ina structure contents    **
-** 1.0.1  2018-06-23 https://github.com/SV-Zanshin Removed debug mode and code                                    **
+** 1.0.1  2018-06-24 https://github.com/SV-Zanshin Removed extraneous elements from ina structure, optimzed code  **
+** 1.0.1b 2018-06-23 https://github.com/SV-Zanshin Fixed error on multiple devices with ina structure contents    **
+** 1.0.1a 2018-06-23 https://github.com/SV-Zanshin Removed debug mode and code                                    **
 ** 1.0.0  2018-06-22 https://github.com/SV-Zanshin Initial release                                                **
 ** 1.0.0b 2018-06-17 https://github.com/SV-Zanshin Continued coding, tested on INA219 and INA226                  **
 ** 1.0.0a 2018-06-10 https://github.com/SV-Zanshin Initial coding began                                           **
@@ -51,15 +52,11 @@
   typedef struct {                                                            // Structure of values per device   //
     uint8_t  address;                                                         // I2C Address of device            //
     uint8_t  type;                                                            // see enumerated "ina_Type"        //
-    uint16_t calibration;                                                     // Calibration register value       //
     uint16_t shuntVoltage_LSB;                                                // Device dependent LSB factor      //
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //
     uint32_t current_LSB;                                                     // Amperage LSB                     //
     uint32_t power_LSB;                                                       // Wattage LSB                      //
-    uint8_t  programmableGain;                                                // Only on some devices             //
     uint8_t  operatingMode;                                                   // Default continuous mode operation//
-    uint16_t calibConst;                                                      // Device specific calibration const//
-    uint16_t powerConstant;                                                   // Device specific calibration const//
     uint8_t  maxBusAmps;                                                      // Store initialization value       //
     uint32_t microOhmR;                                                       // Store initialization value       //
     char     deviceName[7];                                                   // Device name as a character array //

@@ -139,28 +139,28 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
 void INA_Class::initINA219_INA220(const uint8_t maxBusAmps,                   // Set up INA219 or INA220          //
                                   const uint32_t microOhmR,                   //                                  //
                                   const uint8_t deviceNumber) {               //                                  //
+  uint8_t programmableGain;                                                   // Programmable Gain temp variable  //
+  uint16_t calibration;                                                       // Calibration temporary variable   //
   ina.type                 = INA219;                                          // Set to an INA219                 //
   ina.shuntVoltageRegister = INA219_SHUNT_VOLTAGE_REGISTER;                   // Set the Shunt Voltage Register   //
   ina.currentRegister      = INA219_CURRENT_REGISTER;                         // Set the current Register         //
   ina.busVoltage_LSB       = INA219_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
   ina.shuntVoltage_LSB     = INA219_SHUNT_VOLTAGE_LSB;                        // Set to hard-coded value          //
-  ina.calibConst           = 4096;                                            // Device specific constant         //
-  ina.powerConstant        = 20;                                              // Device specific constant         //
   ina.operatingMode        = B111;                                            // Default to continuous mode       //
   ina.current_LSB = (uint64_t)maxBusAmps * 1000000000 / 32767;                // Get the best possible LSB in nA  //
-  ina.calibration = (uint64_t)ina.calibConst*(uint64_t)100000 /               // Compute calibration register     //
+  calibration     = (uint64_t)409600000 /                                     // Compute calibration register     //
                     ((uint64_t)ina.current_LSB*(uint64_t)microOhmR/           // using 64 bit numbers throughout  //
                     (uint64_t)100000);                                        //                                  //
-  ina.power_LSB   = (uint32_t)ina.powerConstant*ina.current_LSB;              // Fixed multiplier per device      //
-  writeWord(INA_CALIBRATION_REGISTER,ina.calibration,ina.address);            // Write the calibration value      //
+  ina.power_LSB   = (uint32_t)20*ina.current_LSB;                             // Fixed multiplier per device      //
+  writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address);                // Write the calibration value      //
   // Determine optimal programmable gain so that there is no chance of an overflow yet with maximum accuracy      //
   uint16_t maxShuntmV = maxBusAmps*microOhmR/1000;                            // Compute maximum shunt millivolts //
-  if      (maxShuntmV<=40)  ina.programmableGain = 0;                         // gain x1 for +- 40mV              //
-  else if (maxShuntmV<=80)  ina.programmableGain = 1;                         // gain x2 for +- 80mV              //
-  else if (maxShuntmV<=160) ina.programmableGain = 2;                         // gain x4 for +- 160mV             //
-  else                      ina.programmableGain = 3;                         // default gain x8 for +- 320mV     //
+  if      (maxShuntmV<=40)  programmableGain = 0;                             // gain x1 for +- 40mV              //
+  else if (maxShuntmV<=80)  programmableGain = 1;                             // gain x2 for +- 80mV              //
+  else if (maxShuntmV<=160) programmableGain = 2;                             // gain x4 for +- 160mV             //
+  else                      programmableGain = 3;                             // default gain x8 for +- 320mV     //
   uint16_t tempRegister = 0x399F & INA219_CONFIG_PG_MASK;                     // Zero out the programmable gain   //
-  tempRegister |= ina.programmableGain<<INA219_PG_FIRST_BIT;                  // Overwrite the new values         //
+  tempRegister |= programmableGain<<INA219_PG_FIRST_BIT;                      // Overwrite the new values         //
   writeWord(INA_CONFIGURATION_REGISTER,tempRegister,ina.address);             // Write new value to config reg    //
   writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
   uint16_t tempBusmV = getBusMilliVolts(deviceNumber);                        // Get the voltage on the bus       //
@@ -175,21 +175,19 @@ void INA_Class::initINA219_INA220(const uint8_t maxBusAmps,                   //
 *******************************************************************************************************************/
 void INA_Class::initINA226(const uint8_t maxBusAmps,const uint32_t microOhmR, // Set up INA226                    //
                            const uint8_t deviceNumber) {                      //                                  //
+  uint16_t calibration;                                                       // Calibration temporary variable   //
   ina.type                 = INA226;                                          // Set to an INA226                 //
   ina.shuntVoltageRegister = INA226_SHUNT_VOLTAGE_REGISTER;                   // Set the Shunt Voltage Register   //
   ina.currentRegister      = INA226_CURRENT_REGISTER;                         // Set the current Register         //
   ina.busVoltage_LSB       = INA226_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
   ina.shuntVoltage_LSB     = INA226_SHUNT_VOLTAGE_LSB;                        // Set to hard-coded value          //
-  ina.calibConst           = 512;                                             // Device specific constant         //
-  ina.powerConstant        = 25;                                              // Device specific constant         //
-  ina.programmableGain     = 0;                                               // Programmable gain not used       //
   ina.operatingMode        = B111;                                            // Default to continuous mode       //
   ina.current_LSB          = (uint64_t)maxBusAmps * 1000000000 / 32767;       // Get the best possible LSB in nA  //
-  ina.calibration          = (uint64_t)ina.calibConst*(uint64_t)100000 /      // Compute calibration register     //
+  calibration              = (uint64_t)51200000 /                             // Compute calibration register     //
                              ((uint64_t)ina.current_LSB*(uint64_t)microOhmR/  // using 64 bit numbers throughout  //
                              (uint64_t)100000);                               //                                  //
-  ina.power_LSB            = (uint32_t)ina.powerConstant*ina.current_LSB;     // Fixed multiplier per device      //
-  writeWord(INA_CALIBRATION_REGISTER,ina.calibration,ina.address);            // Write the calibration value      //
+  ina.power_LSB            = (uint32_t)25*ina.current_LSB;                    // Fixed multiplier per device      //
+  writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address);                // Write the calibration value      //
   writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
   return;                                                                     // return to caller                 //
 } // of method initINA226()                                                   //                                  //
@@ -201,8 +199,6 @@ void INA_Class::initINA260(const uint8_t deviceNumber) {                      //
   ina.shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER;                   // Register not present             //
   ina.currentRegister      = INA260_CURRENT_REGISTER;                         // Set the current Register         //
   ina.busVoltage_LSB       = INA260_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
-  ina.calibConst           = 512;                                             // Device specific constant         //
-  ina.powerConstant        = 25;                                              // Device specific constant         //
   ina.operatingMode        = B111;                                            // Default to continuous mode       //
   ina.current_LSB          = 1250000;                                         // Fixed LSB of 1.25mv              //
   ina.power_LSB            = 10000000;                                        // Fixed multiplier per device      //
@@ -252,17 +248,7 @@ void INA_Class::setBusConversion(const uint32_t convTime,                     //
                       configRegister &= ~INA219_CONFIG_BADC_MASK;             // zero out the averages part       //
                       configRegister |= convRate << 7;                        // shift in the BADC averages       //
                       break;                                                  //                                  //
-        case INA226 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
-                      else if (convTime>= 41560) convRate = 6;                //                                  //
-                      else if (convTime>= 21160) convRate = 5;                //                                  //
-                      else if (convTime>= 11000) convRate = 4;                //                                  //
-                      else if (convTime>=   588) convRate = 3;                //                                  //
-                      else if (convTime>=   332) convRate = 2;                //                                  //
-                      else if (convTime>=   204) convRate = 1;                //                                  //
-                      else                       convRate = 0;                //                                  //
-                      configRegister &= ~INA226_CONFIG_BADC_MASK;             // zero out the averages part       //
-                      configRegister |= convRate << 6;                        // shift in the averages to register//
-                      break;                                                  //                                  //
+        case INA226 :                                                         // both INA226 or INA260 same range // 
         case INA260 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
                       else if (convTime>= 41560) convRate = 6;                //                                  //
                       else if (convTime>= 21160) convRate = 5;                //                                  //
@@ -271,8 +257,13 @@ void INA_Class::setBusConversion(const uint32_t convTime,                     //
                       else if (convTime>=   332) convRate = 2;                //                                  //
                       else if (convTime>=   204) convRate = 1;                //                                  //
                       else                       convRate = 0;                //                                  //
-                      configRegister &= ~INA260_CONFIG_BADC_MASK;             // zero out the averages part       //
-                      configRegister |= convRate << 7;                        // shift in the averages to register//
+                      if (ina.type==INA226) {                                 // Depending upon which device      //
+                        configRegister &= ~INA226_CONFIG_BADC_MASK;           // zero out the averages part       //
+                        configRegister |= convRate << 6;                      // shift in the averages to register//
+                      } else {                                                //                                  //
+                        configRegister &= ~INA260_CONFIG_BADC_MASK;           // zero out the averages part       //
+                        configRegister |= convRate << 7;                      // shift in the averages to register//
+                      } // of if-then an INA226 or INA260                     //                                  //
                       break;                                                  //                                  //
       } // of switch type                                                     //                                  //
       writeWord(INA_CONFIGURATION_REGISTER,configRegister,ina.address);       // Save new value                   //
@@ -304,17 +295,7 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
                       configRegister &= ~INA219_CONFIG_SADC_MASK;             // zero out the averages part       //
                       configRegister |= convRate << 3;                        // shift in the BADC averages       //
                       break;                                                  //                                  //
-        case INA226 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
-                      else if (convTime>= 41560) convRate = 6;                //                                  //
-                      else if (convTime>= 21160) convRate = 5;                //                                  //
-                      else if (convTime>= 11000) convRate = 4;                //                                  //
-                      else if (convTime>=   588) convRate = 3;                //                                  //
-                      else if (convTime>=   332) convRate = 2;                //                                  //
-                      else if (convTime>=   204) convRate = 1;                //                                  //
-                      else                       convRate = 0;                //                                  //
-                      configRegister &= ~INA226_CONFIG_SADC_MASK;             // zero out the averages part       //
-                      configRegister |= convRate << 3;                        // shift in the averages to register//
-                      break;                                                  //                                  //
+        case INA226 :                                                         // Both INA226 and INA260 same range//
         case INA260 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
                       else if (convTime>= 41560) convRate = 6;                //                                  //
                       else if (convTime>= 21160) convRate = 5;                //                                  //
@@ -323,7 +304,10 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
                       else if (convTime>=   332) convRate = 2;                //                                  //
                       else if (convTime>=   204) convRate = 1;                //                                  //
                       else                       convRate = 0;                //                                  //
-                      configRegister &= ~INA260_CONFIG_SADC_MASK;             // zero out the averages part       //
+                      if (ina.type==INA226)                                   // Select mask depending on device  //
+                        configRegister &= ~INA226_CONFIG_SADC_MASK;           // zero out the averages part       //
+                      else                                                    //                                  //
+                        configRegister &= ~INA260_CONFIG_SADC_MASK;           // zero out the averages part       //
                       configRegister |= convRate << 3;                        // shift in the averages to register//
                       break;                                                  //                                  //
       } // of switch type                                                     //                                  //

@@ -29,7 +29,7 @@
 ** soldered onto a breakout board for breadboard use. The INA226 is quite similar to the INA219 mentioned above,  **
 ** but it can take bus voltages of up to 36V (which I needed in order to monitor a 24V battery system which goes  **
 ** above 28V while charging and which is above the absolute limits of the INA219). It is also significantly more  **
-** accurate than the INA219.                                                                                      **
+** accurate than the INA219, plus has an alert pin.                                                               **
 **                                                                                                                **
 ** The interrupt is set to pin 8. The tests were done on an Arduino Micro, and the Atmel 82U4 chip only allows    **
 ** pin change interrupt on selected pins (SS,SCK,MISO,MOSI,8) so pin 8 was chosen.                                **
@@ -103,6 +103,8 @@ void setup() {                                                                //
   while (deviceNumber==UINT8_MAX) {                                           // Loop until we find devices       //
     devicesFound = INA.begin(1,100000);                                       // ±1Amps maximum for 0.1Ω resistor //
     for (uint8_t i=0;i<devicesFound;i++) {                                    // the first INA226 device found    //
+                                                                              // Change "INA226" to "INA260" or   //
+                                                                              // whichever INA2xx to measure      //
       if (strcmp(INA.getDeviceName(i),"INA226")==0) {                         // Set deviceNumber appropriately   //
         deviceNumber = i;                                                     //                                  //
         INA.reset(deviceNumber);                                              // Reset device to default settings //
