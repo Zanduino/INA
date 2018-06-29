@@ -31,7 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.2  2018-06-29 https://github.com/SV-Zanshin Started work on adding INA3221 support to library              **
+** 1.0.2  2018-06-29 https://github.com/SV-Zanshin Issue #2. Adding INA3221 support to library                    **
 ** 1.0.1  2018-06-24 https://github.com/SV-Zanshin Removed extraneous elements from ina structure, optimzed code  **
 ** 1.0.1b 2018-06-23 https://github.com/SV-Zanshin Fixed error on multiple devices with ina structure contents    **
 ** 1.0.1a 2018-06-23 https://github.com/SV-Zanshin Removed debug mode and code                                    **
