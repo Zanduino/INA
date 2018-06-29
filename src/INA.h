@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.2  2018-06-29 https://github.com/SV-Zanshin Started work on adding INA3221 support to library              **
 ** 1.0.1  2018-06-24 https://github.com/SV-Zanshin Removed extraneous elements from ina structure, optimzed code  **
 ** 1.0.1b 2018-06-23 https://github.com/SV-Zanshin Fixed error on multiple devices with ina structure contents    **
 ** 1.0.1a 2018-06-23 https://github.com/SV-Zanshin Removed debug mode and code                                    **
@@ -64,7 +65,7 @@
     uint8_t  currentRegister;                                                 // Current Register                 //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
-  enum ina_Type { INA219,INA226,INA230,INA231,INA260,UNKNOWN };               // Supported distinct types         //
+  enum ina_Type { INA219,INA226,INA230,INA231,INA260,INA3221,UNKNOWN };       // List of supported devices        //
   enum ina_Mode { INA_MODE_SHUTDOWN,                                          // Device powered down              //
                   INA_MODE_TRIGGERED_SHUNT,                                   // Triggered shunt, no bus          //
                   INA_MODE_TRIGGERED_BUS,                                     // Triggered bus, no shunt          //
@@ -122,6 +123,8 @@
   const uint16_t INA260_BUS_VOLTAGE_LSB         =    125;                     // LSB in uV *100 1.25mV            //
   const uint16_t INA260_CONFIG_BADC_MASK        = 0x01C0;                     // Bits 6-8  masked                 //
   const uint16_t INA260_CONFIG_SADC_MASK        = 0x0038;                     // Bits 3-5  masked                 //
+                                                                              //----------------------------------//
+  const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER =      1;                     // First shunt voltage register     //
                                                                               //==================================//
   const uint8_t  I2C_DELAY                      =     10;                     // Microsecond delay on write       //
   /*****************************************************************************************************************
