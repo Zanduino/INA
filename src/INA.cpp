@@ -67,6 +67,12 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {                //
   return;                                                                     // return nothing                   //
 } // of method writeInatoEEPROM()                                             //                                  //
 /*******************************************************************************************************************
+** Method setI2CSpeed chagnes the I2C bus speed                                                                   **
+*******************************************************************************************************************/
+void INA_Class::setI2CSpeed(const uint16_t i2cSpeed ) {                       //                                  //
+  Wire.setClock(i2cSpeed);                                                    // Set the I2C Speed to value       //
+} // of method setI2CSpeed                                                    //                                  //
+/*******************************************************************************************************************
 ** Method begin() searches for possible devices and sets the INA Configuration details, without which meaningful  **
 ** readings cannot be made. If it is called without the option deviceNumber parameter then the settings are       **
 ** applied to all devices, otherwise just that specific device is targeted.                                       **
@@ -114,8 +120,14 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
                 strcpy(ina.deviceName,"INA260");                              // Set string                       //
                 initINA260(_DeviceCount);                                     // perform initialization on device //
               } else {                                                        //                                  //
-                ina.type       = UNKNOWN;                                     //                                  //
-                strcpy(ina.deviceName,"UNKNWN");                              // Set string                       //
+                if (tempRegister==0x7127) {                                   // INA3221                          //
+                  ina.type       = INA3221;                                   // Set to an INA3221                //
+                  strcpy(ina.deviceName,"INA3221");                           // Set string                       //
+                  initINA3221(maxBusAmps,microOhmR,_DeviceCount);             // perform initialization on device //
+                } else {                                                      //                                  //
+                  ina.type       = UNKNOWN;                                   //                                  //
+                  strcpy(ina.deviceName,"UNKNOWN");                           // Set string                       //
+                } // of if-then-else it is an INA3221                         //                                  //
               } // of if-then-else it is an INA260                            //                                  //
             } // of if-then-else it is an INA226, INA230, INA231              //                                  //
           } // of if-then-else it is an INA209, INA219, INA220                //                                  //
@@ -204,6 +216,21 @@ void INA_Class::initINA260(const uint8_t deviceNumber) {                      //
   ina.operatingMode        = B111;                                            // Default to continuous mode       //
   ina.current_LSB          = 1250000;                                         // Fixed LSB of 1.25mv              //
   ina.power_LSB            = 10000000;                                        // Fixed multiplier per device      //
+  writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
+  return;                                                                     // return to caller                 //
+} // of method initINA226()                                                   //                                  //
+/*******************************************************************************************************************
+** Method initINA3221 sets up the device and fills the ina-structure                                              **
+*******************************************************************************************************************/
+void INA_Class::initINA3221(const uint8_t maxBusAmps,const uint32_t microOhmR,// Set up INA3221                   //
+                            const uint8_t deviceNumber) {                     //                                  //
+  ina.type                 = INA3221;                                         // Set to an INA260                 //
+//  ina.shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER;                   // Register not present             //
+//  ina.currentRegister      = INA260_CURRENT_REGISTER;                         // Set the current Register         //
+//  ina.busVoltage_LSB       = INA260_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
+  ina.operatingMode        = B111;                                            // Default to continuous mode       //
+//  ina.current_LSB          = 1250000;                                         // Fixed LSB of 1.25mv              //
+//  ina.power_LSB            = 10000000;                                        // Fixed multiplier per device      //
   writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
   return;                                                                     // return to caller                 //
 } // of method initINA226()                                                   //                                  //
