@@ -160,7 +160,7 @@ void INA_Class::initINA219_INA220(const uint8_t maxBusAmps,                   //
   ina.currentRegister      = INA219_CURRENT_REGISTER;                         // Set the current Register         //
   ina.busVoltage_LSB       = INA219_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
   ina.shuntVoltage_LSB     = INA219_SHUNT_VOLTAGE_LSB;                        // Set to hard-coded value          //
-  ina.operatingMode        = B111;                                            // Default to continuous mode       //
+  ina.operatingMode        = INA_DEFAULT_OPERATING_MODE;                      // Default to continuous mode       //
   ina.current_LSB = (uint64_t)maxBusAmps * 1000000000 / 32767;                // Get the best possible LSB in nA  //
   calibration     = (uint64_t)409600000 /                                     // Compute calibration register     //
                     ((uint64_t)ina.current_LSB*(uint64_t)microOhmR/           // using 64 bit numbers throughout  //
@@ -195,7 +195,7 @@ void INA_Class::initINA226(const uint8_t maxBusAmps,const uint32_t microOhmR, //
   ina.currentRegister      = INA226_CURRENT_REGISTER;                         // Set the current Register         //
   ina.busVoltage_LSB       = INA226_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
   ina.shuntVoltage_LSB     = INA226_SHUNT_VOLTAGE_LSB;                        // Set to hard-coded value          //
-  ina.operatingMode        = B111;                                            // Default to continuous mode       //
+  ina.operatingMode        = INA_DEFAULT_OPERATING_MODE;                      // Default to continuous mode       //
   ina.current_LSB          = (uint64_t)maxBusAmps * 1000000000 / 32767;       // Get the best possible LSB in nA  //
   calibration              = (uint64_t)51200000 /                             // Compute calibration register     //
                              ((uint64_t)ina.current_LSB*(uint64_t)microOhmR/  // using 64 bit numbers throughout  //
@@ -213,7 +213,7 @@ void INA_Class::initINA260(const uint8_t deviceNumber) {                      //
   ina.shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER;                   // Register not present             //
   ina.currentRegister      = INA260_CURRENT_REGISTER;                         // Set the current Register         //
   ina.busVoltage_LSB       = INA260_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
-  ina.operatingMode        = B111;                                            // Default to continuous mode       //
+  ina.operatingMode        = INA_DEFAULT_OPERATING_MODE;                      // Default to continuous mode       //
   ina.current_LSB          = 1250000;                                         // Fixed LSB of 1.25mv              //
   ina.power_LSB            = 10000000;                                        // Fixed multiplier per device      //
   writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
@@ -228,7 +228,7 @@ void INA_Class::initINA3221(const uint8_t maxBusAmps,const uint32_t microOhmR,//
 //  ina.shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER;                   // Register not present             //
 //  ina.currentRegister      = INA260_CURRENT_REGISTER;                         // Set the current Register         //
 //  ina.busVoltage_LSB       = INA260_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
-  ina.operatingMode        = B111;                                            // Default to continuous mode       //
+  ina.operatingMode        = INA_DEFAULT_OPERATING_MODE;                      // Default to continuous mode       //
 //  ina.current_LSB          = 1250000;                                         // Fixed LSB of 1.25mv              //
 //  ina.power_LSB            = 10000000;                                        // Fixed multiplier per device      //
   writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //

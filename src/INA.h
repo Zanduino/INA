@@ -19,8 +19,8 @@
 ** in the first 80 spaces and the comments start after that and go to column 117, this allows the code to be      **
 ** printed in A4 landscape mode with correct pagination.                                                          **
 **                                                                                                                **
-** GNU General Public License 3                                                                                   **
-** ============================                                                                                   **
+** GNU General Public License v3.0                                                                                **
+** ===============================                                                                                **
 ** This program is free software: you can redistribute it and/or modify it under the terms of the GNU General     **
 ** Public License as published by the Free Software Foundation, either version 3 of the License, or (at your      **
 ** option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY     **
@@ -101,6 +101,7 @@
   const uint8_t  INA_ALERT_BUS_UNDER_VOLT_BIT   =      12;                    // Register bit                     //
   const uint8_t  INA_ALERT_POWER_OVER_WATT_BIT  =      11;                    // Register bit                     //
   const uint8_t  INA_ALERT_CONVERSION_RDY_BIT   =      10;                    // Register bit                     //
+  const uint8_t  INA_DEFAULT_OPERATING_MODE     =    B111;                    // Default continuous mode          //
                                                                               //==================================//
                                                                               // Device-specific values           //
                                                                               //==================================//
