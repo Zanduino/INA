@@ -79,10 +79,13 @@
   /*****************************************************************************************************************
   ** Declare constants used in the class                                                                          **
   *****************************************************************************************************************/
-  const uint16_t I2C_STANDARD_MODE              =  100000;                    // Default normal I2C comms speed   //
-  const uint16_t I2C_FAST_MODE                  =  400000;                    // Fast mode                        //
-  const uint16_t I2C_FAST_MODE_PLUS             = 1000000;                    // Really fast mode                 //
-  const uint16_t I2C_HIGH_SPEED_MODE            = 3400000;                    // Turbo mode                       //
+  #ifndef I2C_MODES                                                           // I2C related constants            //
+    #define I2C_MODES                                                         // Guard code to prevent multiple   //
+    const uint16_t I2C_STANDARD_MODE            =  100000;                    // Default normal I2C 100KHz speed  //
+    const uint16_t I2C_FAST_MODE                =  400000;                    // Fast mode                        //
+    const uint16_t I2C_FAST_MODE_PLUS           = 1000000;                    // Really fast mode                 //
+    const uint16_t I2C_HIGH_SPEED_MODE          = 3400000;                    // Turbo mode                       //
+  #endif                                                                      //----------------------------------//
   const uint8_t  INA_CONFIGURATION_REGISTER     =       0;                    //==================================//
   const uint8_t  INA_BUS_VOLTAGE_REGISTER       =       2;                    // Values common to all INAs        //
   const uint8_t  INA_POWER_REGISTER             =       3;                    //                                  //
