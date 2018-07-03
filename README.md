@@ -1,5 +1,5 @@
 # INA2xx Devices
-<img src="https://github.com/SV-Zanshin/INA226/blob/master/Images/INA226.jpg" width="175" align="right"/>_Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors at the same time.  Details of the library methods and example programs are to be found [at the INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
+<img src="https://github.com/SV-Zanshin/INA/blob/master/images/INA226.jpg" width="175" align="right"/>_Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors at the same time.  Details of the library methods and example programs are to be found [at the INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
 
 Texas Instruments produces this family of power monitors and the library supports the following devices:
 
@@ -18,7 +18,7 @@ The packages are small and a lot of work to solder, but fortunately there are no
 ## Library description
 The library locates all INA2xx devices on the I2C chain. Each unit can be individually configured with 2 setup parameters describing the expected maximum voltage, shunt/resistor values which then set the internal configuration registers is ready to begin accurate measurements.  The details of how to setup the library along with all of the publicly available methods can be found on the [INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
 
-Lengths have been taken to avoid the use of floating point in the library. To keep the original level of precision without loss but to allow the full range of voltages and amperes to be returned the amperage results are returned as 32-bit integers.
+Great lengths have been taken to avoid the use of floating point in the library. This keeps the library size down because floating point support doesn't have to be compiled into the code. The results are returned as 32-bit integersTo keep the original level of precision without loss but to allow the full range of voltages and amperes to be returned the amperage .
 
 Since the functionality differs between the supported devices there are some functions which will only work for certain devices.
 
