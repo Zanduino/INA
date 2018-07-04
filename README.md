@@ -17,7 +17,9 @@ Texas Instruments produces this family of power monitors and the library support
 ## Hardware layout
 The packages are small and a lot of work to solder, but fortunately there are now several sources for breakout boards for the various devices which are worth it in time savings. My first test with a INA226 involved a blank breakout board, some solder paste, a frying pan, desoldering braid, a magnifying glass and quite a bit of time to set up the first breadboard.
 ## Library description
-The library locates all INA2xx devices on the I2C chain. Each unit can be individually configured with 2 setup parameters describing the expected maximum voltage, shunt/resistor values which then set the internal configuration registers is ready to begin accurate measurements.  The details of how to setup the library along with all of the publicly available methods can be found on the [INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
+The library locates all INA2xx devices on the I2C chain. Each unit can be individually configured with 2 setup parameters describing the expected maximum voltage, shunt/resistor values which then set the internal configuration registers is ready to begin accurate measurements.  The details of how to setup the library along with all of the publicly available methods can be found on the [<img src="https://github.com/SV-Zanshin/INA/blob/master/images/wiki.png" width="15"/> INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
+
+
 
 Great lengths have been taken to avoid the use of floating point in the library. This keeps the library size down because floating point support doesn't have to be compiled into the code. The results are returned as 32-bit integersTo keep the original level of precision without loss but to allow the full range of voltages and amperes to be returned the amperage .
 
