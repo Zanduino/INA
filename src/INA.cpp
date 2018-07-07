@@ -83,7 +83,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
   uint16_t originalRegister,tempRegister;                                     // Stores 16-bit register contents  //
   if (_DeviceCount==0) {                                                      // Enumerate devices in first call  //
     Wire.begin();                                                             // Start the I2C wire subsystem     //
-    for(uint8_t deviceAddress = 64;deviceAddress<79;deviceAddress++) {        // Loop for each possible address   //
+    for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++) {    // Loop for each possible address   //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //
       if (Wire.endTransmission() == 0 &&                                      // by checking the return error     //
           (_DeviceCount*sizeof(ina))<EEPROM.length()) {                       // and if the EEPROM has space      //
@@ -96,6 +96,9 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
           ina.address    = deviceAddress;                                     // Store device address             //
           ina.maxBusAmps = maxBusAmps;                                        // Store settings for future resets //
           ina.microOhmR  = microOhmR;                                         // Store settings for future resets //
+
+Serial.print("*");Serial.print(tempRegister,HEX);Serial.println("*");
+
           if (tempRegister==0x399F) {                                         // INA219, INA220                   //
             strcpy(ina.deviceName,"INA219");                                  // Set string                       //
             initINA219_INA220(maxBusAmps,microOhmR,_DeviceCount);             // perform initialization on device //

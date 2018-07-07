@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.2  2018-07-07 https://github.com/dnlwgnd    Issue #4. Guard code used incorrect label                      **
 ** 1.0.2  2018-06-30 https://github.com/SV-Zanshin Issue #3. Adding faster I2C bus support                        **
 ** 1.0.2  2018-06-29 https://github.com/SV-Zanshin Issue #2. Adding INA3221 support to library                    **
 ** 1.0.2  2018-06-29 https://github.com/SV-Zanshin Issue #2. Adding INA3221 support to library                    **
@@ -47,7 +48,7 @@
 #else                                                                         // rather than the new one          //
   #include "WProgram.h"                                                       //                                  //
 #endif                                                                        //                                  //
-#ifndef INA_Class_h                                                           // Guard code definition            //
+#ifndef INA__Class_h                                                          // Guard code definition            //
   #define INA__Class_h                                                        // Define the name inside guard code//
   /*****************************************************************************************************************
   ** Declare structures and enumerated types used in the class                                                    **
