@@ -96,9 +96,6 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
           ina.address    = deviceAddress;                                     // Store device address             //
           ina.maxBusAmps = maxBusAmps;                                        // Store settings for future resets //
           ina.microOhmR  = microOhmR;                                         // Store settings for future resets //
-
-Serial.print("*");Serial.print(tempRegister,HEX);Serial.println("*");
-
           if (tempRegister==0x399F) {                                         // INA219, INA220                   //
             strcpy(ina.deviceName,"INA219");                                  // Set string                       //
             initINA219_INA220(maxBusAmps,microOhmR,_DeviceCount);             // perform initialization on device //
@@ -124,9 +121,14 @@ Serial.print("*");Serial.print(tempRegister,HEX);Serial.println("*");
                 initINA260(_DeviceCount);                                     // perform initialization on device //
               } else {                                                        //                                  //
                 if (tempRegister==0x7127) {                                   // INA3221                          //
-                  ina.type       = INA3221;                                   // Set to an INA3221                //
+                  ina.type                = INA3221;                          // Set to an INA3221                //
+                  ina.virtualDeviceNumber = 0;                                // Set to first virtual device      //
                   strcpy(ina.deviceName,"INA3221");                           // Set string                       //
-                  initINA3221(maxBusAmps,microOhmR,_DeviceCount);             // perform initialization on device //
+                  initINA3221(maxBusAmps,microOhmR,_DeviceCount++);           // First channel initialization     //
+                  ina.virtualDeviceNumber = 1;                                // Set to second virtual device     //
+                  initINA3221(maxBusAmps,microOhmR,_DeviceCount++);           // Second channel initialization    //
+                  ina.virtualDeviceNumber = 2;                                // Set to third virtual device      //
+                  initINA3221(maxBusAmps,microOhmR,_DeviceCount);             // Third channel initialization     //
                 } else {                                                      //                                  //
                   ina.type       = UNKNOWN;                                   //                                  //
                   strcpy(ina.deviceName,"UNKNOWN");                           // Set string                       //
@@ -228,9 +230,10 @@ void INA_Class::initINA260(const uint8_t deviceNumber) {                      //
 void INA_Class::initINA3221(const uint8_t maxBusAmps,const uint32_t microOhmR,// Set up INA3221                   //
                             const uint8_t deviceNumber) {                     //                                  //
   ina.type                 = INA3221;                                         // Set to an INA260                 //
-//  ina.shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER;                   // Register not present             //
+  ina.shuntVoltageRegister = INA3221_SHUNT_VOLTAGE_REGISTER;                  // Register for 1st shunt voltage   //
 //  ina.currentRegister      = INA260_CURRENT_REGISTER;                         // Set the current Register         //
-//  ina.busVoltage_LSB       = INA260_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
+  ina.busVoltage_LSB       = INA3221_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
+  ina.shuntVoltage_LSB     = INA3221_SHUNT_VOLTAGE_LSB;                       // Set to hard-coded value          //
   ina.operatingMode        = INA_DEFAULT_OPERATING_MODE;                      // Default to continuous mode       //
 //  ina.current_LSB          = 1250000;                                         // Fixed LSB of 1.25mv              //
 //  ina.power_LSB            = 10000000;                                        // Fixed multiplier per device      //
@@ -280,7 +283,7 @@ void INA_Class::setBusConversion(const uint32_t convTime,                     //
                       configRegister &= ~INA219_CONFIG_BADC_MASK;             // zero out the averages part       //
                       configRegister |= convRate << 7;                        // shift in the BADC averages       //
                       break;                                                  //                                  //
-        case INA226 :                                                         // both INA226 or INA260 same range // 
+        case INA226 :                                                         // both INA226 or INA260 same range //
         case INA260 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
                       else if (convTime>= 41560) convRate = 6;                //                                  //
                       else if (convTime>= 21160) convRate = 5;                //                                  //
@@ -359,8 +362,9 @@ char * INA_Class::getDeviceName(const uint8_t deviceNumber) {                 //
 *******************************************************************************************************************/
 uint16_t INA_Class::getBusMilliVolts(const uint8_t deviceNumber) {            //                                  //
   readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
-  uint16_t busVoltage = readWord(INA_BUS_VOLTAGE_REGISTER,ina.address);       // Get the raw value and apply      //
-  if (ina.type==INA219) busVoltage = busVoltage >> 3;                         // INA219 - 3LSB unused, so shift   //
+  uint16_t busVoltage = readWord(INA_BUS_VOLTAGE_REGISTER +                   // Get the raw value from register  //
+                                 (ina.virtualDeviceNumber*2),ina.address);    // using possible INA3221 offset    //
+  if (ina.type==INA219 || ina.type==INA3221) busVoltage = busVoltage >> 3;    // INA219 - 3LSB unused, so shift   //
   busVoltage = (uint32_t)busVoltage*ina.busVoltage_LSB/100;                   // conversion to get milliVolts     //
   if (!bitRead(ina.operatingMode,2) && bitRead(ina.operatingMode,1)) {        // If triggered mode and bus active //
     int16_t configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);// Get the current register         //
@@ -378,7 +382,9 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber) {           //
     int32_t  busMicroAmps    = getBusMicroAmps(deviceNumber);                 // Get the amps on the bus          //
              shuntVoltage    = busMicroAmps / 200;                            // 2mOhm resistor, Ohm's law        //
   } else {                                                                    //                                  //
-    shuntVoltage = readWord(ina.shuntVoltageRegister,ina.address);            // Get the raw value                //
+    shuntVoltage = readWord(ina.shuntVoltageRegister +                        // Get the raw value from register  //
+                            (ina.virtualDeviceNumber*2),ina.address);         // using possible INA3221 offset    //
+    if (ina.type==INA3221) shuntVoltage = shuntVoltage >> 3;                  // INA3221 - 3LSB unused, so shift  //
     shuntVoltage = shuntVoltage*ina.shuntVoltage_LSB/10;                      // Convert to microvolts            //
   } // of if-then-else an INA260 with inbuilt shunt                           //                                  //
   if (!bitRead(ina.operatingMode,2) && bitRead(ina.operatingMode,0)) {        // If triggered and shunt active    //

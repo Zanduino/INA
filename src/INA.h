@@ -66,6 +66,7 @@
     char     deviceName[8];                                                   // Device name as a character array //
     uint8_t  shuntVoltageRegister;                                            // Shunt Voltage Register           //
     uint8_t  currentRegister;                                                 // Current Register                 //
+    uint8_t  virtualDeviceNumber;                                             // Only used with INA3221           //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
   enum ina_Type { INA219,INA226,INA230,INA231,INA260,INA3221,UNKNOWN };       // List of supported devices        //
@@ -135,7 +136,10 @@
   const uint16_t INA260_CONFIG_BADC_MASK        =  0x01C0;                    // Bits 6-8  masked                 //
   const uint16_t INA260_CONFIG_SADC_MASK        =  0x0038;                    // Bits 3-5  masked                 //
                                                                               //----------------------------------//
-  const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER =       1;                    // First shunt voltage register     //
+  const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER =       1;                    // Register number 2                //
+  const uint16_t INA3221_BUS_VOLTAGE_LSB        =     800;                    // LSB in uV *100 8mV               //
+  const uint16_t INA3221_SHUNT_VOLTAGE_LSB      =     400;                    // LSB in uV *10  40uV              //
+  const uint8_t  INA3221_MASK_REGISTER          =     0xF;                    // Mask register                    //
                                                                               //==================================//
   const uint8_t  I2C_DELAY                      =      10;                    // Microsecond delay on write       //
   /*****************************************************************************************************************
