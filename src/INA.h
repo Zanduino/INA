@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.2  2018-07-08 https://github.com/SV-Zanshin Issue #2. Finished testing INA3221 across function             **
 ** 1.0.2  2018-07-07 https://github.com/dnlwgnd    Issue #4. Guard code used incorrect label                      **
 ** 1.0.2  2018-06-30 https://github.com/SV-Zanshin Issue #3. Adding faster I2C bus support                        **
 ** 1.0.2  2018-06-29 https://github.com/SV-Zanshin Issue #2. Adding INA3221 support to library                    **
@@ -127,7 +128,7 @@
   const uint16_t INA226_SHUNT_VOLTAGE_LSB       =      25;                    // LSB in uV *10  2.5uV             //
   const uint16_t INA226_CONFIG_AVG_MASK         =  0x0E00;                    // Bits 9-11                        //
   const uint16_t INA226_DIE_ID_VALUE            =  0x2260;                    // Hard-coded Die ID for INA226     //
-  const uint16_t INA226_CONFIG_BADC_MASK        =  0x01C0;                    // Bits 7-10  masked                //
+  const uint16_t INA226_CONFIG_BADC_MASK        =  0x01C0;                    // Bits 6-8  masked                //
   const uint16_t INA226_CONFIG_SADC_MASK        =  0x0018;                    // Bits 3-4                         //
                                                                               //==================================//
   const uint8_t  INA260_SHUNT_VOLTAGE_REGISTER  =       0;                    // Register doesn't exist on device //
@@ -139,6 +140,7 @@
   const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER =       1;                    // Register number 2                //
   const uint16_t INA3221_BUS_VOLTAGE_LSB        =     800;                    // LSB in uV *100 8mV               //
   const uint16_t INA3221_SHUNT_VOLTAGE_LSB      =     400;                    // LSB in uV *10  40uV              //
+  const uint16_t INA3221_CONFIG_BADC_MASK       =  0x01C0;                    // Bits 7-10  masked                //
   const uint8_t  INA3221_MASK_REGISTER          =     0xF;                    // Mask register                    //
                                                                               //==================================//
   const uint8_t  I2C_DELAY                      =      10;                    // Microsecond delay on write       //
