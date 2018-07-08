@@ -54,8 +54,9 @@ void setup() {                                                                //
   #endif                                                                      // interface to initialize          //
   Serial.print(F("\n\nDisplay INA Readings V1.0.0\n"));                       // Display program information      //
   Serial.print(F(" - Searching & Initializing INA devices\n"));               // Display program information      //
-  // The begin initializes the calibration for an expected ±1 Amps maximum current and for a 0.1Ohm resistor, and //
-  // since no specific device is given as the 3rd parameter all devices are initially set to these values         //
+  // The begin method initializes the calibration for an expected ±1 Amps maximum current and for a 0.1Ohm        //
+  // resistor, and since no specific device is given as the 3rd parameter all devices are initially set to these  //
+  // values                                                                                                       //
   devicesFound = INA.begin(1,100000);                                         // Set expected Amps and resistor   //
   Serial.print(F(" - Detected "));                                            //                                  //
   Serial.print(devicesFound);                                                 //                                  //
