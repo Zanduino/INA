@@ -31,7 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.2  2018-07-08 https://github.com/SV-Zanshin Issue #2. Finished testing INA3221 across function             **
+** 1.0.2  2018-07-08 https://github.com/SV-Zanshin Issue #2. Finished testing INA3221 across all functions        **
 ** 1.0.2  2018-07-07 https://github.com/dnlwgnd    Issue #4. Guard code used incorrect label                      **
 ** 1.0.2  2018-06-30 https://github.com/SV-Zanshin Issue #3. Adding faster I2C bus support                        **
 ** 1.0.2  2018-06-29 https://github.com/SV-Zanshin Issue #2. Adding INA3221 support to library                    **
