@@ -2,10 +2,10 @@
 File contains a list of changes made to artefacts in the INA Arduino library and example programs, most recent changes are listed first.
 
 <table>
-  <th>Date</th>
-  <th>Who</th>
-  <th>Version</th>
-  <th>Changes</th>
+  <th style="width:15%">Date</th>
+  <th style="width:20%">Who</th>
+  <th style="width:15%">Version</th>
+  <th style="width:40%">Changes</th>
   <tr>
     <td>2018-07-11</td>
     <td>@SV-Zanshin</td>
