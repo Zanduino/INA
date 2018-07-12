@@ -201,9 +201,7 @@
                                  const uint32_t microOhmR,                    //                                  //
                                  const uint8_t deviceNumber);                 //                                  //
       void     initINA260       (const uint8_t maxBusAmps);                   //                                  //
-      void     initINA3221      (const uint8_t maxBusAmps,                    // Initialize INA226                //
-                                 const uint32_t microOhmR,                    //                                  //
-                                 const uint8_t deviceNumber);                 //                                  //
+      void     initINA3221      (const uint8_t deviceNumber);                 // Initialize INA3221               //
       uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
       uint8_t  _currentINA         = UINT8_MAX;                               // Stores current INA device number //
       inaDet   ina;                                                           // Declare a single global value    //

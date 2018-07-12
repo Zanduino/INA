@@ -124,13 +124,13 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
                   ina.type                = INA3221;                          // Set to an INA3221                //
                   ina.virtualDeviceNumber = 0;                                // Set to first virtual device      //
                   strcpy(ina.deviceName,"INA3221");                           // Set string                       //
-                  initINA3221(maxBusAmps,microOhmR,_DeviceCount);             // First channel initialization     //
+                  initINA3221(_DeviceCount);                                  // First channel initialization     //
                   _DeviceCount = ((_DeviceCount+1)%maxDevices);               //                                  //
                   ina.virtualDeviceNumber = 1;                                // Set to second virtual device     //
-                  initINA3221(maxBusAmps,microOhmR,_DeviceCount);             // Second channel initialization    //
+                  initINA3221(_DeviceCount);                                  // Second channel initialization    //
                   _DeviceCount = ((_DeviceCount+1)%maxDevices);               //                                  //
                   ina.virtualDeviceNumber = 2;                                // Set to third virtual device      //
-                  initINA3221(maxBusAmps,microOhmR,_DeviceCount);             // Third channel initialization     //
+                  initINA3221(_DeviceCount);                                  // Third channel initialization     //
                 } else {                                                      //                                  //
                   ina.type       = UNKNOWN;                                   //                                  //
                   strcpy(ina.deviceName,"UNKNOWN");                           // Set string                       //
@@ -150,6 +150,11 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
       case INA219:initINA219_INA220(ina.maxBusAmps,ina.microOhmR,deviceNumber);break;//                           //
       case INA226:initINA226(ina.maxBusAmps,ina.microOhmR,deviceNumber);break;//                                  //
       case INA260:initINA260(deviceNumber);break;                             //                                  //
+      case INA3221 :                                                          //                                  //
+        if (ina.virtualDeviceNumber==0) {                                     // All 3 ports have same settings,  //
+          initINA3221(deviceNumber);                                          // so just initialize the first one //
+        } // of if this is the first virtual device                           //                                  //
+        break;                                                                //                                  //
     } // of switch type                                                       //                                  //
   } // of if-then-else first call                                             //                                  //
   _currentINA = UINT8_MAX;                                                    // Force read of on next call       //
@@ -230,8 +235,7 @@ void INA_Class::initINA260(const uint8_t deviceNumber) {                      //
 /*******************************************************************************************************************
 ** Method initINA3221 sets up the device and fills the ina-structure                                              **
 *******************************************************************************************************************/
-void INA_Class::initINA3221(const uint8_t maxBusAmps,const uint32_t microOhmR,// Set up INA3221                   //
-                            const uint8_t deviceNumber) {                     //                                  //
+void INA_Class::initINA3221(const uint8_t deviceNumber) {                     //                                  //
   ina.type                 = INA3221;                                         // Set to an INA3221                //
   ina.shuntVoltageRegister = INA3221_SHUNT_VOLTAGE_REGISTER;                  // Register for 1st shunt voltage   //
   ina.currentRegister      = 0;                                               // INA3221 has no current Register  //
@@ -243,35 +247,6 @@ void INA_Class::initINA3221(const uint8_t maxBusAmps,const uint32_t microOhmR,//
   writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
   return;                                                                     // return to caller                 //
 } // of method initINA226()                                                   //                                  //
-/*******************************************************************************************************************
-** Method getBusMicroAmps retrieves the computed current in microamps.                                            **
-*******************************************************************************************************************/
-int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {              //                                  //
-  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
-  int32_t microAmps = 0;                                                      // Initialize return variable       //
-  if (ina.type==INA3221) {                                                    // INA3221 doesn't compute Amps     //
-    microAmps = getShuntMicroVolts(deviceNumber) * 1000000 / ina.microOhmR;   // Compute and convert units        //
-  } else {                                                                    //                                  //
-    microAmps = (int64_t)readWord(ina.currentRegister,ina.address) *          // Convert to micro-amps            //
-                ina.current_LSB / 1000;                                       //                                  //
-  } // of if-then-else an INA3221                                             //                                  //
-  return(microAmps);                                                          // return computed micro-amps       //
-} // of method getBusMicroAmps()                                              //                                  //
-/*******************************************************************************************************************
-** Method getBusMicroWatts retrieves the computed power in milliwatts                                             **
-*******************************************************************************************************************/
-int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {             //                                  //
-  int32_t microWatts = 0;                                                     // Initialize return variable       //
-  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
-  if (ina.type==INA3221) {                                                    // INA3221 doesn't compute Amps     //
-    microWatts = (getShuntMicroVolts(deviceNumber)*1000000/ina.microOhmR) *   // compute watts = volts * amps     //
-                 getBusMilliVolts(deviceNumber) / 1000;                       //                                  //
-  } else {                                                                    //                                  //
-    microWatts = (int64_t)readWord(INA_POWER_REGISTER,ina.address) *          // Get power register value and     //
-                 ina.power_LSB / 1000;                                        // convert to milliwatts            //
-  } // of if-then-else an INA3221                                             //                                  //
-  return(microWatts);                                                         // return computed milliwatts       //
-} // of method getBusMicroWatts()                                             //                                  //
 /*******************************************************************************************************************
 ** Method setBusConversion specifies the conversion rate in microseconds, rounded to the nearest valid value      **
 *******************************************************************************************************************/
@@ -417,6 +392,36 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber) {           //
   return(shuntVoltage);                                                       // return computed microvolts       //
 } // of method getShuntMicroVolts()                                           //                                  //
 /*******************************************************************************************************************
+** Method getBusMicroAmps retrieves the computed current in microamps.                                            **
+*******************************************************************************************************************/
+int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {              //                                  //
+  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
+  int32_t microAmps = 0;                                                      // Initialize return variable       //
+  if (ina.type==INA3221) {                                                    // INA3221 doesn't compute Amps     //
+    microAmps = getShuntMicroVolts(deviceNumber) *                            // Compute and convert units        //
+                ((int32_t)1000000 / (int32_t)ina.microOhmR);                  //                                  //
+  } else {                                                                    //                                  //
+    microAmps = (int64_t)readWord(ina.currentRegister,ina.address) *          // Convert to micro-amps            //
+                ina.current_LSB / 1000;                                       //                                  //
+  } // of if-then-else an INA3221                                             //                                  //
+  return(microAmps);                                                          // return computed micro-amps       //
+} // of method getBusMicroAmps()                                              //                                  //
+/*******************************************************************************************************************
+** Method getBusMicroWatts retrieves the computed power in milliwatts                                             **
+*******************************************************************************************************************/
+int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {             //                                  //
+  int32_t microWatts = 0;                                                     // Initialize return variable       //
+  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
+  if (ina.type==INA3221) {                                                    // INA3221 doesn't compute Amps     //
+    microWatts = (getShuntMicroVolts(deviceNumber)*1000000/ina.microOhmR) *   // compute watts = volts * amps     //
+    getBusMilliVolts(deviceNumber) / 1000;                       //                                  //
+    } else {                                                                    //                                  //
+    microWatts = (int64_t)readWord(INA_POWER_REGISTER,ina.address) *          // Get power register value and     //
+    ina.power_LSB / 1000;                                        // convert to milliwatts            //
+  } // of if-then-else an INA3221                                             //                                  //
+  return(microWatts);                                                         // return computed milliwatts       //
+} // of method getBusMicroWatts()                                             //                                  //
+/*******************************************************************************************************************
 ** Method reset resets the INA using the first bit in the configuration register                                  **
 *******************************************************************************************************************/
 void INA_Class::reset(const uint8_t deviceNumber) {                           // Reset the INA                    //
@@ -430,7 +435,7 @@ void INA_Class::reset(const uint8_t deviceNumber) {                           //
         case INA226  : initINA226(ina.maxBusAmps,ina.microOhmR,i); break;     //                                  //
         case INA260  : initINA260(deviceNumber);break;                        //                                  //
         case INA3221 : if (ina.virtualDeviceNumber==0) {                      // All 3 ports have same settings,  //
-                       initINA3221(ina.maxBusAmps,ina.microOhmR,i);           // so just initialize the first one //
+                       initINA3221(i);                                        // so just initialize the first one //
                        } // of if this is the first virtual device            //                                  //
                        break;                                                 //                                  //
       } // of switch type                                                     //                                  //
