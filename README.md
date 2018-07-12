@@ -1,4 +1,4 @@
-<p align="center"><img src="Logo/horizontal.png" alt="INA" height="300px"></p>
+<p align="right"><img src="images/horizontal_narrow.png" alt="INA" height="100px"></p>
 
 
 # INA2xx Devices
