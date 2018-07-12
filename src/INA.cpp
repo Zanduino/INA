@@ -82,7 +82,9 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
                             const uint8_t deviceNumber ) {                    //                                  //
   uint16_t originalRegister,tempRegister;                                     // Stores 16-bit register contents  //
   if (_DeviceCount==0) {                                                      // Enumerate devices in first call  //
-    Wire.begin();                                                             // Start the I2C wire subsystem     //
+    #ifndef ESP8266                                                           // I2C begin() on Esplora problems  //
+      Wire.begin();                                                           // Start I2C communications         //
+    #endif                                                                    //                                  //
     uint8_t maxDevices = EEPROM.length() / sizeof(ina);                       // Compute number devices possible  //
     for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++) {    // Loop for each possible address   //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //
