@@ -1,5 +1,5 @@
 
-# <p align="left"><img src="images/horizontal_narrow.png" alt="INA" height="100px"></p> INA2xx Devices
+# INA2*xxx* Devices<img src="images/horizontal_narrow.png" alt="INA" align="right" height="100px">
 <img src="https://github.com/SV-Zanshin/INA/blob/master/images/INA226.jpg" width="175" align="right"/>_Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors at the same time.  Details of the library methods and example programs are to be found [at the INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
 
 Texas Instruments produces this family of power monitors and the library supports the following devices:
