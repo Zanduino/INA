@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.2  2018-07-12 https://github.com/coelner    Issue #9. Esplora doesn't accept "Wire.begin()"                **
 ** 1.0.2  2018-07-08 https://github.com/SV-Zanshin Issue #2. Finished testing INA3221 across all functions        **
 ** 1.0.2  2018-07-07 https://github.com/dnlwgnd    Issue #4. Guard code used incorrect label                      **
 ** 1.0.2  2018-06-30 https://github.com/SV-Zanshin Issue #3. Adding faster I2C bus support                        **
