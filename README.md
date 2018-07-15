@@ -1,4 +1,4 @@
-<img src="images/horizontal_narrow.png" alt="INA" align="right" height="100px">
+<img src="images/horizontal_narrow.png" alt="INA" align="right" height="75px">
 
 # INA2*xx* Devices
 _Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors at the same time.  Details of the library methods and example programs are to be found [at the INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
@@ -26,5 +26,5 @@ Great lengths have been taken to avoid the use of floating point in the library.
 
 Since the functionality differs between the supported devices there are some functions which will only work for certain devices.
 
-<img src="https://github.com/SV-Zanshin/INA/blob/master/images/horizontal_narrow.png" alt="INA" align="left" height="100px">
+<img src="https://github.com/SV-Zanshin/INA/blob/master/images/horizontal_narrow.png" alt="INA" align="left" height="75px">
 <img src="https://www.sv-zanshin.com/r/images/site/gif/zanshintext.gif" align="right" width="75"/><img src="https://www.sv-zanshin.com/r/images/site/gif/zanshinkanjitiny.gif" align="right">
