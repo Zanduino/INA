@@ -69,7 +69,7 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {                //
 /*******************************************************************************************************************
 ** Method setI2CSpeed chagnes the I2C bus speed                                                                   **
 *******************************************************************************************************************/
-void INA_Class::setI2CSpeed(const uint16_t i2cSpeed ) {                       //                                  //
+void INA_Class::setI2CSpeed(const uint32_t i2cSpeed ) {                       //                                  //
   Wire.setClock(i2cSpeed);                                                    // Set the I2C Speed to value       //
 } // of method setI2CSpeed                                                    //                                  //
 /*******************************************************************************************************************
