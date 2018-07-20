@@ -66,6 +66,8 @@
     uint32_t address              : 7; // 0-127//                             // I2C Address of device            //
     uint32_t maxBusAmps           : 5; // 0-31 //                             // Store initialization value       //
     uint32_t microOhmR            :20; // 0-1.048.575 //                      // Store initialization value       //
+  } inaEEPROM; // of structure                                                //                                  //
+  typedef struct : inaEEPROM {                                                // Structure of values per device   //
     uint8_t  shuntVoltageRegister : 4; // 0-15 //                             // Shunt Voltage Register           //
     uint8_t  currentRegister      : 4; // 0-15 //                             // Current Register                 //
     uint16_t shuntVoltage_LSB;                                                // Device dependent LSB factor      //
