@@ -54,8 +54,9 @@ void INA_Class::writeWord(const uint8_t addr, const uint16_t data,            //
 *******************************************************************************************************************/
 void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //                                  //
   if (deviceNumber!=_currentINA) {                                            // Only read EEPROM if necessary    //
-    EEPROM.get(deviceNumber*sizeof(ina),ina);                                 // Read EEPROM values               //
+    EEPROM.get(deviceNumber*sizeof(inaEE),inaEE);                             // Read EEPROM values               //
     _currentINA = deviceNumber;                                               // Store new current value          //
+    ina = inaEE;                                                              // see inaDet constructor           //
   } // of if-then we have a new device                                        //                                  //
   return;                                                                     // return nothing                   //
 } // of method readInafromEEPROM()                                            //                                  //
@@ -63,7 +64,8 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //
 ** Private method writeInatoEEPROM writes the "ina" structure to EEPROM                                           **
 *******************************************************************************************************************/
 void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {                //                                  //
-  EEPROM.put(deviceNumber*sizeof(ina),ina);                                   // Write the structure              //
+  inaEE = ina;                                                                // only save part of ina            //
+  EEPROM.put(deviceNumber*sizeof(inaEE),inaEE);                               // Write the structure              //
   return;                                                                     // return nothing                   //
 } // of method writeInatoEEPROM()                                             //                                  //
 /*******************************************************************************************************************
@@ -85,7 +87,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
     #ifndef ESP8266                                                           // I2C begin() on Esplora problems  //
       Wire.begin();                                                           // Start I2C communications         //
     #endif                                                                    //                                  //
-    uint8_t maxDevices = EEPROM.length() / sizeof(ina);                       // Compute number devices possible  //
+    uint8_t maxDevices = EEPROM.length() / sizeof(inaEE);                     // Compute number devices possible  //
     for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++) {    // Loop for each possible address   //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //
       if (Wire.endTransmission() == 0 && _DeviceCount < maxDevices) {         // If no error and EEPROM has space //

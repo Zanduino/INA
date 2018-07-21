@@ -67,13 +67,15 @@
     uint32_t maxBusAmps           : 5; // 0-31 //                             // Store initialization value       //
     uint32_t microOhmR            :20; // 0-1.048.575 //                      // Store initialization value       //
   } inaEEPROM; // of structure                                                //                                  //
-  typedef struct : inaEEPROM {                                                // Structure of values per device   //
+  typedef struct inaDet : inaEEPROM {                                         // Structure of values per device   //
     uint8_t  shuntVoltageRegister : 4; // 0-15 //                             // Shunt Voltage Register           //
     uint8_t  currentRegister      : 4; // 0-15 //                             // Current Register                 //
     uint16_t shuntVoltage_LSB;                                                // Device dependent LSB factor      //
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //
     uint32_t current_LSB;                                                     // Amperage LSB                     //
     uint32_t power_LSB;                                                       // Wattage LSB                      //
+    inaDet(){}                                                                // struct constructor               //
+    inaDet(inaEEPROM){}                                                       // for ina = inaEE; assignment      //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
   enum ina_Type { INA219,                                                     // List of supported devices        //
@@ -217,6 +219,7 @@
       void     initINA3221      (const uint8_t deviceNumber);                 // Initialize INA3221               //
       uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
       uint8_t  _currentINA         = UINT8_MAX;                               // Stores current INA device number //
+      inaEEPROM inaEE;                                                        // Declare a single global value    //
       inaDet   ina;                                                           // Declare a single global value    //
   }; // of INA_Class definition                                               //                                  //
 #endif                                                                        //----------------------------------//
