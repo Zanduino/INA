@@ -53,7 +53,7 @@ inaDet::inaDet(inaEEPROM inaEE){                                              //
     current_LSB          = 1250000;                                           // Fixed LSB of 1.25mv              //
     power_LSB            = 10000000;                                          // Fixed multiplier per device      //
     break;                                                                    //                                  //
-  case INA3221:                                                               // INA3221                           //
+  case INA3221:                                                               // INA3221                          //
     shuntVoltageRegister = INA3221_SHUNT_VOLTAGE_REGISTER;                    // Register for 1st shunt voltage   //
     currentRegister      = 0;                                                 // INA3221 has no current Register  //
     busVoltage_LSB       = INA3221_BUS_VOLTAGE_LSB;                           // Set to hard-coded value          //
@@ -148,42 +148,42 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
           if (tempRegister==0x399F) {                                         // INA219, INA220                   //
             inaEE.type = INA219;                                              //                                  //
             ina = inaEE;                                                      // see inaDet constructor           //
-            initINA219_INA220(_DeviceCount);                                  // perform initialization on device //
+            initDevice(_DeviceCount);                                         // perform initialization on device //
           } else {                                                            //                                  //
             if (tempRegister==0x4127) {                                       // INA226, INA230, INA231           //
               tempRegister = readWord(INA_DIE_ID_REGISTER,deviceAddress);     // Read the INA209 high-register    //
               if (tempRegister==INA226_DIE_ID_VALUE) {                        // We've identified an INA226       //
                 inaEE.type = INA226;                                          //                                  //
                 ina = inaEE;                                                  // see inaDet constructor           //
-                initINA226_INA231(_DeviceCount);                              // perform initialization on device //
+                initDevice(_DeviceCount);                                     // perform initialization on device //
               } else {                                                        //                                  //
                 if (tempRegister!=0) {                                        // uncertain if this works, but as  //
                   inaEE.type = INA230;                                        // INA230 and INA231 are processed  //
                   ina = inaEE;                                                // see inaDet constructor           //
-                  initINA226_INA231(_DeviceCount);                            // as INA226 it makes no difference //
+                  initDevice(_DeviceCount);                                   // as INA226 it makes no difference //
                 } else {                                                      //                                  //
                   inaEE.type = INA231;                                        //                                  //
                   ina = inaEE;                                                // see inaDet constructor           //
-                  initINA226_INA231(_DeviceCount);                            // perform initialization on device //
+                  initDevice(_DeviceCount);                                   // perform initialization on device //
                 } // of if-then-else a INA230 or INA231                       //                                  //
               } // of if-then-else an INA226                                  //                                  //
             } else {                                                          //                                  //
               if (tempRegister==0x6127) {                                     // INA260                           //
                 inaEE.type = INA260;                                          // Set to an INA260                 //
                 ina = inaEE;                                                  // see inaDet constructor           //
-                initINA260(_DeviceCount);                                     // perform initialization on device //
+                initDevice(_DeviceCount);                                     // perform initialization on device //
               } else {                                                        //                                  //
                 if (tempRegister==0x7127) {                                   // INA3221                          //
                   inaEE.type = INA3221;                                       // Set to an INA3221                //
                   ina = inaEE;                                                // see inaDet constructor           //
                   ina.virtualDeviceNumber = 0;                                // Set to first virtual device      //
-                  initINA3221(_DeviceCount);                                  // First channel initialization     //
+                  initDevice(_DeviceCount);                                   // First channel initialization     //
                   _DeviceCount = ((_DeviceCount+1)%maxDevices);               //                                  //
                   ina.virtualDeviceNumber = 1;                                // Set to second virtual device     //
-                  initINA3221(_DeviceCount);                                  // Second channel initialization    //
+                  initDevice(_DeviceCount);                                   // Second channel initialization    //
                   _DeviceCount = ((_DeviceCount+1)%maxDevices);               //                                  //
                   ina.virtualDeviceNumber = 2;                                // Set to third virtual device      //
-                  initINA3221(_DeviceCount);                                  // Third channel initialization     //
+                  initDevice(_DeviceCount);                                   // Third channel initialization     //
                 } else {                                                      //                                  //
                   ina.type       = UNKNOWN;                                   //                                  //
                 } // of if-then-else it is an INA3221                         //                                  //
@@ -198,79 +198,56 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
     } // for-next each possible I2C address                                   //                                  //
   } else {                                                                    // otherwise we need to recompute   //
     readInafromEEPROM(deviceNumber);                                          // Load EEPROM to ina structure     //
-    switch (ina.type) {                                                       // Select appropriate device        //
-      case INA219:initINA219_INA220(deviceNumber);break;                      //                                  //
-      case INA226:                                                            //                                  //
-      case INA230:                                                            //                                  //
-      case INA231:initINA226_INA231(deviceNumber,ina.type);break;             //                                  //
-      case INA260:initINA260(deviceNumber);break;                             //                                  //
-      case INA3221:                                                           //                                  //
-        if (ina.virtualDeviceNumber==0) {                                     // All 3 ports have same settings,  //
-          initINA3221(deviceNumber);                                          // so just initialize the first one //
-        } // of if this is the first virtual device                           //                                  //
-        break;                                                                //                                  //
-    } // of switch type                                                       //                                  //
+    initDevice(deviceNumber);                                                 //                                  //
   } // of if-then-else first call                                             //                                  //
   _currentINA = UINT8_MAX;                                                    // Force read of on next call       //
   return _DeviceCount;                                                        // Return number of devices found   //
 } // of method begin()                                                        //                                  //
 /*******************************************************************************************************************
-** Method initINA219_INA220 sets up the device and fills the ina-structure                                        **
+** Method initDevice sets up the device and fills (re)sets the calibration                                        **
 *******************************************************************************************************************/
-void INA_Class::initINA219_INA220(const uint8_t deviceNumber) {               // Set up INA219 or INA220          //
+void INA_Class::initDevice(const uint8_t deviceNumber) {                      // Set up INAxxx devices            //
+                                                                              // (re)set operatingMode            //
+  ina.operatingMode = INA_DEFAULT_OPERATING_MODE;                             // Default to continuous mode       //
+  writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
+                                                                              // (re)set INA_CALIBRATION_REGISTER //
   uint8_t programmableGain;                                                   // Programmable Gain temp variable  //
-  uint16_t calibration;                                                       // Calibration temporary variable   //
-  calibration = (uint64_t)409600000 /                                         // Compute calibration register     //
-                ((uint64_t)ina.current_LSB*(uint64_t)ina.microOhmR/           // using 64 bit numbers throughout  //
-                (uint64_t)100000);                                            //                                  //
-  writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address);                // Write the calibration value      //
-  // Determine optimal programmable gain so that there is no chance of an overflow yet with maximum accuracy      //
-  uint16_t maxShuntmV = ina.maxBusAmps*ina.microOhmR/1000;                    // Compute maximum shunt millivolts //
-  if      (maxShuntmV<=40)  programmableGain = 0;                             // gain x1 for +- 40mV              //
-  else if (maxShuntmV<=80)  programmableGain = 1;                             // gain x2 for +- 80mV              //
-  else if (maxShuntmV<=160) programmableGain = 2;                             // gain x4 for +- 160mV             //
-  else                      programmableGain = 3;                             // default gain x8 for +- 320mV     //
-  uint16_t tempRegister = 0x399F & INA219_CONFIG_PG_MASK;                     // Zero out the programmable gain   //
-  tempRegister |= programmableGain<<INA219_PG_FIRST_BIT;                      // Overwrite the new values         //
-  writeWord(INA_CONFIGURATION_REGISTER,tempRegister,ina.address);             // Write new value to config reg    //
-  uint16_t tempBusmV = getBusMilliVolts(deviceNumber);                        // Get the voltage on the bus       //
-  if (tempBusmV > 20 && tempBusmV < 16000) {                                  // If we have a voltage             //
-    bitClear(tempRegister,INA219_BRNG_BIT);                                   // set to 0 for 0-16 volts          //
-    writeWord(INA_CONFIGURATION_REGISTER,tempRegister,ina.address);           // Write new value to config reg    //
-  } // if-then set the range to 0-16V                                         //                                  //
-  ina.operatingMode = INA_DEFAULT_OPERATING_MODE;                             // Default to continuous mode       //
-  writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
+  uint16_t calibration, maxShuntmV, tempRegister, tempBusmV;                  // Calibration temporary variables  //
+  switch (ina.type) {                                                         // Select appropriate device        //
+    case INA219:                                                              // Set up INA219 or INA220          //
+      calibration  = (uint64_t)409600000 /                                    // Compute calibration register     //
+                     ((uint64_t)ina.current_LSB*(uint64_t)ina.microOhmR/      // using 64 bit numbers throughout  //
+                     (uint64_t)100000);                                       //                                  //
+      writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address);            // Write the calibration value      //
+      // Determine optimal programmable gain so that there is no chance of an overflow yet with maximum accuracy  //
+      maxShuntmV = ina.maxBusAmps*ina.microOhmR/1000;                         // Compute maximum shunt millivolts //
+      if      (maxShuntmV<=40)  programmableGain = 0;                         // gain x1 for +- 40mV              //
+      else if (maxShuntmV<=80)  programmableGain = 1;                         // gain x2 for +- 80mV              //
+      else if (maxShuntmV<=160) programmableGain = 2;                         // gain x4 for +- 160mV             //
+      else                      programmableGain = 3;                         // default gain x8 for +- 320mV     //
+      tempRegister = 0x399F & INA219_CONFIG_PG_MASK;                          // Zero out the programmable gain   //
+      tempRegister |= programmableGain<<INA219_PG_FIRST_BIT;                  // Overwrite the new values         //
+      writeWord(INA_CONFIGURATION_REGISTER,tempRegister,ina.address);         // Write new value to config reg    //
+      tempBusmV = getBusMilliVolts(deviceNumber);                             // Get the voltage on the bus       //
+      if (tempBusmV > 20 && tempBusmV < 16000) {                              // If we have a voltage             //
+        bitClear(tempRegister,INA219_BRNG_BIT);                               // set to 0 for 0-16 volts          //
+        writeWord(INA_CONFIGURATION_REGISTER,tempRegister,ina.address);       // Write new value to config reg    //
+      } // if-then set the range to 0-16V                                     //                                  //
+      break;                                                                  //                                  //
+    case INA226:                                                              // Set up INA226, INA230 or INA231  //
+    case INA230:                                                              //                                  //
+    case INA231:                                                              //                                  //
+      calibration = (uint64_t)51200000 /                                      // Compute calibration register     //
+                    ((uint64_t)ina.current_LSB*(uint64_t)ina.microOhmR/       // using 64 bit numbers throughout  //
+                    (uint64_t)100000);                                        //                                  //
+      writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address);            // Write the calibration value      //
+      break;                                                                  //                                  //
+    case INA260:                                                              // Nothing for INA260 or INA3221    //
+    case INA3221:                                                             //                                  //
+      break;                                                                  //                                  //
+  } // of switch type                                                         //                                  //
   return;                                                                     // return to caller                 //
-} // of method initINA219_INA220()                                            //                                  //
-/*******************************************************************************************************************
-** Method initINA226_INA231 sets up the device and fills the ina-structure                                        **
-*******************************************************************************************************************/
-void INA_Class::initINA226_INA231(const uint8_t deviceNumber){                // Set up INA226, INA230 or INA231  //
-  uint16_t calibration;                                                       // Calibration temporary variable   //
-  calibration = (uint64_t)51200000 /                                          // Compute calibration register     //
-                ((uint64_t)ina.current_LSB*(uint64_t)ina.microOhmR/           // using 64 bit numbers throughout  //
-                (uint64_t)100000);                                            //                                  //
-  writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address);                // Write the calibration value      //
-  ina.operatingMode = INA_DEFAULT_OPERATING_MODE;                             // Default to continuous mode       //
-  writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
-  return;                                                                     // return to caller                 //
-} // of method initINA226_INA231()                                            //                                  //
-/*******************************************************************************************************************
-** Method initINA260 sets up the device and fills the ina-structure                                               **
-*******************************************************************************************************************/
-void INA_Class::initINA260(const uint8_t deviceNumber) {                      //                                  //
-  ina.operatingMode = INA_DEFAULT_OPERATING_MODE;                             // Default to continuous mode       //
-  writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
-  return;                                                                     // return to caller                 //
-} // of method initINA260()                                                   //                                  //
-/*******************************************************************************************************************
-** Method initINA3221 sets up the device and fills the ina-structure                                              **
-*******************************************************************************************************************/
-void INA_Class::initINA3221(const uint8_t deviceNumber) {                     //                                  //
-  ina.operatingMode = INA_DEFAULT_OPERATING_MODE;                             // Default to continuous mode       //
-  writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
-  return;                                                                     // return to caller                 //
-} // of method initINA3221()                                                  //                                  //
+} // of method initDevice()                                                   //                                  //
 /*******************************************************************************************************************
 ** Method setBusConversion specifies the conversion rate in microseconds, rounded to the nearest valid value      **
 *******************************************************************************************************************/
@@ -474,17 +451,7 @@ void INA_Class::reset(const uint8_t deviceNumber) {                           //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
       readInafromEEPROM(i);                                                   // Load EEPROM to ina structure     //
       writeWord(INA_CONFIGURATION_REGISTER,INA_RESET_DEVICE,ina.address);     // Set most significant bit to reset//
-      switch (ina.type) {                                                     // Select appropriate device        //
-        case INA219  : initINA219_INA220(i);break;                            //                                  //
-        case INA226  :                                                        //                                  //
-        case INA230  :                                                        //                                  //
-        case INA231  : initINA226_INA231(i);break;                            //                                  //
-        case INA260  : initINA260(i);break;                                   //                                  //
-        case INA3221 : if (ina.virtualDeviceNumber==0) {                      // All 3 ports have same settings,  //
-                       initINA3221(i);                                        // so just initialize the first one //
-                       } // of if this is the first virtual device            //                                  //
-                       break;                                                 //                                  //
-      } // of switch type                                                     //                                  //
+      initDevice(i);                                                          //                                  //
     } // of if this device needs to be set                                    //                                  //
   } // for-next each device loop                                              //                                  //
 } // of method reset                                                          //                                  //
