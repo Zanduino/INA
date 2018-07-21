@@ -19,6 +19,55 @@
 #include <Wire.h>                                                             // I2C Library definition           //
 #include <EEPROM.h>                                                           // Include the EEPROM library       //
                                                                               //                                  //
+inaDet::inaDet(){}                                                            // Struct constructor               //
+inaDet::inaDet(inaEEPROM inaEE){                                              // Constructor from saved values    //
+  type = inaEE.type;                                                          //  triggered by assignmet from type//
+  virtualDeviceNumber = inaEE.virtualDeviceNumber;                            //  inaEEPROM, e.g ina = inaEE;     //
+  operatingMode = inaEE.operatingMode;                                        //                                  //
+  address = inaEE.address;                                                    //                                  //
+  maxBusAmps = inaEE.maxBusAmps;                                              //                                  //
+  microOhmR = inaEE.maxBusAmps;                                               // Copy values read from EEPROM     //
+  switch (type) {                                                             //                                  //
+  case INA219:                                                                // INA219                           //
+    shuntVoltageRegister = INA219_SHUNT_VOLTAGE_REGISTER;                     // Set the Shunt Voltage Register   //
+    currentRegister      = INA219_CURRENT_REGISTER;                           // Set the current Register         //
+    busVoltage_LSB       = INA219_BUS_VOLTAGE_LSB;                            // Set to hard-coded value          //
+    shuntVoltage_LSB     = INA219_SHUNT_VOLTAGE_LSB;                          // Set to hard-coded value          //
+    operatingMode        = INA_DEFAULT_OPERATING_MODE;                        // Default to continuous mode       //
+    current_LSB = (uint64_t)maxBusAmps * 1000000000 / 32767;                  // Get the best possible LSB in nA  //
+    power_LSB   = (uint32_t)20*current_LSB;                                   // Fixed multiplier per device      //
+    break;                                                                    //                                  //
+  case INA226:                                                                // INA226, INA230 and INA231        //
+  case INA230:                                                                // will be treated the same         //
+  case INA231:                                                                //                                  //
+    shuntVoltageRegister = INA226_SHUNT_VOLTAGE_REGISTER;                     // Set the Shunt Voltage Register   //
+    currentRegister      = INA226_CURRENT_REGISTER;                           // Set the current Register         //
+    busVoltage_LSB       = INA226_BUS_VOLTAGE_LSB;                            // Set to hard-coded value          //
+    shuntVoltage_LSB     = INA226_SHUNT_VOLTAGE_LSB;                          // Set to hard-coded value          //
+    operatingMode        = INA_DEFAULT_OPERATING_MODE;                        // Default to continuous mode       //
+    current_LSB          = (uint64_t)maxBusAmps * 1000000000 / 32767;         // Get the best possible LSB in nA  //
+    power_LSB            = (uint32_t)25*current_LSB;                          // Fixed multiplier per device      //
+    break;                                                                    //                                  //
+  case INA260:                                                                // INA260                           //
+    shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER;                     // Register not present             //
+    currentRegister      = INA260_CURRENT_REGISTER;                           // Set the current Register         //
+    busVoltage_LSB       = INA260_BUS_VOLTAGE_LSB;                            // Set to hard-coded value          //
+    operatingMode        = INA_DEFAULT_OPERATING_MODE;                        // Default to continuous mode       //
+    current_LSB          = 1250000;                                           // Fixed LSB of 1.25mv              //
+    power_LSB            = 10000000;                                          // Fixed multiplier per device      //
+    break;                                                                    //                                  //
+  case INA3221:                                                               // INA3221                           //
+    shuntVoltageRegister = INA3221_SHUNT_VOLTAGE_REGISTER;                    // Register for 1st shunt voltage   //
+    currentRegister      = 0;                                                 // INA3221 has no current Register  //
+    busVoltage_LSB       = INA3221_BUS_VOLTAGE_LSB;                           // Set to hard-coded value          //
+    shuntVoltage_LSB     = INA3221_SHUNT_VOLTAGE_LSB;                         // Set to hard-coded value          //
+    operatingMode        = INA_DEFAULT_OPERATING_MODE;                        // Default to continuous mode       //
+    current_LSB          = 0;                                                 // INA3221 has no current register  //
+    power_LSB            = 0;                                                 // INA3221 has no power register    //
+    break;                                                                    //                                  //
+  } // of switch type                                                         //                                  //
+} // of constructor                                                           //                                  //
+                                                                              //                                  //
 INA_Class::INA_Class()  {}                                                    // Class constructor                //
 INA_Class::~INA_Class() {}                                                    // Unused class destructor          //
 /*******************************************************************************************************************
@@ -80,8 +129,8 @@ void INA_Class::setI2CSpeed(const uint32_t i2cSpeed ) {                       //
 ** applied to all devices, otherwise just that specific device is targeted.                                       **
 *******************************************************************************************************************/
 uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            // Class initializer                //
-                            const uint32_t microOhmR,                         //                                  //
-                            const uint8_t deviceNumber ) {                    //                                  //
+                         const uint32_t microOhmR,                            //                                  //
+                         const uint8_t deviceNumber ) {                       //                                  //
   uint16_t originalRegister,tempRegister;                                     // Stores 16-bit register contents  //
   if (_DeviceCount==0) {                                                      // Enumerate devices in first call  //
     #ifndef ESP8266                                                           // I2C begin() on Esplora problems  //
@@ -445,7 +494,6 @@ int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {             //
 ** Method reset resets the INA using the first bit in the configuration register                                  **
 *******************************************************************************************************************/
 void INA_Class::reset(const uint8_t deviceNumber) {                           // Reset the INA                    //
-  int16_t configRegister;                                                     // Hold configuration register      //
   for(uint8_t i=0;i<_DeviceCount;i++) {                                       // Loop for each device found       //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
       readInafromEEPROM(i);                                                   // Load EEPROM to ina structure     //

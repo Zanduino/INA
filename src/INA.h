@@ -74,8 +74,8 @@
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //
     uint32_t current_LSB;                                                     // Amperage LSB                     //
     uint32_t power_LSB;                                                       // Wattage LSB                      //
-    inaDet(){}                                                                // struct constructor               //
-    inaDet(inaEEPROM){}                                                       // for ina = inaEE; assignment      //
+    inaDet();                                                                 // struct constructor               //
+    inaDet(inaEEPROM inaEE);                                                  // for ina = inaEE; assignment      //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
   enum ina_Type { INA219,                                                     // List of supported devices        //
