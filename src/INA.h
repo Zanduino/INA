@@ -208,14 +208,9 @@
                                  const uint8_t deviceAddress);                //                                  //
       void     readInafromEEPROM(const uint8_t deviceNumber);                 // Retrieve structure from EEPROM   //
       void     writeInatoEEPROM (const uint8_t deviceNumber);                 // Write structure to EEPROM        //
-      void     initINA219_INA220(const uint8_t  maxBusAmps,                   // Initialize INA219 or INA220      //
-                                 const uint32_t microOhmR,                    //                                  //
-                                 const uint8_t  deviceNumber);                //                                  //
-      void     initINA226_INA231(const uint8_t maxBusAmps,                    // Initialize INA226, INA230        //
-                                 const uint32_t microOhmR,                    // or INA231                        //
-                                 const uint8_t deviceNumber,                  //                                  //
-                                 const uint8_t ina_type=INA226);              // INA226 by default                //
-      void     initINA260       (const uint8_t maxBusAmps);                   //                                  //
+      void     initINA219_INA220(const uint8_t deviceNumber);                 // Initialize INA219 or INA220      //
+      void     initINA226_INA231(const uint8_t deviceNumber);                 // Initialize INA226,INA230,INA231  //
+      void     initINA260       (const uint8_t deviceNumber);                 // Initialize INA260                //
       void     initINA3221      (const uint8_t deviceNumber);                 // Initialize INA3221               //
       uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
       uint8_t  _currentINA         = UINT8_MAX;                               // Stores current INA device number //
