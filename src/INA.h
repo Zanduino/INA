@@ -31,7 +31,9 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.2  2018-07-22 https://github.com/SV-Zanshin Issue #11. Reduce EEPROM footprint. Moved "deviceName", 8Bytes **
+** 1.0.2  2018-07-22 https://github.com/SV-Zanshin Issue #11. Reduce EEPROM footprint. Removed "deviceName", 8B.  **
+**                                                 Changed datatype in structure to bit-level length definitions, **
+**                                                 saving additional 3 bytes                                      **
 ** 1.0.2  2018-07-21 https://github.com/avaldeve   Issue #12. Incorrect const datatype for I2C Speeds             **
 ** 1.0.2  2018-07-12 https://github.com/coelner    Issue #9. Esplora doesn't accept "Wire.begin()"                **
 ** 1.0.2  2018-07-08 https://github.com/SV-Zanshin Issue #2. Finished testing INA3221 across all functions        **
@@ -59,20 +61,26 @@
   *****************************************************************************************************************/
   typedef struct {                                                            // Structure of values per device   //
     uint8_t  address;                                                         // I2C Address of device            //
-    uint8_t  type;                                                            // see enumerated "ina_Type"        //
+    uint8_t  type                 : 3; // 0- 7 //                             // see enumerated "ina_Type"        //
+    uint8_t  virtualDeviceNumber  : 2; // 0- 3 //                             // Only used with INA3221           //
+    uint8_t  operatingMode        : 3; // 0- 7 //                             // Default to continuous mode       //
+    uint8_t  shuntVoltageRegister : 4; // 0-15 //                             // Shunt Voltage Register           //
+    uint8_t  currentRegister      : 4; // 0-15 //                             // Current Register                 //
+    uint8_t  maxBusAmps;                                                      // Store initialization value       //
     uint16_t shuntVoltage_LSB;                                                // Device dependent LSB factor      //
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //
     uint32_t current_LSB;                                                     // Amperage LSB                     //
     uint32_t power_LSB;                                                       // Wattage LSB                      //
-    uint8_t  operatingMode;                                                   // Default continuous mode operation//
-    uint8_t  maxBusAmps;                                                      // Store initialization value       //
     uint32_t microOhmR;                                                       // Store initialization value       //
-    uint8_t  shuntVoltageRegister;                                            // Shunt Voltage Register           //
-    uint8_t  currentRegister;                                                 // Current Register                 //
-    uint8_t  virtualDeviceNumber;                                             // Only used with INA3221           //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
-  enum ina_Type { INA219,INA226,INA230,INA231,INA260,INA3221,UNKNOWN };       // List of supported devices        //
+  enum ina_Type { INA219,                                                     // List of supported devices        //
+                  INA226,                                                     //                                  //
+                  INA230,                                                     //                                  //
+                  INA231,                                                     //                                  //
+                  INA260,                                                     //                                  //
+                  INA3221,                                                    //                                  //
+                  UNKNOWN };                                                  //                                  //
   enum ina_Mode { INA_MODE_SHUTDOWN,                                          // Device powered down              //
                   INA_MODE_TRIGGERED_SHUNT,                                   // Triggered shunt, no bus          //
                   INA_MODE_TRIGGERED_BUS,                                     // Triggered bus, no shunt          //
