@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.2  2018-07-22 https://github.com/SV-Zanshin Issue #11. Reduce EEPROM footprint. Moved "deviceName", 8Bytes **
 ** 1.0.2  2018-07-21 https://github.com/avaldeve   Issue #12. Incorrect const datatype for I2C Speeds             **
 ** 1.0.2  2018-07-12 https://github.com/coelner    Issue #9. Esplora doesn't accept "Wire.begin()"                **
 ** 1.0.2  2018-07-08 https://github.com/SV-Zanshin Issue #2. Finished testing INA3221 across all functions        **
@@ -66,7 +67,6 @@
     uint8_t  operatingMode;                                                   // Default continuous mode operation//
     uint8_t  maxBusAmps;                                                      // Store initialization value       //
     uint32_t microOhmR;                                                       // Store initialization value       //
-    char     deviceName[8];                                                   // Device name as a character array //
     uint8_t  shuntVoltageRegister;                                            // Shunt Voltage Register           //
     uint8_t  currentRegister;                                                 // Current Register                 //
     uint8_t  virtualDeviceNumber;                                             // Only used with INA3221           //
@@ -91,8 +91,8 @@
     const uint32_t I2C_FAST_MODE_PLUS           = 1000000;                    // Really fast mode                 //
     const uint32_t I2C_HIGH_SPEED_MODE          = 3400000;                    // Turbo mode                       //
   #endif                                                                      //----------------------------------//
-  const uint8_t  INA_CONFIGURATION_REGISTER     =       0;                    //==================================//
-  const uint8_t  INA_BUS_VOLTAGE_REGISTER       =       2;                    // Values common to all INAs        //
+  const uint8_t  INA_CONFIGURATION_REGISTER     =       0;                    // Values common to all INAs        //
+  const uint8_t  INA_BUS_VOLTAGE_REGISTER       =       2;                    //                                  //
   const uint8_t  INA_POWER_REGISTER             =       3;                    //                                  //
   const uint8_t  INA_CALIBRATION_REGISTER       =       5;                    //                                  //
   const uint8_t  INA_MASK_ENABLE_REGISTER       =       6;                    // Not found on all devices         //

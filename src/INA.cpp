@@ -99,33 +99,27 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
           ina.maxBusAmps = maxBusAmps;                                        // Store settings for future resets //
           ina.microOhmR  = microOhmR;                                         // Store settings for future resets //
           if (tempRegister==0x399F) {                                         // INA219, INA220                   //
-            strcpy(ina.deviceName,"INA219");                                  // Set string                       //
             initINA219_INA220(maxBusAmps,microOhmR,_DeviceCount);             // perform initialization on device //
           } else {                                                            //                                  //
             if (tempRegister==0x4127) {                                       // INA226, INA230, INA231           //
               tempRegister = readWord(INA_DIE_ID_REGISTER,deviceAddress);     // Read the INA209 high-register    //
               if (tempRegister==INA226_DIE_ID_VALUE) {                        // We've identified an INA226       //
-                strcpy(ina.deviceName,"INA226");                              // Set string                       //
                 initINA226(maxBusAmps,microOhmR,_DeviceCount);                // perform initialization on device //
               } else {                                                        //                                  //
                 if (tempRegister!=0) {                                        // uncertain if this works, but as  //
-                  strcpy(ina.deviceName,"INA230");                            // INA230 and INA231 are processed  //
                   initINA226(maxBusAmps,microOhmR,_DeviceCount);              // as INA226 it makes no difference //
                 } else {                                                      //                                  //
-                  strcpy(ina.deviceName,"INA231");                            // Set string                       //
                   initINA226(maxBusAmps,microOhmR,_DeviceCount);              // perform initialization on device //
                 } // of if-then-else a INA230 or INA231                       //                                  //
               } // of if-then-else an INA226                                  //                                  //
             } else {                                                          //                                  //
               if (tempRegister==0x6127) {                                     // INA260                           //
                 ina.type       = INA260;                                      // Set to an INA260                 //
-                strcpy(ina.deviceName,"INA260");                              // Set string                       //
                 initINA260(_DeviceCount);                                     // perform initialization on device //
               } else {                                                        //                                  //
                 if (tempRegister==0x7127) {                                   // INA3221                          //
                   ina.type                = INA3221;                          // Set to an INA3221                //
                   ina.virtualDeviceNumber = 0;                                // Set to first virtual device      //
-                  strcpy(ina.deviceName,"INA3221");                           // Set string                       //
                   initINA3221(_DeviceCount);                                  // First channel initialization     //
                   _DeviceCount = ((_DeviceCount+1)%maxDevices);               //                                  //
                   ina.virtualDeviceNumber = 1;                                // Set to second virtual device     //
@@ -135,7 +129,6 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
                   initINA3221(_DeviceCount);                                  // Third channel initialization     //
                 } else {                                                      //                                  //
                   ina.type       = UNKNOWN;                                   //                                  //
-                  strcpy(ina.deviceName,"UNKNOWN");                           // Set string                       //
                 } // of if-then-else it is an INA3221                         //                                  //
               } // of if-then-else it is an INA260                            //                                  //
             } // of if-then-else it is an INA226, INA230, INA231              //                                  //
@@ -345,11 +338,28 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
   } // for-next each device loop                                              //                                  //
 } // of method setShuntConversion()                                           //                                  //
 /*******************************************************************************************************************
-** Method getDeviceName retrieves the device name from EEPROM                                                     **
+** Method getDeviceName returns a text representation of the device name according to the device type stored in   **
+** the EEPROM structure                                                                                           **
 *******************************************************************************************************************/
 char * INA_Class::getDeviceName(const uint8_t deviceNumber) {                 //                                  //
+  static char deviceName[8];                                                  // declare return value             //
   readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
-  return(ina.deviceName);                                                     // return device type number        //
+  switch ( ina.type ) {                                                       // Set value depending on type      //
+    case INA219  : strcpy(deviceName,"INA219");                               //                                  //
+                   break;                                                     //                                  //
+    case INA226  : strcpy(deviceName,"INA226");                               //                                  //
+                   break;                                                     //                                  //
+    case INA230  : strcpy(deviceName,"INA230");                               //                                  //
+                   break;                                                     //                                  //
+    case INA231  : strcpy(deviceName,"INA231");                               //                                  //
+                   break;                                                     //                                  //
+    case INA260  : strcpy(deviceName,"INA260");                               //                                  //
+                   break;                                                     //                                  //
+    case INA3221 : strcpy(deviceName,"INA3221");                              //                                  //
+                  break;                                                      //                                  //
+    default      : strcpy(deviceName,"UNKNOWN");                              //                                  //
+  } // of switch on type
+  return(deviceName);                                                         // return device type number        //
 } // of method getDeviceName()                                                //                                  //
 /*******************************************************************************************************************
 ** Method getBusMilliVolts retrieves the bus voltage measurement                                                  **
