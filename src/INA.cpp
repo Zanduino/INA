@@ -22,13 +22,13 @@
 inaDet::inaDet(){}                                                            // Struct constructor               //
 inaDet::inaDet(inaEEPROM inaEE){                                              // Constructor from saved values    //
   type = inaEE.type;                                                          //  triggered by assignmet from type//
-  virtualDeviceNumber = inaEE.virtualDeviceNumber;                            //  inaEEPROM, e.g ina = inaEE;     //
   operatingMode = inaEE.operatingMode;                                        //                                  //
   address = inaEE.address;                                                    //                                  //
   maxBusAmps = inaEE.maxBusAmps;                                              //                                  //
   microOhmR = inaEE.maxBusAmps;                                               // Copy values read from EEPROM     //
   switch (type) {                                                             //                                  //
   case INA219:                                                                // INA219                           //
+    busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;                          // Bus Voltage Register             //
     shuntVoltageRegister = INA219_SHUNT_VOLTAGE_REGISTER;                     // Set the Shunt Voltage Register   //
     currentRegister      = INA219_CURRENT_REGISTER;                           // Set the current Register         //
     busVoltage_LSB       = INA219_BUS_VOLTAGE_LSB;                            // Set to hard-coded value          //
@@ -39,6 +39,7 @@ inaDet::inaDet(inaEEPROM inaEE){                                              //
   case INA226:                                                                // INA226, INA230 and INA231        //
   case INA230:                                                                // will be treated the same         //
   case INA231:                                                                //                                  //
+    busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;                          // Bus Voltage Register             //
     shuntVoltageRegister = INA226_SHUNT_VOLTAGE_REGISTER;                     // Set the Shunt Voltage Register   //
     currentRegister      = INA226_CURRENT_REGISTER;                           // Set the current Register         //
     busVoltage_LSB       = INA226_BUS_VOLTAGE_LSB;                            // Set to hard-coded value          //
@@ -47,19 +48,27 @@ inaDet::inaDet(inaEEPROM inaEE){                                              //
     power_LSB            = (uint32_t)25*current_LSB;                          // Fixed multiplier per device      //
     break;                                                                    //                                  //
   case INA260:                                                                // INA260                           //
+    busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;                          // Bus Voltage Register             //
     shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER;                     // Register not present             //
     currentRegister      = INA260_CURRENT_REGISTER;                           // Set the current Register         //
     busVoltage_LSB       = INA260_BUS_VOLTAGE_LSB;                            // Set to hard-coded value          //
     current_LSB          = 1250000;                                           // Fixed LSB of 1.25mv              //
     power_LSB            = 10000000;                                          // Fixed multiplier per device      //
     break;                                                                    //                                  //
-  case INA3221:                                                               // INA3221                          //
+  case INA3221_0:                                                             // INA3221 1st channel              //
+    busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;                          // Register for 1st bus voltage     //
     shuntVoltageRegister = INA3221_SHUNT_VOLTAGE_REGISTER;                    // Register for 1st shunt voltage   //
     currentRegister      = 0;                                                 // INA3221 has no current Register  //
     busVoltage_LSB       = INA3221_BUS_VOLTAGE_LSB;                           // Set to hard-coded value          //
     shuntVoltage_LSB     = INA3221_SHUNT_VOLTAGE_LSB;                         // Set to hard-coded value          //
     current_LSB          = 0;                                                 // INA3221 has no current register  //
     power_LSB            = 0;                                                 // INA3221 has no power register    //
+  case INA3221_1:                                                             // INA3221 2nd channel              //
+    busVoltageRegister  += 2;                                                 // Register for 2nd bus voltage     //
+    shuntVoltageRegister+= 2;                                                 // Register for 2nd shunt voltage   //
+  case INA3221_2:                                                             // INA3221 3rd channel              //
+    busVoltageRegister  += 2;                                                 // Register for 3rdbus voltage     //
+    shuntVoltageRegister+= 2;                                                 // Register for 3rd shunt voltage   //
     break;                                                                    //                                  //
   } // of switch type                                                         //                                  //
 } // of constructor                                                           //                                  //
@@ -142,56 +151,51 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
         if (tempRegister==INA_RESET_DEVICE ){                                 // If the register isn't reset then //
            writeWord(INA_CONFIGURATION_REGISTER,originalRegister,deviceAddress);// Not an an INA, write back value//
         } else {                                                              // otherwise we know it is an INA   //
-          inaEE.address    = deviceAddress;                                   // Store device address             //
-          inaEE.maxBusAmps = maxBusAmps;                                      // Store settings for future resets //
-          inaEE.microOhmR  = microOhmR;                                       // Store settings for future resets //
           if (tempRegister==0x399F) {                                         // INA219, INA220                   //
             inaEE.type = INA219;                                              //                                  //
-            ina = inaEE;                                                      // see inaDet constructor           //
-            initDevice(_DeviceCount);                                         // perform initialization on device //
           } else {                                                            //                                  //
             if (tempRegister==0x4127) {                                       // INA226, INA230, INA231           //
               tempRegister = readWord(INA_DIE_ID_REGISTER,deviceAddress);     // Read the INA209 high-register    //
               if (tempRegister==INA226_DIE_ID_VALUE) {                        // We've identified an INA226       //
                 inaEE.type = INA226;                                          //                                  //
-                ina = inaEE;                                                  // see inaDet constructor           //
-                initDevice(_DeviceCount);                                     // perform initialization on device //
               } else {                                                        //                                  //
                 if (tempRegister!=0) {                                        // uncertain if this works, but as  //
                   inaEE.type = INA230;                                        // INA230 and INA231 are processed  //
-                  ina = inaEE;                                                // see inaDet constructor           //
-                  initDevice(_DeviceCount);                                   // as INA226 it makes no difference //
                 } else {                                                      //                                  //
                   inaEE.type = INA231;                                        //                                  //
-                  ina = inaEE;                                                // see inaDet constructor           //
-                  initDevice(_DeviceCount);                                   // perform initialization on device //
                 } // of if-then-else a INA230 or INA231                       //                                  //
               } // of if-then-else an INA226                                  //                                  //
             } else {                                                          //                                  //
               if (tempRegister==0x6127) {                                     // INA260                           //
                 inaEE.type = INA260;                                          // Set to an INA260                 //
-                ina = inaEE;                                                  // see inaDet constructor           //
-                initDevice(_DeviceCount);                                     // perform initialization on device //
               } else {                                                        //                                  //
                 if (tempRegister==0x7127) {                                   // INA3221                          //
-                  inaEE.type = INA3221;                                       // Set to an INA3221                //
-                  ina = inaEE;                                                // see inaDet constructor           //
-                  ina.virtualDeviceNumber = 0;                                // Set to first virtual device      //
-                  initDevice(_DeviceCount);                                   // First channel initialization     //
-                  _DeviceCount = ((_DeviceCount+1)%maxDevices);               //                                  //
-                  ina.virtualDeviceNumber = 1;                                // Set to second virtual device     //
-                  initDevice(_DeviceCount);                                   // Second channel initialization    //
-                  _DeviceCount = ((_DeviceCount+1)%maxDevices);               //                                  //
-                  ina.virtualDeviceNumber = 2;                                // Set to third virtual device      //
-                  initDevice(_DeviceCount);                                   // Third channel initialization     //
+                  inaEE.type = INA3221_0;                                     // Set to an INA3221                //
                 } else {                                                      //                                  //
-                  ina.type       = UNKNOWN;                                   //                                  //
+                  inaEE.type = UNKNOWN;                                       //                                  //
                 } // of if-then-else it is an INA3221                         //                                  //
               } // of if-then-else it is an INA260                            //                                  //
             } // of if-then-else it is an INA226, INA230, INA231              //                                  //
           } // of if-then-else it is an INA209, INA219, INA220                //                                  //
-          if (ina.type != UNKNOWN ) {                                         // Increment device if valid INA2xx //
-            _DeviceCount = ((_DeviceCount+1)%maxDevices);                     // start again at 0 if overflow     //
+          if (inaEE.type != UNKNOWN ) {                                       // Increment device if valid INA2xx //
+            inaEE.address    = deviceAddress;                                 // Store device address             //
+            inaEE.maxBusAmps = maxBusAmps;                                    // Store settings for future resets //
+            inaEE.microOhmR  = microOhmR;                                     // Store settings for future resets //
+            ina = inaEE;                                                      // see inaDet constructor           //
+            if (inaEE.type == INA3221_0 ) {                                   //                                  //
+              ina.type = INA3221_0;                                           // Set to INA3221 1st channel       //
+              initDevice(_DeviceCount);                                       // First channel initialization     //
+              _DeviceCount = ((_DeviceCount+1)%maxDevices);                   //                                  //
+              ina.type = INA3221_1;                                           // Set to INA3221 2nd channel       //
+              initDevice(_DeviceCount);                                       // Second channel initialization    //
+              _DeviceCount = ((_DeviceCount+1)%maxDevices);                   //                                  //
+              ina.type = INA3221_2;                                           // Set to INA3221 3rd channel       //
+              initDevice(_DeviceCount);                                       // Third channel initialization     //
+              _DeviceCount = ((_DeviceCount+1)%maxDevices);                   // start again at 0 if overflow     //
+            } else {                                                          //                                  //
+              initDevice(_DeviceCount);                                       // perform initialization on device //
+              _DeviceCount = ((_DeviceCount+1)%maxDevices);                   // start again at 0 if overflow     //
+            } // of if-then inaEE.type                                        //                                  //
           } // of if-then we can add device                                   //                                  //
         } // of if-then-else we have an INA-Type device                       //                                  //
       } // of if-then we have a device                                        //                                  //
@@ -243,7 +247,9 @@ void INA_Class::initDevice(const uint8_t deviceNumber) {                      //
       writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address);            // Write the calibration value      //
       break;                                                                  //                                  //
     case INA260:                                                              // Nothing for INA260 or INA3221    //
-    case INA3221:                                                             //                                  //
+    case INA3221_0:                                                           //                                  //
+    case INA3221_1:                                                           //                                  //
+    case INA3221_2:                                                           //                                  //
       break;                                                                  //                                  //
   } // of switch type                                                         //                                  //
   return;                                                                     // return to caller                 //
@@ -276,7 +282,9 @@ void INA_Class::setBusConversion(const uint32_t convTime,                     //
         case INA226 :                                                         // INA226,                          //
         case INA230 :                                                         // INA230,                          //
         case INA231 :                                                         // INA231 and                       //
-        case INA3221:                                                         // INA3221 are the same as INA260   //
+        case INA3221_0:                                                       // INA3221                          //
+        case INA3221_1:                                                       // are the same as INA260           //
+        case INA3221_2:                                                       //                                  //
         case INA260 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
                       else if (convTime>= 41560) convRate = 6;                //                                  //
                       else if (convTime>= 21160) convRate = 5;                //                                  //
@@ -285,7 +293,8 @@ void INA_Class::setBusConversion(const uint32_t convTime,                     //
                       else if (convTime>=   332) convRate = 2;                //                                  //
                       else if (convTime>=   204) convRate = 1;                //                                  //
                       else                       convRate = 0;                //                                  //
-                      if (ina.type==INA226 || ina.type==INA3221) {            // Depending upon which device      //
+                      if (ina.type==INA226    || ina.type==INA3221_0 ||       // Depending upon which device      //
+                          ina.type==INA3221_1 || ina.type==INA3221_2) {       //                                  //
                         configRegister &= ~INA226_CONFIG_BADC_MASK;           // zero out the averages part       //
                         configRegister |= convRate << 6;                      // shift in the averages to register//
                       } else {                                                //                                  //
@@ -326,7 +335,9 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
         case INA226 :                                                         // INA226,                          //
         case INA230 :                                                         // INA230,                          //
         case INA231 :                                                         // INA231 and                       //
-        case INA3221:                                                         // INA3221 are the same as INA260   //
+        case INA3221_0:                                                       // INA3221                          //
+        case INA3221_1:                                                       // are the same as INA260           //
+        case INA3221_2:                                                       //                                  //
         case INA260 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
                       else if (convTime>= 41560) convRate = 6;                //                                  //
                       else if (convTime>= 21160) convRate = 5;                //                                  //
@@ -335,7 +346,8 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
                       else if (convTime>=   332) convRate = 2;                //                                  //
                       else if (convTime>=   204) convRate = 1;                //                                  //
                       else                       convRate = 0;                //                                  //
-                      if (ina.type==INA226 || ina.type==INA3221) {            // Select mask depending on device  //
+                      if (ina.type==INA226    || ina.type==INA3221_0 ||       // Select mask depending on device  //
+                          ina.type==INA3221_1 || ina.type==INA3221_2) {       //                                  //
                         configRegister &= ~INA226_CONFIG_SADC_MASK;           // zero out the averages part       //
                       } else {                                                //                                  //
                         configRegister &= ~INA260_CONFIG_SADC_MASK;           // zero out the averages part       //
@@ -365,10 +377,12 @@ char * INA_Class::getDeviceName(const uint8_t deviceNumber) {                 //
                    break;                                                     //                                  //
     case INA260  : strcpy(deviceName,"INA260");                               //                                  //
                    break;                                                     //                                  //
-    case INA3221 : strcpy(deviceName,"INA3221");                              //                                  //
+    case INA3221_0:                                                           //                                  //
+    case INA3221_1:                                                           //                                  //
+    case INA3221_2:strcpy(deviceName,"INA3221");                              //                                  //
                   break;                                                      //                                  //
     default      : strcpy(deviceName,"UNKNOWN");                              //                                  //
-  } // of switch on type
+  } // of switch on type                                                      //                                  //
   return(deviceName);                                                         // return device type number        //
 } // of method getDeviceName()                                                //                                  //
 /*******************************************************************************************************************
@@ -376,9 +390,9 @@ char * INA_Class::getDeviceName(const uint8_t deviceNumber) {                 //
 *******************************************************************************************************************/
 uint16_t INA_Class::getBusMilliVolts(const uint8_t deviceNumber) {            //                                  //
   readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
-  uint16_t busVoltage = readWord(INA_BUS_VOLTAGE_REGISTER +                   // Get the raw value from register  //
-                                 (ina.virtualDeviceNumber*2),ina.address);    // using possible INA3221 offset    //
-  if (ina.type==INA219 || ina.type==INA3221) busVoltage = busVoltage >> 3;    // INA219 - 3LSB unused, so shift   //
+  uint16_t busVoltage = readWord(ina.busVoltageRegister,ina.address);         // Get the raw value from register  //
+  if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2 ||    //                                  //
+      ina.type==INA219 ) busVoltage = busVoltage >> 3;                        // INA219 - 3LSB unused, so shift   //
   busVoltage = (uint32_t)busVoltage*ina.busVoltage_LSB/100;                   // conversion to get milliVolts     //
   if (!bitRead(ina.operatingMode,2) && bitRead(ina.operatingMode,1)) {        // If triggered mode and bus active //
     int16_t configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);// Get the current register         //
@@ -396,9 +410,8 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber) {           //
     int32_t  busMicroAmps    = getBusMicroAmps(deviceNumber);                 // Get the amps on the bus          //
              shuntVoltage    = busMicroAmps / 200;                            // 2mOhm resistor, Ohm's law        //
   } else {                                                                    //                                  //
-    shuntVoltage = readWord(ina.shuntVoltageRegister +                        // Get the raw value from register  //
-                            (ina.virtualDeviceNumber*2),ina.address);         // using possible INA3221 offset    //
-    if (ina.type==INA3221) {                                                  // INA3221 doesn't use 3 LSB        //
+    shuntVoltage = readWord(ina.shuntVoltageRegister,ina.address);            // Get the raw value from register  //
+    if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2) {  // INA3221 doesn't use 3 LSB        //
       if (shuntVoltage&0x8000) {                                              // If the shunt is negative, then   //
         shuntVoltage = (shuntVoltage>>3) & 0xE000;                            // shift over 3, then 3 MSB to 1    //
       } else {                                                                //                                  //
@@ -419,7 +432,7 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber) {           //
 int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {              //                                  //
   readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
   int32_t microAmps = 0;                                                      // Initialize return variable       //
-  if (ina.type==INA3221) {                                                    // INA3221 doesn't compute Amps     //
+  if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2) {    // INA3221 doesn't compute Amps     //
     microAmps = getShuntMicroVolts(deviceNumber) *                            // Compute and convert units        //
                 ((int32_t)1000000 / (int32_t)ina.microOhmR);                  //                                  //
   } else {                                                                    //                                  //
@@ -434,7 +447,7 @@ int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {              //
 int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {             //                                  //
   int32_t microWatts = 0;                                                     // Initialize return variable       //
   readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
-  if (ina.type==INA3221) {                                                    // INA3221 doesn't compute Amps     //
+  if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2) {    // INA3221 doesn't compute Amps     //
     microWatts = (getShuntMicroVolts(deviceNumber)*1000000/ina.microOhmR) *   // compute watts = volts * amps     //
                  getBusMilliVolts(deviceNumber) / 1000;                       //                                  //
   } else {                                                                    //                                  //
@@ -495,7 +508,9 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber) {               //
           case INA260:                                                        //                                  //
             cvBits = readWord(INA_MASK_ENABLE_REGISTER,ina.address)&(uint16_t)8;//                                //
             break;                                                            //                                  //
-          case INA3221:                                                       //                                  //
+          case INA3221_0:                                                     //                                  //
+          case INA3221_1:                                                     //                                  //
+          case INA3221_2:                                                     //                                  //
             cvBits = readWord(INA3221_MASK_REGISTER,ina.address)&(uint16_t)1; //                                  //
             break;                                                            //                                  //
           default    :cvBits = 1;                                             //                                  //
@@ -724,7 +739,9 @@ void INA_Class::setAveraging(const uint16_t averages,                         //
         case INA226 :                                                         //                                  //
         case INA230 :                                                         //                                  //
         case INA231 :                                                         //                                  //
-        case INA3221:                                                         //                                  //
+        case INA3221_0:                                                       //                                  //
+        case INA3221_1:                                                       //                                  //
+        case INA3221_2:                                                       //                                  //
         case INA260 : if      (averages>=1024) averageIndex = 7;              // setting depending upon range     //
                       else if (averages>= 512) averageIndex = 6;              //                                  //
                       else if (averages>= 256) averageIndex = 5;              //                                  //

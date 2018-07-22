@@ -60,16 +60,16 @@
   ** Declare structures and enumerated types used in the class                                                    **
   *****************************************************************************************************************/
   typedef struct {                                                            // Structure of values per device   //
-    uint8_t  type                 : 3; // 0- 7 //                             // see enumerated "ina_Type"        //
-    uint8_t  virtualDeviceNumber  : 2; // 0- 3 //                             // Only used with INA3221           //
-    uint8_t  operatingMode        : 3; // 0- 7 //                             // Default to continuous mode       //
+    uint8_t  type                 : 4; // 0-15 //                             // see enumerated "ina_Type"        //
+    uint8_t  operatingMode        : 4; // 0-15 //                             // Default to continuous mode       //
     uint32_t address              : 7; // 0-127//                             // I2C Address of device            //
     uint32_t maxBusAmps           : 5; // 0-31 //                             // Store initialization value       //
     uint32_t microOhmR            :20; // 0-1.048.575 //                      // Store initialization value       //
   } inaEEPROM; // of structure                                                //                                  //
   typedef struct inaDet : inaEEPROM {                                         // Structure of values per device   //
-    uint8_t  shuntVoltageRegister : 4; // 0-15 //                             // Shunt Voltage Register           //
-    uint8_t  currentRegister      : 4; // 0-15 //                             // Current Register                 //
+    uint8_t  busVoltageRegister   : 3; // 0- 7 //                             // Bus Voltage Register             //
+    uint8_t  shuntVoltageRegister : 2; // 0- 4 //                             // Shunt Voltage Register           //
+    uint8_t  currentRegister      : 3; // 0- 7 //                             // Current Register                 //
     uint16_t shuntVoltage_LSB;                                                // Device dependent LSB factor      //
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //
     uint32_t current_LSB;                                                     // Amperage LSB                     //
@@ -83,7 +83,9 @@
                   INA230,                                                     //                                  //
                   INA231,                                                     //                                  //
                   INA260,                                                     //                                  //
-                  INA3221,                                                    //                                  //
+                  INA3221_0,                                                  // INA3221 1st channel              //
+                  INA3221_1,                                                  // INA3221 2nd channel              //
+                  INA3221_2,                                                  // INA3221 3rd channel              //
                   UNKNOWN };                                                  //                                  //
   enum ina_Mode { INA_MODE_SHUTDOWN,                                          // Device powered down              //
                   INA_MODE_TRIGGERED_SHUNT,                                   // Triggered shunt, no bus          //
