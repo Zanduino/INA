@@ -60,18 +60,18 @@
   ** Declare structures and enumerated types used in the class                                                    **
   *****************************************************************************************************************/
   typedef struct {                                                            // Structure of values per device   //
-    uint8_t  address;                                                         // I2C Address of device            //
     uint8_t  type                 : 3; // 0- 7 //                             // see enumerated "ina_Type"        //
     uint8_t  virtualDeviceNumber  : 2; // 0- 3 //                             // Only used with INA3221           //
     uint8_t  operatingMode        : 3; // 0- 7 //                             // Default to continuous mode       //
+    uint32_t address              : 7; // 0-127//                             // I2C Address of device            //
+    uint32_t maxBusAmps           : 5; // 0-31 //                             // Store initialization value       //
+    uint32_t microOhmR            :20; // 0-1.048.575 //                      // Store initialization value       //
     uint8_t  shuntVoltageRegister : 4; // 0-15 //                             // Shunt Voltage Register           //
     uint8_t  currentRegister      : 4; // 0-15 //                             // Current Register                 //
-    uint8_t  maxBusAmps;                                                      // Store initialization value       //
     uint16_t shuntVoltage_LSB;                                                // Device dependent LSB factor      //
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //
     uint32_t current_LSB;                                                     // Amperage LSB                     //
     uint32_t power_LSB;                                                       // Wattage LSB                      //
-    uint32_t microOhmR;                                                       // Store initialization value       //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
   enum ina_Type { INA219,                                                     // List of supported devices        //
