@@ -363,27 +363,19 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
 ** Method getDeviceName returns a text representation of the device name according to the device type stored in   **
 ** the EEPROM structure                                                                                           **
 *******************************************************************************************************************/
-char * INA_Class::getDeviceName(const uint8_t deviceNumber) {                 //                                  //
-  static char deviceName[8];                                                  // declare return value             //
+const char* INA_Class::getDeviceName(const uint8_t deviceNumber) {            //                                  //
   readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
   switch ( ina.type ) {                                                       // Set value depending on type      //
-    case INA219  : strcpy(deviceName,"INA219");                               //                                  //
-                   break;                                                     //                                  //
-    case INA226  : strcpy(deviceName,"INA226");                               //                                  //
-                   break;                                                     //                                  //
-    case INA230  : strcpy(deviceName,"INA230");                               //                                  //
-                   break;                                                     //                                  //
-    case INA231  : strcpy(deviceName,"INA231");                               //                                  //
-                   break;                                                     //                                  //
-    case INA260  : strcpy(deviceName,"INA260");                               //                                  //
-                   break;                                                     //                                  //
+    case INA219 : return("INA219");                                           //                                  //
+    case INA226 : return("INA226");                                           //                                  //
+    case INA230 : return("INA230");                                           //                                  //
+    case INA231 : return("INA231");                                           //                                  //
+    case INA260 : return("INA260");                                           //                                  //
     case INA3221_0:                                                           //                                  //
     case INA3221_1:                                                           //                                  //
-    case INA3221_2:strcpy(deviceName,"INA3221");                              //                                  //
-                  break;                                                      //                                  //
-    default      : strcpy(deviceName,"UNKNOWN");                              //                                  //
-  } // of switch on type                                                      //                                  //
-  return(deviceName);                                                         // return device type number        //
+    case INA3221_2:return("INA3221");                                         //                                  //
+    default:      return("UNKNOWN");                                          //                                  //
+  } // of switch type                                                         //                                  //
 } // of method getDeviceName()                                                //                                  //
 /*******************************************************************************************************************
 ** Method getBusMilliVolts retrieves the bus voltage measurement                                                  **

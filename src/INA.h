@@ -183,7 +183,7 @@
       int32_t  getShuntMicroVolts(const uint8_t  deviceNumber=0);             // Retrieve Shunt voltage in uV     //
       int32_t  getBusMicroAmps   (const uint8_t  deviceNumber=0);             // Retrieve micro-amps              //
       int32_t  getBusMicroWatts  (const uint8_t  deviceNumber=0);             // Retrieve micro-watts             //
-      char *   getDeviceName     (const uint8_t  deviceNumber=0);             // Retrieve device name as char[7]  //
+      const char* getDeviceName  (const uint8_t  deviceNumber=0);             // Retrieve device name (const char)//
       void     reset             (const uint8_t  deviceNumber=0);             // Reset the device                 //
       void     waitForConversion (const uint8_t  deviceNumber=UINT8_MAX);     // wait for conversion to complete  //
       bool     AlertOnConversion (const bool alertState,                      // Enable pin change on conversion  //
