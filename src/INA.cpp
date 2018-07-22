@@ -104,12 +104,12 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
             if (tempRegister==0x4127) {                                       // INA226, INA230, INA231           //
               tempRegister = readWord(INA_DIE_ID_REGISTER,deviceAddress);     // Read the INA209 high-register    //
               if (tempRegister==INA226_DIE_ID_VALUE) {                        // We've identified an INA226       //
-                initINA226(maxBusAmps,microOhmR,_DeviceCount);                // perform initialization on device //
+                initINA226_INA231(maxBusAmps,microOhmR,_DeviceCount, INA226); // perform initialization on device //
               } else {                                                        //                                  //
                 if (tempRegister!=0) {                                        // uncertain if this works, but as  //
-                  initINA226(maxBusAmps,microOhmR,_DeviceCount);              // as INA226 it makes no difference //
-                } else {                                                      //                                  //
-                  initINA226(maxBusAmps,microOhmR,_DeviceCount);              // perform initialization on device //
+                  initINA226_INA231(maxBusAmps,microOhmR,_DeviceCount, INA230);//INA230 and INA231 are processed  //
+                } else {                                                      // as INA226 it makes no difference //
+                  initINA226_INA231(maxBusAmps,microOhmR,_DeviceCount, INA231);//perform initialization on device //
                 } // of if-then-else a INA230 or INA231                       //                                  //
               } // of if-then-else an INA226                                  //                                  //
             } else {                                                          //                                  //
@@ -143,9 +143,11 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
     readInafromEEPROM(deviceNumber);                                          // Load EEPROM to ina structure     //
     switch (ina.type) {                                                       // Select appropriate device        //
       case INA219:initINA219_INA220(ina.maxBusAmps,ina.microOhmR,deviceNumber);break;//                           //
-      case INA226:initINA226(ina.maxBusAmps,ina.microOhmR,deviceNumber);break;//                                  //
+      case INA226:                                                            //                                  //
+      case INA230:                                                            //                                  //
+      case INA231:initINA226_INA231(ina.maxBusAmps,ina.microOhmR,deviceNumber,ina.type);break;//                  //
       case INA260:initINA260(deviceNumber);break;                             //                                  //
-      case INA3221 :                                                          //                                  //
+      case INA3221:                                                           //                                  //
         if (ina.virtualDeviceNumber==0) {                                     // All 3 ports have same settings,  //
           initINA3221(deviceNumber);                                          // so just initialize the first one //
         } // of if this is the first virtual device                           //                                  //
@@ -193,12 +195,12 @@ void INA_Class::initINA219_INA220(const uint8_t maxBusAmps,                   //
   return;                                                                     // return to caller                 //
 } // of method initINA219_INA220()                                            //                                  //
 /*******************************************************************************************************************
-** Method initINA226 sets up the device and fills the ina-structure                                               **
+** Method initINA226_INA231 sets up the device and fills the ina-structure                                        **
 *******************************************************************************************************************/
-void INA_Class::initINA226(const uint8_t maxBusAmps,const uint32_t microOhmR, // Set up INA226                    //
-                           const uint8_t deviceNumber) {                      //                                  //
+void INA_Class::initINA226_INA231(const uint8_t maxBusAmps,const uint32_t microOhmR, // INA226, INA230 or INA231, //
+                           const uint8_t deviceNumber, const uint8_t ina_type){// INA226 by default               //
   uint16_t calibration;                                                       // Calibration temporary variable   //
-  ina.type                 = INA226;                                          // Set to an INA226                 //
+  ina.type                 = ina_type;                                        // Set to an INA226 by default      //
   ina.shuntVoltageRegister = INA226_SHUNT_VOLTAGE_REGISTER;                   // Set the Shunt Voltage Register   //
   ina.currentRegister      = INA226_CURRENT_REGISTER;                         // Set the current Register         //
   ina.busVoltage_LSB       = INA226_BUS_VOLTAGE_LSB;                          // Set to hard-coded value          //
@@ -212,7 +214,7 @@ void INA_Class::initINA226(const uint8_t maxBusAmps,const uint32_t microOhmR, //
   writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address);                // Write the calibration value      //
   writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
   return;                                                                     // return to caller                 //
-} // of method initINA226()                                                   //                                  //
+} // of method initINA226_INA231()                                            //                                  //
 /*******************************************************************************************************************
 ** Method initINA260 sets up the device and fills the ina-structure                                               **
 *******************************************************************************************************************/
@@ -226,7 +228,7 @@ void INA_Class::initINA260(const uint8_t deviceNumber) {                      //
   ina.power_LSB            = 10000000;                                        // Fixed multiplier per device      //
   writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
   return;                                                                     // return to caller                 //
-} // of method initINA226()                                                   //                                  //
+} // of method initINA260()                                                   //                                  //
 /*******************************************************************************************************************
 ** Method initINA3221 sets up the device and fills the ina-structure                                              **
 *******************************************************************************************************************/
@@ -241,7 +243,7 @@ void INA_Class::initINA3221(const uint8_t deviceNumber) {                     //
   ina.power_LSB            = 0;                                               // INA3221 has no power register    //
   writeInatoEEPROM(deviceNumber);                                             // Store the structure to EEPROM    //
   return;                                                                     // return to caller                 //
-} // of method initINA226()                                                   //                                  //
+} // of method initINA3221()                                                  //                                  //
 /*******************************************************************************************************************
 ** Method setBusConversion specifies the conversion rate in microseconds, rounded to the nearest valid value      **
 *******************************************************************************************************************/
@@ -267,7 +269,9 @@ void INA_Class::setBusConversion(const uint32_t convTime,                     //
                       configRegister &= ~INA219_CONFIG_BADC_MASK;             // zero out the averages part       //
                       configRegister |= convRate << 7;                        // shift in the BADC averages       //
                       break;                                                  //                                  //
-        case INA226 :                                                         // INA226 and                       //
+        case INA226 :                                                         // INA226,                          //
+        case INA230 :                                                         // INA230,                          //
+        case INA231 :                                                         // INA231 and                       //
         case INA3221:                                                         // INA3221 are the same as INA260   //
         case INA260 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
                       else if (convTime>= 41560) convRate = 6;                //                                  //
@@ -315,7 +319,9 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
                       configRegister &= ~INA219_CONFIG_SADC_MASK;             // zero out the averages part       //
                       configRegister |= convRate << 3;                        // shift in the BADC averages       //
                       break;                                                  //                                  //
-        case INA226 :                                                         // INA226 and                       //
+        case INA226 :                                                         // INA226,                          //
+        case INA230 :                                                         // INA230,                          //
+        case INA231 :                                                         // INA231 and                       //
         case INA3221:                                                         // INA3221 are the same as INA260   //
         case INA260 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
                       else if (convTime>= 41560) convRate = 6;                //                                  //
@@ -426,10 +432,10 @@ int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {             //
   readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
   if (ina.type==INA3221) {                                                    // INA3221 doesn't compute Amps     //
     microWatts = (getShuntMicroVolts(deviceNumber)*1000000/ina.microOhmR) *   // compute watts = volts * amps     //
-    getBusMilliVolts(deviceNumber) / 1000;                       //                                  //
-    } else {                                                                    //                                  //
+                 getBusMilliVolts(deviceNumber) / 1000;                       //                                  //
+  } else {                                                                    //                                  //
     microWatts = (int64_t)readWord(INA_POWER_REGISTER,ina.address) *          // Get power register value and     //
-    ina.power_LSB / 1000;                                        // convert to milliwatts            //
+                 ina.power_LSB / 1000;                                        // convert to milliwatts            //
   } // of if-then-else an INA3221                                             //                                  //
   return(microWatts);                                                         // return computed milliwatts       //
 } // of method getBusMicroWatts()                                             //                                  //
@@ -444,7 +450,9 @@ void INA_Class::reset(const uint8_t deviceNumber) {                           //
       writeWord(INA_CONFIGURATION_REGISTER,INA_RESET_DEVICE,ina.address);     // Set most significant bit to reset//
       switch (ina.type) {                                                     // Select appropriate device        //
         case INA219  : initINA219_INA220(ina.maxBusAmps,ina.microOhmR,i);break;//                                 //
-        case INA226  : initINA226(ina.maxBusAmps,ina.microOhmR,i); break;     //                                  //
+        case INA226  :                                                        //                                  //
+        case INA230  :                                                        //                                  //
+        case INA231  : initINA226_INA231(ina.maxBusAmps,ina.microOhmR,i); break;//                                //
         case INA260  : initINA260(deviceNumber);break;                        //                                  //
         case INA3221 : if (ina.virtualDeviceNumber==0) {                      // All 3 ports have same settings,  //
                        initINA3221(i);                                        // so just initialize the first one //
@@ -489,6 +497,8 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber) {               //
             readWord(INA_POWER_REGISTER,ina.address);                         // Resets the "ready" bit           //
             break;                                                            //                                  //
           case INA226:                                                        //                                  //
+          case INA230:                                                        //                                  //
+          case INA231:                                                        //                                  //
           case INA260:                                                        //                                  //
             cvBits = readWord(INA_MASK_ENABLE_REGISTER,ina.address)&(uint16_t)8;//                                //
             break;                                                            //                                  //
@@ -514,8 +524,10 @@ bool INA_Class::AlertOnConversion(const bool alertState,                      //
     if(deviceNumber==UINT8_MAX || deviceNumber==i ) {                         // If this device needs setting     //
       readInafromEEPROM(i);                                                   // Load EEPROM to ina structure     //
       switch (ina.type) {                                                     // Select appropriate device        //
-        case INA226 :                                                         // Devices that have an alert pin   //
-        case INA260 :                                                         // Devices that have an alert pin   //
+        case INA226:                                                          // Devices that have an alert pin   //
+        case INA230:                                                          // Devices that have an alert pin   //
+        case INA231:                                                          // Devices that have an alert pin   //
+        case INA260:                                                          // Devices that have an alert pin   //
           alertRegister = readWord(INA_MASK_ENABLE_REGISTER,ina.address);     // Get the current register         //
           alertRegister &= INA_ALERT_MASK;                                    // Mask off all bits                //
           if (alertState) bitSet(alertRegister,INA_ALERT_CONVERSION_RDY_BIT); // Turn on the bit                  //
@@ -542,7 +554,9 @@ bool INA_Class::AlertOnShuntOverVoltage(const bool alertState,                //
     if(deviceNumber==UINT8_MAX || deviceNumber==i ) {                         // If this device needs setting     //
       readInafromEEPROM(i);                                                   // Load EEPROM to ina structure     //
       switch (ina.type) {                                                     // Select appropriate device        //
-        case INA226 :                                                         // Devices that have an alert pin   //
+        case INA226:                                                          // Devices that have an alert pin   //
+        case INA230:                                                          // Devices that have an alert pin   //
+        case INA231:                                                          // Devices that have an alert pin   //
           alertRegister = readWord(INA_MASK_ENABLE_REGISTER,ina.address);     // Get the current register         //
           alertRegister &= INA_ALERT_MASK;                                    // Mask off all bits                //
           if (alertState) {                                                   // If true, then also set threshold //
@@ -573,7 +587,9 @@ bool INA_Class::AlertOnShuntUnderVoltage(const bool alertState,               //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
       readInafromEEPROM(i);                                                   // Load EEPROM to ina structure     //
       switch (ina.type) {                                                     // Select appropriate device        //
-        case INA226 :                                                         // Devices that have an alert pin   //
+        case INA226:                                                          // Devices that have an alert pin   //
+        case INA230:                                                          // Devices that have an alert pin   //
+        case INA231:                                                          // Devices that have an alert pin   //
           alertRegister = readWord(INA_MASK_ENABLE_REGISTER,ina.address);     // Get the current register         //
           alertRegister &= INA_ALERT_MASK;                                    // Mask off all bits                //
           if (alertState) {                                                   // If true, then also set threshold //
@@ -603,8 +619,10 @@ bool INA_Class::AlertOnBusOverVoltage(const bool alertState,                  //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
       readInafromEEPROM(i);                                                   // Load EEPROM to ina structure     //
       switch (ina.type) {                                                     // Select appropriate device        //
-        case INA226 :                                                         // Devices that have an alert pin   //
-        case INA260 :                                                         // Devices that have an alert pin   //
+        case INA226:                                                          // Devices that have an alert pin   //
+        case INA230:                                                          // Devices that have an alert pin   //
+        case INA231:                                                          // Devices that have an alert pin   //
+        case INA260:                                                          // Devices that have an alert pin   //
           alertRegister = readWord(INA_MASK_ENABLE_REGISTER,ina.address);     // Get the current register         //
           alertRegister &= INA_ALERT_MASK;                                    // Mask off all bits                //
           if (alertState) {                                                   // If true, then also set threshold //
@@ -634,8 +652,10 @@ bool INA_Class::AlertOnBusUnderVoltage(const bool alertState,                 //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
       readInafromEEPROM(i);                                                   // Load EEPROM to ina structure     //
       switch (ina.type) {                                                     // Select appropriate device        //
-        case INA226 :                                                         // Devices that have an alert pin   //
-        case INA260 :                                                         // Devices that have an alert pin   //
+        case INA226:                                                          // Devices that have an alert pin   //
+        case INA230:                                                          // Devices that have an alert pin   //
+        case INA231:                                                          // Devices that have an alert pin   //
+        case INA260:                                                          // Devices that have an alert pin   //
           alertRegister = readWord(INA_MASK_ENABLE_REGISTER,ina.address);     // Get the current register         //
           alertRegister &= INA_ALERT_MASK;                                    // Mask off all bits                //
           if (alertState) {                                                   // If true, then also set threshold //
@@ -665,8 +685,10 @@ bool INA_Class::AlertOnPowerOverLimit(const bool alertState,                  //
     if(deviceNumber==UINT8_MAX || deviceNumber%_DeviceCount==i ) {            // If this device needs setting     //
       readInafromEEPROM(i);                                                   // Load EEPROM to ina structure     //
       switch (ina.type) {                                                     // Select appropriate device        //
-        case INA226 :                                                         // Devices that have an alert pin   //
-        case INA260 :                                                         // Devices that have an alert pin   //
+        case INA226:                                                          // Devices that have an alert pin   //
+        case INA230:                                                          // Devices that have an alert pin   //
+        case INA231:                                                          // Devices that have an alert pin   //
+        case INA260:                                                          // Devices that have an alert pin   //
           alertRegister = readWord(INA_MASK_ENABLE_REGISTER,ina.address);     // Get the current register         //
           alertRegister &= INA_ALERT_MASK;                                    // Mask off all bits                //
           if (alertState) {                                                   // If true, then also set threshold //
@@ -707,6 +729,8 @@ void INA_Class::setAveraging(const uint16_t averages,                         //
                       configRegister |= averageIndex << 7;                    // shift in the BADC averages       //
                       break;                                                  //                                  //
         case INA226 :                                                         //                                  //
+        case INA230 :                                                         //                                  //
+        case INA231 :                                                         //                                  //
         case INA3221:                                                         //                                  //
         case INA260 : if      (averages>=1024) averageIndex = 7;              // setting depending upon range     //
                       else if (averages>= 512) averageIndex = 6;              //                                  //

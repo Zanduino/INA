@@ -207,9 +207,10 @@
       void     initINA219_INA220(const uint8_t  maxBusAmps,                   // Initialize INA219 or INA220      //
                                  const uint32_t microOhmR,                    //                                  //
                                  const uint8_t  deviceNumber);                //                                  //
-      void     initINA226       (const uint8_t maxBusAmps,                    // Initialize INA226                //
-                                 const uint32_t microOhmR,                    //                                  //
-                                 const uint8_t deviceNumber);                 //                                  //
+      void     initINA226_INA231(const uint8_t maxBusAmps,                    // Initialize INA226, INA230        //
+                                 const uint32_t microOhmR,                    // or INA231                        //
+                                 const uint8_t deviceNumber,                  //                                  //
+                                 const uint8_t ina_type=INA226);              // INA226 by default                //
       void     initINA260       (const uint8_t maxBusAmps);                   //                                  //
       void     initINA3221      (const uint8_t deviceNumber);                 // Initialize INA3221               //
       uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
