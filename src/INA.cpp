@@ -54,7 +54,15 @@ void INA_Class::writeWord(const uint8_t addr, const uint16_t data,            //
 *******************************************************************************************************************/
 void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //                                  //
   if (deviceNumber!=_currentINA) {                                            // Only read EEPROM if necessary    //
+    #ifdef __STM32F1__                                                        // STM32F1 as no builtin EEPROM, it //
+    uint16 e = deviceNumber*sizeof(ina);                                      // uses flash memory do emulate it  //
+    uint16 *ptr = (uint16*) &ina;                                             // "EEPROM" cells are uint16 type   //
+    for(uint8_t n = sizeof(ina); n ;--n) {                                    // Implement EEPROM.get template    //
+      EEPROM.read(e++, ptr++);                                                // for ina (inaDet type)            //
+    } // for                                                                  //                                  //
+    #else                                                                     // EEPROM Library V2.0 for Arduino  //
     EEPROM.get(deviceNumber*sizeof(ina),ina);                                 // Read EEPROM values               //
+    #endif                                                                    //                                  //
     _currentINA = deviceNumber;                                               // Store new current value          //
   } // of if-then we have a new device                                        //                                  //
   return;                                                                     // return nothing                   //
@@ -63,7 +71,15 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //
 ** Private method writeInatoEEPROM writes the "ina" structure to EEPROM                                           **
 *******************************************************************************************************************/
 void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {                //                                  //
+  #ifdef __STM32F1__                                                          // STM32F1 as no builtin EEPROM, it //
+  uint16 e = deviceNumber*sizeof(ina);                                        // uses flash memory do emulate it  //
+  const uint16 *ptr = (const uint16*) &ina;                                   // "EEPROM" cells are uint16 type   //
+  for(uint8_t n = sizeof(ina); n ;--n) {                                      // Implement EEPROM.put template    //
+    EEPROM.update(e++, *ptr++);                                               // for ina (inaDet type)            //
+  } // for                                                                    //                                  //
+  #else                                                                       // EEPROM Library V2.0 for Arduino  //
   EEPROM.put(deviceNumber*sizeof(ina),ina);                                   // Write the structure              //
+  #endif                                                                      //                                  //
   return;                                                                     // return nothing                   //
 } // of method writeInatoEEPROM()                                             //                                  //
 /*******************************************************************************************************************
@@ -85,7 +101,11 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
     #ifndef ESP8266                                                           // I2C begin() on Esplora problems  //
       Wire.begin();                                                           // Start I2C communications         //
     #endif                                                                    //                                  //
+    #ifdef __STM32F1__                                                        // Emulated EEPROM for STM32F1      //
+    uint8_t maxDevices = EEPROM.maxcount() / sizeof(ina);                     // Compute number devices possible  //
+    #else                                                                     // EEPROM Library V2.0 for Arduino  //
     uint8_t maxDevices = EEPROM.length() / sizeof(ina);                       // Compute number devices possible  //
+    #endif                                                                    //                                  //
     for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++) {    // Loop for each possible address   //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //
       if (Wire.endTransmission() == 0 && _DeviceCount < maxDevices) {         // If no error and EEPROM has space //
