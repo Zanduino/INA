@@ -269,10 +269,10 @@ void INA_Class::setBusConversion(const uint32_t convTime,                     //
                       break;                                                  //                                  //
         case INA226 :                                                         // INA226 and                       //
         case INA3221:                                                         // INA3221 are the same as INA260   //
-        case INA260 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
-                      else if (convTime>= 41560) convRate = 6;                //                                  //
-                      else if (convTime>= 21160) convRate = 5;                //                                  //
-                      else if (convTime>= 11000) convRate = 4;                //                                  //
+        case INA260 : if      (convTime>=  8244) convRate = 7;                // setting depending upon range     //
+                      else if (convTime>=  4156) convRate = 6;                //                                  //
+                      else if (convTime>=  2116) convRate = 5;                //                                  //
+                      else if (convTime>=  1100) convRate = 4;                //                                  //
                       else if (convTime>=   588) convRate = 3;                //                                  //
                       else if (convTime>=   332) convRate = 2;                //                                  //
                       else if (convTime>=   204) convRate = 1;                //                                  //
@@ -317,10 +317,10 @@ void INA_Class::setShuntConversion(const uint32_t convTime,                   //
                       break;                                                  //                                  //
         case INA226 :                                                         // INA226 and                       //
         case INA3221:                                                         // INA3221 are the same as INA260   //
-        case INA260 : if      (convTime>= 82440) convRate = 7;                // setting depending upon range     //
-                      else if (convTime>= 41560) convRate = 6;                //                                  //
-                      else if (convTime>= 21160) convRate = 5;                //                                  //
-                      else if (convTime>= 11000) convRate = 4;                //                                  //
+        case INA260 : if      (convTime>=  8244) convRate = 7;                // setting depending upon range     //
+                      else if (convTime>=  4156) convRate = 6;                //                                  //
+                      else if (convTime>=  2116) convRate = 5;                //                                  //
+                      else if (convTime>=  1100) convRate = 4;                //                                  //
                       else if (convTime>=   588) convRate = 3;                //                                  //
                       else if (convTime>=   332) convRate = 2;                //                                  //
                       else if (convTime>=   204) convRate = 1;                //                                  //
