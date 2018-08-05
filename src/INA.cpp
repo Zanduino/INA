@@ -21,11 +21,11 @@
                                                                               //                                  //
 inaDet::inaDet(){}                                                            // Struct constructor               //
 inaDet::inaDet(inaEEPROM inaEE){                                              // Constructor from saved values    //
-  type = inaEE.type;                                                          //  triggered by assignmet from type//
+  type          = inaEE.type;                                                 // triggered by assignment from type//
   operatingMode = inaEE.operatingMode;                                        //                                  //
-  address = inaEE.address;                                                    //                                  //
-  maxBusAmps = inaEE.maxBusAmps;                                              //                                  //
-  microOhmR = inaEE.maxBusAmps;                                               // Copy values read from EEPROM     //
+  address       = inaEE.address;                                              //                                  //
+  maxBusAmps    = inaEE.maxBusAmps;                                           //                                  //
+  microOhmR     = inaEE.microOhmR;                                            // Copy values read from EEPROM     //
   switch (type) {                                                             //                                  //
   case INA219:                                                                // INA219                           //
     busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;                          // Bus Voltage Register             //
@@ -56,6 +56,8 @@ inaDet::inaDet(inaEEPROM inaEE){                                              //
     power_LSB            = 10000000;                                          // Fixed multiplier per device      //
     break;                                                                    //                                  //
   case INA3221_0:                                                             // INA3221 1st channel              //
+  case INA3221_1:                                                             // INA3221 2nd channel              //
+  case INA3221_2:                                                             // INA3221 3rd channel              //
     busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;                          // Register for 1st bus voltage     //
     shuntVoltageRegister = INA3221_SHUNT_VOLTAGE_REGISTER;                    // Register for 1st shunt voltage   //
     currentRegister      = 0;                                                 // INA3221 has no current Register  //
@@ -63,12 +65,15 @@ inaDet::inaDet(inaEEPROM inaEE){                                              //
     shuntVoltage_LSB     = INA3221_SHUNT_VOLTAGE_LSB;                         // Set to hard-coded value          //
     current_LSB          = 0;                                                 // INA3221 has no current register  //
     power_LSB            = 0;                                                 // INA3221 has no power register    //
-  case INA3221_1:                                                             // INA3221 2nd channel              //
-    busVoltageRegister  += 2;                                                 // Register for 2nd bus voltage     //
-    shuntVoltageRegister+= 2;                                                 // Register for 2nd shunt voltage   //
-  case INA3221_2:                                                             // INA3221 3rd channel              //
-    busVoltageRegister  += 2;                                                 // Register for 3rdbus voltage     //
-    shuntVoltageRegister+= 2;                                                 // Register for 3rd shunt voltage   //
+    if (type==INA3221_1) {                                                    //                                  //
+      busVoltageRegister   += 2;                                              // Register for 2nd bus voltage     //
+      shuntVoltageRegister += 2;                                              // Register for 2nd shunt voltage   //
+    } else {                                                                  //                                  //
+      if (type==INA3221_2) {                                                  //                                  //
+        busVoltageRegister   += 4;                                            // Register for 3rd bus voltage     //
+        shuntVoltageRegister += 4;                                            // Register for 3rd shunt voltage   //
+      } // of if-then INA322_2                                                //                                  //
+    } // of if-then-else INA3221_1                                            //                                  //
     break;                                                                    //                                  //
   } // of switch type                                                         //                                  //
 } // of constructor                                                           //                                  //
@@ -109,13 +114,13 @@ void INA_Class::writeWord(const uint8_t addr, const uint16_t data,            //
 void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //                                  //
   if (deviceNumber!=_currentINA) {                                            // Only read EEPROM if necessary    //
     #ifdef __STM32F1__                                                        // STM32F1 as no builtin EEPROM, it //
-    uint16 e = deviceNumber*sizeof(inaEE);                                    // uses flash memory do emulate it  //
-    uint16 *ptr = (uint16*) &inaEE;                                           // "EEPROM" cells are uint16 type   //
-    for(uint8_t n = sizeof(inaEE); n ;--n) {                                  // Implement EEPROM.get template    //
-      EEPROM.read(e++, ptr++);                                                // for ina (inaDet type)            //
-    } // for                                                                  //                                  //
+      uint16 e = deviceNumber*sizeof(inaEE);                                  // uses flash memory do emulate it  //
+      uint16 *ptr = (uint16*) &inaEE;                                         // "EEPROM" cells are uint16 type   //
+      for(uint8_t n = sizeof(inaEE); n ;--n) {                                // Implement EEPROM.get template    //
+        EEPROM.read(e++, ptr++);                                              // for ina (inaDet type)            //
+      } // of for-next each byte                                              //                                  //
     #else                                                                     // EEPROM Library V2.0 for Arduino  //
-    EEPROM.get(deviceNumber*sizeof(inaEE),inaEE);                             // Read EEPROM values               //
+      EEPROM.get(deviceNumber*sizeof(inaEE),inaEE);                           // Read EEPROM values               //
     #endif                                                                    //                                  //
     _currentINA = deviceNumber;                                               // Store new current value          //
     ina = inaEE;                                                              // see inaDet constructor           //
@@ -128,13 +133,13 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //
 void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {                //                                  //
   inaEE = ina;                                                                // only save part of ina            //
   #ifdef __STM32F1__                                                          // STM32F1 as no builtin EEPROM, it //
-  uint16 e = deviceNumber*sizeof(inaEE);                                      // uses flash memory do emulate it  //
-  const uint16 *ptr = (const uint16*) &inaEE;                                 // "EEPROM" cells are uint16 type   //
-  for(uint8_t n = sizeof(inaEE); n ;--n) {                                    // Implement EEPROM.put template    //
-    EEPROM.update(e++, *ptr++);                                               // for ina (inaDet type)            //
-  } // for                                                                    //                                  //
+    uint16 e = deviceNumber*sizeof(inaEE);                                    // uses flash memory do emulate it  //
+    const uint16 *ptr = (const uint16*) &inaEE;                               // "EEPROM" cells are uint16 type   //
+    for(uint8_t n = sizeof(inaEE); n ;--n) {                                  // Implement EEPROM.put template    //
+      EEPROM.update(e++, *ptr++);                                             // for ina (inaDet type)            //
+    } // for                                                                  //                                  //
   #else                                                                       // EEPROM Library V2.0 for Arduino  //
-  EEPROM.put(deviceNumber*sizeof(inaEE),inaEE);                               // Write the structure              //
+    EEPROM.put(deviceNumber*sizeof(inaEE),inaEE);                             // Write the structure              //
   #endif                                                                      //                                  //
   return;                                                                     // return nothing                   //
 } // of method writeInatoEEPROM()                                             //                                  //
@@ -158,9 +163,9 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
       Wire.begin();                                                           // Start I2C communications         //
     #endif                                                                    //                                  //
     #ifdef __STM32F1__                                                        // Emulated EEPROM for STM32F1      //
-    uint8_t maxDevices = EEPROM.maxcount() / sizeof(inaEE);                   // Compute number devices possible  //
+      uint8_t maxDevices = EEPROM.maxcount() / sizeof(inaEE);                 // Compute number devices possible  //
     #else                                                                     // EEPROM Library V2.0 for Arduino  //
-    uint8_t maxDevices = EEPROM.length() / sizeof(inaEE);                     // Compute number devices possible  //
+      uint8_t maxDevices = EEPROM.length() / sizeof(inaEE);                   // Compute number devices possible  //
     #endif                                                                    //                                  //
     for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++) {    // Loop for each possible address   //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //
@@ -404,7 +409,9 @@ uint16_t INA_Class::getBusMilliVolts(const uint8_t deviceNumber) {            //
   readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
   uint16_t busVoltage = readWord(ina.busVoltageRegister,ina.address);         // Get the raw value from register  //
   if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2 ||    //                                  //
-      ina.type==INA219 ) busVoltage = busVoltage >> 3;                        // INA219 - 3LSB unused, so shift   //
+      ina.type==INA219 ) {                                                    //                                  //
+        busVoltage = busVoltage >> 3;                                         // INA219 - 3LSB unused, so shift   //
+      } // of if-then an INA3221                                              //                                  //
   busVoltage = (uint32_t)busVoltage*ina.busVoltage_LSB/100;                   // conversion to get milliVolts     //
   if (!bitRead(ina.operatingMode,2) && bitRead(ina.operatingMode,1)) {        // If triggered mode and bus active //
     int16_t configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);// Get the current register         //

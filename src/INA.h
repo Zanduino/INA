@@ -68,7 +68,7 @@
   } inaEEPROM; // of structure                                                //                                  //
   typedef struct inaDet : inaEEPROM {                                         // Structure of values per device   //
     uint8_t  busVoltageRegister   : 3; // 0- 7 //                             // Bus Voltage Register             //
-    uint8_t  shuntVoltageRegister : 2; // 0- 4 //                             // Shunt Voltage Register           //
+    uint8_t  shuntVoltageRegister : 3; // 0- 7 //                             // Shunt Voltage Register           //
     uint8_t  currentRegister      : 3; // 0- 7 //                             // Current Register                 //
     uint16_t shuntVoltage_LSB;                                                // Device dependent LSB factor      //
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //
@@ -153,7 +153,7 @@
   const uint16_t INA260_CONFIG_BADC_MASK        =  0x01C0;                    // Bits 6-8  masked                 //
   const uint16_t INA260_CONFIG_SADC_MASK        =  0x0038;                    // Bits 3-5  masked                 //
                                                                               //----------------------------------//
-  const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER =       1;                    // Register number 2                //
+  const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER =       1;                    // Register number 1                //
   const uint16_t INA3221_BUS_VOLTAGE_LSB        =     800;                    // LSB in uV *100 8mV               //
   const uint16_t INA3221_SHUNT_VOLTAGE_LSB      =     400;                    // LSB in uV *10  40uV              //
   const uint16_t INA3221_CONFIG_BADC_MASK       =  0x01C0;                    // Bits 7-10  masked                //
