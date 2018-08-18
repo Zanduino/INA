@@ -31,7 +31,8 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.2  2018-08-18 https://github.com/SV-Zanshin Issue #21. Rename I2C Constants to avoid redefinition STM32F1  **
+** 1.0.3  2018-08-18 https://github.com/SV-Zanshin Issue #22. Reduce EEPROM Footprint                             **
+** 1.0.3  2018-08-18 https://github.com/SV-Zanshin Issue #21. Rename I2C Constants to avoid redefinition STM32F1  **
 ** 1.0.2  2018-07-22 https://github.com/SV-Zanshin Issue #11. Reduce EEPROM footprint. Removed "deviceName", 8B.  **
 **                                                 Changed datatype in structure to bit-level length definitions, **
 **                                                 saving additional 3 bytes                                      **
