@@ -120,8 +120,8 @@ void setup() {                                                                //
   Serial.println(deviceNumber);                                               //                                  //
   Serial.println();                                                           //                                  //
   INA.setAveraging(64,deviceNumber);                                          // Average each reading 64 times    //
-  INA.setBusConversion(82440,deviceNumber);                                   // Maximum conversion time 8.244ms  //
-  INA.setShuntConversion(82440,deviceNumber);                                 // Maximum conversion time 8.244ms  //
+  INA.setBusConversion(8244,deviceNumber);                                    // Maximum conversion time 8.244ms  //
+  INA.setShuntConversion(8244,deviceNumber);                                  // Maximum conversion time 8.244ms  //
   INA.setMode(INA_MODE_CONTINUOUS_BOTH,deviceNumber);                         // Bus/shunt measured continuously  //
   INA.AlertOnConversion(true,deviceNumber);                                   // Make alert pin go low on finish  //
 } // of method setup()                                                        //                                  //
