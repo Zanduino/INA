@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.2  2018-08-18 https://github.com/SV-Zanshin Issue #21. Rename I2C Constants to avoid redefinition STM32F1  **
 ** 1.0.2  2018-07-22 https://github.com/SV-Zanshin Issue #11. Reduce EEPROM footprint. Removed "deviceName", 8B.  **
 **                                                 Changed datatype in structure to bit-level length definitions, **
 **                                                 saving additional 3 bytes                                      **
@@ -100,10 +101,10 @@
   *****************************************************************************************************************/
   #ifndef I2C_MODES                                                           // I2C related constants            //
     #define I2C_MODES                                                         // Guard code to prevent multiple   //
-    const uint32_t I2C_STANDARD_MODE            =  100000;                    // Default normal I2C 100KHz speed  //
-    const uint32_t I2C_FAST_MODE                =  400000;                    // Fast mode                        //
-    const uint32_t I2C_FAST_MODE_PLUS           = 1000000;                    // Really fast mode                 //
-    const uint32_t I2C_HIGH_SPEED_MODE          = 3400000;                    // Turbo mode                       //
+    const uint32_t INA_I2C_STANDARD_MODE        =  100000;                    // Default normal I2C 100KHz speed  //
+    const uint32_t INA_I2C_FAST_MODE            =  400000;                    // Fast mode                        //
+    const uint32_t INA_I2C_FAST_MODE_PLUS       = 1000000;                    // Really fast mode                 //
+    const uint32_t INA_I2C_HIGH_SPEED_MODE      = 3400000;                    // Turbo mode                       //
   #endif                                                                      //----------------------------------//
   const uint8_t  INA_CONFIGURATION_REGISTER     =       0;                    // Values common to all INAs        //
   const uint8_t  INA_BUS_VOLTAGE_REGISTER       =       2;                    //                                  //
@@ -170,7 +171,7 @@
       uint8_t  begin             (const uint8_t  maxBusAmps,                  // Class initializer                //
                                   const uint32_t microOhmR,                   //                                  //
                                   const uint8_t  deviceNumber = UINT8_MAX );  //                                  //
-      void     setI2CSpeed       (const uint32_t i2cSpeed =I2C_STANDARD_MODE);// Adjust the I2C bus speed         //
+      void     setI2CSpeed       (const uint32_t i2cSpeed=INA_I2C_STANDARD_MODE);// Adjust the I2C bus speed      //
       void     setMode           (const uint8_t  mode,                        // Set the monitoring mode          //
                                   const uint8_t  devNumber=UINT8_MAX);        //                                  //
       void     setAveraging      (const uint16_t averages,                    // Set the number of averages taken //
