@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.2  2018-08-18 https://github.com/SV-Zanshin Issue #21. Rename I2C Constants to avoid redefinition STM32F1  **
 ** 1.0.2  2018-07-22 https://github.com/SV-Zanshin Issue #11. Reduce EEPROM footprint. Removed "deviceName", 8B.  **
 **                                                 Changed datatype in structure to bit-level length definitions, **
 **                                                 saving additional 3 bytes                                      **
@@ -60,18 +61,22 @@
   ** Declare structures and enumerated types used in the class                                                    **
   *****************************************************************************************************************/
   typedef struct {                                                            // Structure of values per device   //
-    uint8_t  address;                                                         // I2C Address of device            //
-    uint8_t  type                 : 3; // 0- 7 //                             // see enumerated "ina_Type"        //
-    uint8_t  virtualDeviceNumber  : 2; // 0- 3 //                             // Only used with INA3221           //
-    uint8_t  operatingMode        : 3; // 0- 7 //                             // Default to continuous mode       //
-    uint8_t  shuntVoltageRegister : 4; // 0-15 //                             // Shunt Voltage Register           //
-    uint8_t  currentRegister      : 4; // 0-15 //                             // Current Register                 //
-    uint8_t  maxBusAmps;                                                      // Store initialization value       //
+    uint8_t  type                 : 4; // 0-15 //                             // see enumerated "ina_Type"        //
+    uint8_t  operatingMode        : 4; // 0-15 //                             // Default to continuous mode       //
+    uint32_t address              : 7; // 0-127//                             // I2C Address of device            //
+    uint32_t maxBusAmps           : 5; // 0-31 //                             // Store initialization value       //
+    uint32_t microOhmR            :20; // 0-1.048.575 //                      // Store initialization value       //
+  } inaEEPROM; // of structure                                                //                                  //
+  typedef struct inaDet : inaEEPROM {                                         // Structure of values per device   //
+    uint8_t  busVoltageRegister   : 3; // 0- 7 //                             // Bus Voltage Register             //
+    uint8_t  shuntVoltageRegister : 3; // 0- 7 //                             // Shunt Voltage Register           //
+    uint8_t  currentRegister      : 3; // 0- 7 //                             // Current Register                 //
     uint16_t shuntVoltage_LSB;                                                // Device dependent LSB factor      //
     uint16_t busVoltage_LSB;                                                  // Device dependent LSB factor      //
     uint32_t current_LSB;                                                     // Amperage LSB                     //
     uint32_t power_LSB;                                                       // Wattage LSB                      //
-    uint32_t microOhmR;                                                       // Store initialization value       //
+    inaDet();                                                                 // struct constructor               //
+    inaDet(inaEEPROM inaEE);                                                  // for ina = inaEE; assignment      //
   } inaDet; // of structure                                                   //                                  //
                                                                               //                                  //
   enum ina_Type { INA219,                                                     // List of supported devices        //
@@ -79,7 +84,9 @@
                   INA230,                                                     //                                  //
                   INA231,                                                     //                                  //
                   INA260,                                                     //                                  //
-                  INA3221,                                                    //                                  //
+                  INA3221_0,                                                  // INA3221 1st channel              //
+                  INA3221_1,                                                  // INA3221 2nd channel              //
+                  INA3221_2,                                                  // INA3221 3rd channel              //
                   UNKNOWN };                                                  //                                  //
   enum ina_Mode { INA_MODE_SHUTDOWN,                                          // Device powered down              //
                   INA_MODE_TRIGGERED_SHUNT,                                   // Triggered shunt, no bus          //
@@ -94,10 +101,10 @@
   *****************************************************************************************************************/
   #ifndef I2C_MODES                                                           // I2C related constants            //
     #define I2C_MODES                                                         // Guard code to prevent multiple   //
-    const uint32_t I2C_STANDARD_MODE            =  100000;                    // Default normal I2C 100KHz speed  //
-    const uint32_t I2C_FAST_MODE                =  400000;                    // Fast mode                        //
-    const uint32_t I2C_FAST_MODE_PLUS           = 1000000;                    // Really fast mode                 //
-    const uint32_t I2C_HIGH_SPEED_MODE          = 3400000;                    // Turbo mode                       //
+    const uint32_t INA_I2C_STANDARD_MODE        =  100000;                    // Default normal I2C 100KHz speed  //
+    const uint32_t INA_I2C_FAST_MODE            =  400000;                    // Fast mode                        //
+    const uint32_t INA_I2C_FAST_MODE_PLUS       = 1000000;                    // Really fast mode                 //
+    const uint32_t INA_I2C_HIGH_SPEED_MODE      = 3400000;                    // Turbo mode                       //
   #endif                                                                      //----------------------------------//
   const uint8_t  INA_CONFIGURATION_REGISTER     =       0;                    // Values common to all INAs        //
   const uint8_t  INA_BUS_VOLTAGE_REGISTER       =       2;                    //                                  //
@@ -147,7 +154,7 @@
   const uint16_t INA260_CONFIG_BADC_MASK        =  0x01C0;                    // Bits 6-8  masked                 //
   const uint16_t INA260_CONFIG_SADC_MASK        =  0x0038;                    // Bits 3-5  masked                 //
                                                                               //----------------------------------//
-  const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER =       1;                    // Register number 2                //
+  const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER =       1;                    // Register number 1                //
   const uint16_t INA3221_BUS_VOLTAGE_LSB        =     800;                    // LSB in uV *100 8mV               //
   const uint16_t INA3221_SHUNT_VOLTAGE_LSB      =     400;                    // LSB in uV *10  40uV              //
   const uint16_t INA3221_CONFIG_BADC_MASK       =  0x01C0;                    // Bits 7-10  masked                //
@@ -164,7 +171,7 @@
       uint8_t  begin             (const uint8_t  maxBusAmps,                  // Class initializer                //
                                   const uint32_t microOhmR,                   //                                  //
                                   const uint8_t  deviceNumber = UINT8_MAX );  //                                  //
-      void     setI2CSpeed       (const uint32_t i2cSpeed =I2C_STANDARD_MODE);// Adjust the I2C bus speed         //
+      void     setI2CSpeed       (const uint32_t i2cSpeed=INA_I2C_STANDARD_MODE);// Adjust the I2C bus speed      //
       void     setMode           (const uint8_t  mode,                        // Set the monitoring mode          //
                                   const uint8_t  devNumber=UINT8_MAX);        //                                  //
       void     setAveraging      (const uint16_t averages,                    // Set the number of averages taken //
@@ -177,7 +184,7 @@
       int32_t  getShuntMicroVolts(const uint8_t  deviceNumber=0);             // Retrieve Shunt voltage in uV     //
       int32_t  getBusMicroAmps   (const uint8_t  deviceNumber=0);             // Retrieve micro-amps              //
       int32_t  getBusMicroWatts  (const uint8_t  deviceNumber=0);             // Retrieve micro-watts             //
-      char *   getDeviceName     (const uint8_t  deviceNumber=0);             // Retrieve device name as char[7]  //
+      const char* getDeviceName  (const uint8_t  deviceNumber=0);             // Retrieve device name (const char)//
       void     reset             (const uint8_t  deviceNumber=0);             // Reset the device                 //
       void     waitForConversion (const uint8_t  deviceNumber=UINT8_MAX);     // wait for conversion to complete  //
       bool     AlertOnConversion (const bool alertState,                      // Enable pin change on conversion  //
@@ -204,16 +211,10 @@
                                  const uint8_t deviceAddress);                //                                  //
       void     readInafromEEPROM(const uint8_t deviceNumber);                 // Retrieve structure from EEPROM   //
       void     writeInatoEEPROM (const uint8_t deviceNumber);                 // Write structure to EEPROM        //
-      void     initINA219_INA220(const uint8_t  maxBusAmps,                   // Initialize INA219 or INA220      //
-                                 const uint32_t microOhmR,                    //                                  //
-                                 const uint8_t  deviceNumber);                //                                  //
-      void     initINA226       (const uint8_t maxBusAmps,                    // Initialize INA226                //
-                                 const uint32_t microOhmR,                    //                                  //
-                                 const uint8_t deviceNumber);                 //                                  //
-      void     initINA260       (const uint8_t maxBusAmps);                   //                                  //
-      void     initINA3221      (const uint8_t deviceNumber);                 // Initialize INA3221               //
+      void     initDevice       (const uint8_t deviceNumber);                 // Initialize any Device            //
       uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
       uint8_t  _currentINA         = UINT8_MAX;                               // Stores current INA device number //
+      inaEEPROM inaEE;                                                        // Declare a single global value    //
       inaDet   ina;                                                           // Declare a single global value    //
   }; // of INA_Class definition                                               //                                  //
 #endif                                                                        //----------------------------------//
