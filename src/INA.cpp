@@ -431,7 +431,7 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber) {           //
   } else {                                                                    //                                  //
     shuntVoltage = readWord(ina.shuntVoltageRegister,ina.address);            // Get the raw value from register  //
     if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2) {  // INA3221 doesn't use 3 LSB        //
-      if (shuntVoltage&0x8000) {                                              // If the shunt is negative, then   //
+      if (shuntVoltage|0x8000) {                                              // If the shunt is negative, then   //
         shuntVoltage = (shuntVoltage>>3) & 0xE000;                            // shift over 3, then 3 MSB to 1    //
       } else {                                                                //                                  //
         shuntVoltage = shuntVoltage >> 3;                                     // INA3221 - 3LSB unused, so shift  //
