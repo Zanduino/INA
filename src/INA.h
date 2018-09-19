@@ -31,7 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.3  2018-09-19 https://github.com/Sv-Zanshin Issue #28. Overflow error when >31Amps specified in begin()    **
+** 1.0.4  2018-09-19 https://github.com/Sv-Zanshin Issue #28. Overflow error when >31Amps specified in begin()    **
 ** 1.0.3  2018-09-04 https://github.com/delboy711  Issue #26. Incorrect INA3221 negative current readings         **
 ** 1.0.3  2018-08-18 https://github.com/SV-Zanshin Issue #22. Reduce EEPROM Footprint                             **
 ** 1.0.3  2018-08-18 https://github.com/SV-Zanshin Issue #21. Rename I2C Constants to avoid redefinition STM32F1  **
