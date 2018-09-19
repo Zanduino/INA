@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.3  2018-09-19 https://github.com/Sv-Zanshi  Issue #28. Overflow error when >31Amps specified in begin()    **
 ** 1.0.3  2018-09-04 https://github.com/delboy711  Issue #26. Incorrect INA3221 negative current readings         **
 ** 1.0.3  2018-08-18 https://github.com/SV-Zanshin Issue #22. Reduce EEPROM Footprint                             **
 ** 1.0.3  2018-08-18 https://github.com/SV-Zanshin Issue #21. Rename I2C Constants to avoid redefinition STM32F1  **
@@ -66,7 +67,7 @@
     uint8_t  type                 : 4; // 0-15 //                             // see enumerated "ina_Type"        //
     uint8_t  operatingMode        : 4; // 0-15 //                             // Default to continuous mode       //
     uint32_t address              : 7; // 0-127//                             // I2C Address of device            //
-    uint32_t maxBusAmps           : 5; // 0-31 //                             // Store initialization value       //
+    uint32_t maxBusAmps           : 7; // 0-127//                             // Store initialization value       //
     uint32_t microOhmR            :20; // 0-1.048.575 //                      // Store initialization value       //
   } inaEEPROM; // of structure                                                //                                  //
   typedef struct inaDet : inaEEPROM {                                         // Structure of values per device   //
