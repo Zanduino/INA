@@ -78,3 +78,11 @@ Release
 *.atsln
 *.componentinfo.xml
 *.cppproj
+
+########################################################################
+# Files and directories from Microsoft Visual Studio 2017              #
+########################################################################
+.sln
+.vcxproj
+.vcxproj.filters
+.vcxproj.user
