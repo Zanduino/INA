@@ -78,7 +78,9 @@ inaDet::inaDet(inaEEPROM inaEE){                                              //
   } // of switch type                                                         //                                  //
 } // of constructor                                                           //                                  //
                                                                               //                                  //
-INA_Class::INA_Class()  {}                                                    // Class constructor                //
+INA_Class::INA_Class()                                                        // Class constructor                //
+{                                                                             //                                  //
+} // of "INA_Class()" Constructor                                             //                                  //
 INA_Class::~INA_Class() {}                                                    // Unused class destructor          //
 /*******************************************************************************************************************
 ** Private method readWord() reads 2 bytes from the specified address on the I2C bus                              **
@@ -113,9 +115,9 @@ void INA_Class::writeWord(const uint8_t addr, const uint16_t data,            //
 *******************************************************************************************************************/
 void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //                                  //
   if (deviceNumber!=_currentINA) {                                            // Only read EEPROM if necessary    //
-    #ifdef __STM32F1__                                                        // STM32F1 as no builtin EEPROM, it //
-      uint16 e = deviceNumber*sizeof(inaEE);                                  // uses flash memory do emulate it  //
-      uint16 *ptr = (uint16*) &inaEE;                                         // "EEPROM" cells are uint16 type   //
+    #ifdef __STM32F1__                                                        // STM32F1 has no built-in EEPROM   //
+      uint16_t e = deviceNumber*sizeof(inaEE);                                // it uses flash memory to emulate  //
+      uint16_t *ptr = (uint16_t*) &inaEE;                                     // "EEPROM" calls are uint16_t type //
       for(uint8_t n = sizeof(inaEE); n ;--n) {                                // Implement EEPROM.get template    //
         EEPROM.read(e++, ptr++);                                              // for ina (inaDet type)            //
       } // of for-next each byte                                              //                                  //
@@ -132,14 +134,17 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {               //
 *******************************************************************************************************************/
 void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {                //                                  //
   inaEE = ina;                                                                // only save part of ina            //
-  #ifdef __STM32F1__                                                          // STM32F1 as no builtin EEPROM, it //
-    uint16 e = deviceNumber*sizeof(inaEE);                                    // uses flash memory do emulate it  //
-    const uint16 *ptr = (const uint16*) &inaEE;                               // "EEPROM" cells are uint16 type   //
+  #ifdef __STM32F1__                                                          // STM32F1 has no built-in EEPROM   //
+    uint16_t e = deviceNumber*sizeof(inaEE);                                  // it uses flash memory to emulate  //
+    const uint16_t *ptr = (const uint16_t*) &inaEE;                           // "EEPROM" calls are uint16_t type //
     for(uint8_t n = sizeof(inaEE); n ;--n) {                                  // Implement EEPROM.put template    //
       EEPROM.update(e++, *ptr++);                                             // for ina (inaDet type)            //
     } // for                                                                  //                                  //
   #else                                                                       // EEPROM Library V2.0 for Arduino  //
     EEPROM.put(deviceNumber*sizeof(inaEE),inaEE);                             // Write the structure              //
+    #ifdef ESP32                                                              //                                  //
+    EEPROM.commit();                                                          // Force write to EEPROM when ESP32 //
+    #endif                                                                    //                                  //
   #endif                                                                      //                                  //
   return;                                                                     // return nothing                   //
 } // of method writeInatoEEPROM()                                             //                                  //
@@ -166,6 +171,10 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps,                            //
       uint8_t maxDevices = EEPROM.maxcount() / sizeof(inaEE);                 // Compute number devices possible  //
     #else                                                                     // EEPROM Library V2.0 for Arduino  //
       uint8_t maxDevices = EEPROM.length() / sizeof(inaEE);                   // Compute number devices possible  //
+    #endif                                                                    //                                  //
+    #ifdef ESP32                                                              //                                  //
+      EEPROM.begin(512);                                                      // If ESP32 then allocate 512 Bytes //
+      maxDevices = 512 / sizeof(inaEE);                                       // and compute number of devices    //
     #endif                                                                    //                                  //
     for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++) {    // Loop for each possible address   //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //

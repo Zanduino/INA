@@ -16,7 +16,8 @@
 ** the 96 bytes of static information per device using https://www.arduino.cc/en/Reference/EEPROM function calls. **
 ** Although up to 16 devices could theoretically be present on the I2C bus the actual limit is determined by the  **
 ** available EEPROM - ATmega328 UNO has 1024k so can support up to 10 devices but the ATmega168 only has 512 bytes**
-** which limits it to supporting at most 5 INAs.                                                                  **
+** which limits it to supporting at most 5 INAs. Support has been added for the ESP32 based Arduinos, these use   **
+** the EEPROM calls differently and need specific code.                                                           **
 **                                                                                                                **
 ** This program is free software: you can redistribute it and/or modify it under the terms of the GNU General     **
 ** Public License as published by the Free Software Foundation, either version 3 of the License, or (at your      **
@@ -27,6 +28,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.0  2018-09-22 https://github.com/SV-Zanshin Cleaned up comments, added wait loop when no INA found         **
 ** 1.0.0  2018-06-22 https://github.com/SV-Zanshin Initial release                                                **
 ** 1.0.0b 2018-06-17 https://github.com/SV-Zanshin INA219 and INA226 completed, including testing                 **
 ** 1.0.0a 2018-06-10 https://github.com/SV-Zanshin Initial coding                                                 **
@@ -60,13 +62,20 @@ void setup()
   #endif                                                                      // interface to initialize          //
   Serial.print(F("\n\nDisplay INA Readings V1.0.0\n"));                       // Display program information      //
   Serial.print(F(" - Searching & Initializing INA devices\n"));               // Display program information      //
-  // The begin method initializes the calibration for an expected ±1 Amps maximum current and for a 0.1Ohm        //
-  // resistor, and since no specific device is given as the 3rd parameter all devices are initially set to these  //
-  // values                                                                                                       //
-  devicesFound = INA.begin(1,100000);                                         // Set expected Amps and resistor   //
-  Serial.print(F(" - Detected "));
-  Serial.print(devicesFound);
-  Serial.println(F(" INA devices on the I2C bus"));
+  /*********************************************************************************
+  ** The begin method initializes the calibration for an expected ±1 Amps maximum **
+  ** current and for a 0.1Ohm resistor, and since no specific device is given as  **
+  ** the 3rd parameter all devices are initially set to these values              **
+  *********************************************************************************/
+    devicesFound = INA.begin(1,100000);                                       // Set expected Amps and resistor   //
+  while (INA.begin(1, 100000) == 0)                                           // Set Amps&resistance and wait if  //
+  {                                                                           // no device has been detected      //
+     Serial.print(F("No INA device found, retrying...\n"));                   //                                  //
+     delay(10000);                                                            // Wait 10 seconds before retrying  //
+  } // while no devices detected                                              //                                  //
+  Serial.print(F(" - Detected "));                                            //                                  //
+  Serial.print(devicesFound);                                                 //                                  //
+  Serial.println(F(" INA devices on the I2C bus"));                           //                                  //
   INA.setBusConversion(8500);                                                 // Maximum conversion time 8.244ms  //
   INA.setShuntConversion(8500);                                               // Maximum conversion time 8.244ms  //
   INA.setAveraging(128);                                                      // Average each reading n-times     //
@@ -79,24 +88,24 @@ void setup()
 *******************************************************************************************************************/
 void loop() 
 {
-  static uint16_t loopCounter = 0;                                            // Count the number of iterations   //
-  Serial.print(F("# Type   Bus V   Shunt mV Bus mA    Bus mW\n"));            // Display the header lines         //
+  static uint16_t loopCounter = 0; // Count the number of iterations
+  Serial.print(F("# Type   Bus V   Shunt mV Bus mA    Bus mW\n"));
   Serial.print(F("= ====== ======= ======== ========= ========\n"));
-  for (uint8_t i=0;i<devicesFound;i++)                                        // Loop through all devices found   //
+  for (uint8_t i=0;i<devicesFound;i++) // Loop through all devices
   {
     Serial.print(i+1); Serial.print(F(" "));
     Serial.print(INA.getDeviceName(i)); Serial.print(F(" "));
-    Serial.print((float)INA.getBusMilliVolts(i)/1000.0,4);
+    Serial.print((float)INA.getBusMilliVolts(i)/1000.0,4); // convert to Volts
     Serial.print(F("V "));
-    Serial.print((float)INA.getShuntMicroVolts(i)/1000.0,3);                  // Convert to millivolts            //
+    Serial.print((float)INA.getShuntMicroVolts(i)/1000.0,3); // convert to Millivolts
     Serial.print(F("mV "));
-    Serial.print((float)INA.getBusMicroAmps(i)/1000.0,4);                     // Convert to milliamp              //
+    Serial.print((float)INA.getBusMicroAmps(i)/1000.0,4); // convert to Milliamps
     Serial.print(F("mA "));
-    Serial.print((float)INA.getBusMicroWatts(i)/1000.0,4);                    // Convert to milliwatts            //
+    Serial.print((float)INA.getBusMicroWatts(i) / 1000.0, 4); // convert to Milliwatts
     Serial.print(F("mW\n"));
   } // for-next each device loop
   Serial.print(F("\n")  );
-  delay(5000);                                                                // Wait 5 seconds for next reading  //
+  delay(5000); // Wait 5 seconds before next reading
   Serial.print(F("Loop iteration ")  );
   Serial.print(++loopCounter);
   Serial.print(F("\n\n")  );
