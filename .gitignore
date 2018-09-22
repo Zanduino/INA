@@ -82,7 +82,7 @@ Release
 ########################################################################
 # Files and directories from Microsoft Visual Studio 2017              #
 ########################################################################
-.sln
-.vcxproj
-.vcxproj.filters
-.vcxproj.user
+*.sln
+*.vcxproj
+*.filters
+*.user
