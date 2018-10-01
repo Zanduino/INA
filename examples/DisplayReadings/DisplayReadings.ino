@@ -28,27 +28,24 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.0  2018-09-22 https://github.com/SV-Zanshin Cleaned up comments, added wait loop when no INA found         **
+** 1.0.1  2018-09-22 https://github.com/SV-Zanshin Cleaned up comments, added INA wait loop, removed F("") calls  **
 ** 1.0.0  2018-06-22 https://github.com/SV-Zanshin Initial release                                                **
 ** 1.0.0b 2018-06-17 https://github.com/SV-Zanshin INA219 and INA226 completed, including testing                 **
 ** 1.0.0a 2018-06-10 https://github.com/SV-Zanshin Initial coding                                                 **
 **                                                                                                                **
 *******************************************************************************************************************/
 #if ARDUINO >= 100                                                            // The Arduino IDE versions before  //
-#include "Arduino.h"                                                          // 100 need to use the older library//
+  #include "Arduino.h"                                                        // 100 need to use the older library//
 #else                                                                         // "WProgram.h" rather than the new //
-#include "WProgram.h"                                                         // "Arduino.h"                      //
+  #include "WProgram.h"                                                       // "Arduino.h"                      //
 #endif                                                                        //                                  //
-#include <INA.h>                                                              // INA Library                      //
+#include <INA.h>                                                              // Zanshin INA Library              //
 /*******************************************************************************************************************
-** Declare program Constants                                                                                      **
+** Declare program constants, global variables and instantiate INA class                                          **
 *******************************************************************************************************************/
 const uint32_t SERIAL_SPEED = 115200;                                         // Use fast serial speed            //
-/*******************************************************************************************************************
-** Declare global variables and instantiate classes                                                               **
-*******************************************************************************************************************/
-INA_Class INA;                                                                // INA class instantiation          //
-uint8_t devicesFound = 0;                                                     // Number of INAs found             //
+uint8_t        devicesFound = 0;                                              // Number of INAs found             //
+INA_Class      INA;                                                           // INA class instantiation          //
 /*******************************************************************************************************************
 ** Method Setup(). This is an Arduino IDE method which is called first upon initial boot or restart. It is only   **
 ** called one time and all of the variables and other initialization calls are done here prior to entering the    **
@@ -60,53 +57,53 @@ void setup()
   #ifdef  __AVR_ATmega32U4__                                                  // If we are a 32U4 processor, then //
     delay(2000);                                                              // wait 2 seconds for the serial    //
   #endif                                                                      // interface to initialize          //
-  Serial.print(F("\n\nDisplay INA Readings V1.0.0\n"));                       // Display program information      //
-  Serial.print(F(" - Searching & Initializing INA devices\n"));               // Display program information      //
-  /*********************************************************************************
-  ** The begin method initializes the calibration for an expected ±1 Amps maximum **
-  ** current and for a 0.1Ohm resistor, and since no specific device is given as  **
-  ** the 3rd parameter all devices are initially set to these values              **
-  *********************************************************************************/
-    devicesFound = INA.begin(1,100000);                                       // Set expected Amps and resistor   //
-  while (INA.begin(1, 100000) == 0)                                           // Set Amps&resistance and wait if  //
-  {                                                                           // no device has been detected      //
-     Serial.print(F("No INA device found, retrying...\n"));                   //                                  //
-     delay(10000);                                                            // Wait 10 seconds before retrying  //
-  } // while no devices detected                                              //                                  //
-  Serial.print(F(" - Detected "));                                            //                                  //
-  Serial.print(devicesFound);                                                 //                                  //
-  Serial.println(F(" INA devices on the I2C bus"));                           //                                  //
+  Serial.print("\n\nDisplay INA Readings V1.0.0\n");
+  Serial.print(" - Searching & Initializing INA devices\n");
+  /****************************************************************************************
+  ** The INA.begin call initializes the device(s) found with an expected ±1 Amps maximum **
+  ** current and for a 0.1Ohm resistor, and since no specific device is given as the 3rd **
+  ** parameter all devices are initially set to these values.                            **
+  ****************************************************************************************/
+  devicesFound = INA.begin(1,100000);                                         // Set expected Amps and resistor   //
+  while (INA.begin(1, 100000) == 0)                                           // Loop until a device is found     //
+  {
+     Serial.println("No INA device found, retrying in 10s...");
+     delay(10000); // Wait 10 seconds before retrying 
+  } // while no devices detected
+  Serial.print(" - Detected ");
+  Serial.print(devicesFound);
+  Serial.println(" INA devices on the I2C bus");
   INA.setBusConversion(8500);                                                 // Maximum conversion time 8.244ms  //
   INA.setShuntConversion(8500);                                               // Maximum conversion time 8.244ms  //
   INA.setAveraging(128);                                                      // Average each reading n-times     //
   INA.setMode(INA_MODE_CONTINUOUS_BOTH);                                      // Bus/shunt measured continuously  //
   INA.AlertOnBusOverVoltage(true,5000);                                       // Trigger alert if over 5V on bus  //
-} // method setup()
+} // method "setup()"
 /*******************************************************************************************************************
-** This is the main program for the Arduino IDE, it is called in an infinite loop. The INA measurements are       **
-** run in a simple infinite loop                                                                                  **
+** This is the main program for the Arduino IDE, it get executed in an infinite loop. The INA measurements are    **
+** run inside this loop and displayed to the serial port                                                          **
 *******************************************************************************************************************/
 void loop() 
 {
   static uint16_t loopCounter = 0; // Count the number of iterations
-  Serial.print(F("# Type   Bus V   Shunt mV Bus mA    Bus mW\n"));
-  Serial.print(F("= ====== ======= ======== ========= ========\n"));
+  Serial.print("# Type   Bus V   Shunt mV Bus mA    Bus mW\n");
+  Serial.print("= ====== ======= ======== ========= ========\n");
   for (uint8_t i=0;i<devicesFound;i++) // Loop through all devices
   {
-    Serial.print(i+1); Serial.print(F(" "));
-    Serial.print(INA.getDeviceName(i)); Serial.print(F(" "));
-    Serial.print((float)INA.getBusMilliVolts(i)/1000.0,4); // convert to Volts
-    Serial.print(F("V "));
-    Serial.print((float)INA.getShuntMicroVolts(i)/1000.0,3); // convert to Millivolts
-    Serial.print(F("mV "));
-    Serial.print((float)INA.getBusMicroAmps(i)/1000.0,4); // convert to Milliamps
-    Serial.print(F("mA "));
-    Serial.print((float)INA.getBusMicroWatts(i) / 1000.0, 4); // convert to Milliwatts
-    Serial.print(F("mW\n"));
-  } // for-next each device loop
-  Serial.print(F("\n")  );
+    Serial.print(i+1); Serial.print(" ");
+    Serial.print(INA.getDeviceName(i)); Serial.print(" ");
+    Serial.print((float)INA.getBusMilliVolts(i)/1000.0,4);    // convert mV to Volts
+    Serial.print("V ");
+    Serial.print((float)INA.getShuntMicroVolts(i)/1000.0,3);  // convert uV to Millivolts
+    Serial.print("mV ");
+    Serial.print((float)INA.getBusMicroAmps(i)/1000.0,4);     // convert uA to Milliamps
+    Serial.print("mA ");
+    Serial.print((float)INA.getBusMicroWatts(i) / 1000.0, 4); // convert uA to Milliwatts
+    Serial.print("mW\n");
+  } // for-next each INA device loop
+  Serial.println();
   delay(5000); // Wait 5 seconds before next reading
-  Serial.print(F("Loop iteration ")  );
+  Serial.print("Loop iteration ");
   Serial.print(++loopCounter);
-  Serial.print(F("\n\n")  );
+  Serial.println("\n");
 } // method "loop()"

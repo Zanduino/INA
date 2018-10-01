@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.5  2018-09-29 https://github.com/Sv-Zanshin Reformatted comments to different c++ coding style             **
 ** 1.0.4  2018-09-22 https://github.com/Sv-Zanshin Issue #27. EEPROM Calls don't work with ESP32                  **
 ** 1.0.4  2018-09-19 https://github.com/Sv-Zanshin Issue #28. Overflow error when >31Amps specified in begin()    **
 ** 1.0.3  2018-09-04 https://github.com/delboy711  Issue #26. Incorrect INA3221 negative current readings         **
@@ -91,7 +92,7 @@
                   INA3221_0,                                                  // INA3221 1st channel              //
                   INA3221_1,                                                  // INA3221 2nd channel              //
                   INA3221_2,                                                  // INA3221 3rd channel              //
-                  UNKNOWN };                                                  //                                  //
+                  INA_UNKNOWN };                                              //                                  //
   enum ina_Mode { INA_MODE_SHUTDOWN,                                          // Device powered down              //
                   INA_MODE_TRIGGERED_SHUNT,                                   // Triggered shunt, no bus          //
                   INA_MODE_TRIGGERED_BUS,                                     // Triggered bus, no shunt          //
@@ -149,7 +150,7 @@
   const uint16_t INA226_SHUNT_VOLTAGE_LSB       =      25;                    // LSB in uV *10  2.5uV             //
   const uint16_t INA226_CONFIG_AVG_MASK         =  0x0E00;                    // Bits 9-11                        //
   const uint16_t INA226_DIE_ID_VALUE            =  0x2260;                    // Hard-coded Die ID for INA226     //
-  const uint16_t INA226_CONFIG_BADC_MASK        =  0x01C0;                    // Bits 6-8  masked                //
+  const uint16_t INA226_CONFIG_BADC_MASK        =  0x01C0;                    // Bits 6-8  masked                 //
   const uint16_t INA226_CONFIG_SADC_MASK        =  0x0018;                    // Bits 3-4                         //
                                                                               //==================================//
   const uint8_t  INA260_SHUNT_VOLTAGE_REGISTER  =       0;                    // Register doesn't exist on device //
@@ -172,53 +173,53 @@
     public:                                                                   // Publicly visible methods         //
       INA_Class();                                                            // Class constructor                //
       ~INA_Class();                                                           // Class destructor                 //
-      uint8_t  begin             (const uint8_t  maxBusAmps,                  // Class initializer                //
-                                  const uint32_t microOhmR,                   //                                  //
-                                  const uint8_t  deviceNumber = UINT8_MAX );  //                                  //
-      void     setI2CSpeed       (const uint32_t i2cSpeed=INA_I2C_STANDARD_MODE);// Adjust the I2C bus speed      //
-      void     setMode           (const uint8_t  mode,                        // Set the monitoring mode          //
-                                  const uint8_t  devNumber=UINT8_MAX);        //                                  //
-      void     setAveraging      (const uint16_t averages,                    // Set the number of averages taken //
-                                  const uint8_t  deviceNumber=UINT8_MAX);     //                                  //
-      void     setBusConversion  (const uint32_t convTime,                    // Set timing for Bus conversions   //
-                                  const uint8_t  deviceNumber=UINT8_MAX);     //                                  //
-      void     setShuntConversion(const uint32_t convTime,                    // Set timing for Shunt conversions //
-                                  const uint8_t  deviceNumber=UINT8_MAX);     //                                  //
-      uint16_t getBusMilliVolts  (const uint8_t  deviceNumber=0);             // Retrieve Bus voltage in mV       //
-      int32_t  getShuntMicroVolts(const uint8_t  deviceNumber=0);             // Retrieve Shunt voltage in uV     //
-      int32_t  getBusMicroAmps   (const uint8_t  deviceNumber=0);             // Retrieve micro-amps              //
-      int32_t  getBusMicroWatts  (const uint8_t  deviceNumber=0);             // Retrieve micro-watts             //
-      const char* getDeviceName  (const uint8_t  deviceNumber=0);             // Retrieve device name (const char)//
-      void     reset             (const uint8_t  deviceNumber=0);             // Reset the device                 //
-      void     waitForConversion (const uint8_t  deviceNumber=UINT8_MAX);     // wait for conversion to complete  //
-      bool     AlertOnConversion (const bool alertState,                      // Enable pin change on conversion  //
-                                  const uint8_t deviceNumber=UINT8_MAX);      //                                  //
-      bool     AlertOnShuntOverVoltage (const bool alertState,                // Enable pin change on conversion  //
-                                        const int32_t milliVolts,             //                                  //
-                                        const uint8_t deviceNumber=UINT8_MAX);//                                  //
-      bool     AlertOnShuntUnderVoltage(const bool alertState,                // Enable pin change on conversion  //
-                                        const int32_t milliVolts,             //                                  //
-                                        const uint8_t deviceNumber=UINT8_MAX);//                                  //
-      bool     AlertOnBusOverVoltage   (const bool alertState,                // Enable pin change on conversion  //
-                                        const int32_t milliVolts,             //                                  //
-                                        const uint8_t deviceNumber=UINT8_MAX);//                                  //
-      bool     AlertOnBusUnderVoltage  (const bool alertState,                // Enable pin change on conversion  //
-                                        const int32_t milliVolts,             //                                  //
-                                        const uint8_t deviceNumber=UINT8_MAX);//                                  //
-      bool     AlertOnPowerOverLimit   (const bool alertState,                // Enable pin change on conversion  //
-                                        const int32_t milliAmps,              //                                  //
-                                        const uint8_t deviceNumber=UINT8_MAX);//                                  //
+      uint8_t  begin                      (const uint8_t  maxBusAmps,         // Class initializer                //
+                                           const uint32_t microOhmR,          //                                  //
+                                           const uint8_t  devNo = UINT8_MAX );//                                  //
+      void        setI2CSpeed             (const uint32_t i2cSpeed=INA_I2C_STANDARD_MODE);// Adjust I2C bus speed //
+      void        setMode                 (const uint8_t  mode,               // Set the monitoring mode          //
+                                           const uint8_t  devNo=UINT8_MAX);   //                                  //
+      void        setAveraging            (const uint16_t averages,           // Set the number of averages taken //
+                                           const uint8_t  devNo=UINT8_MAX);   //                                  //
+      void        setBusConversion        (const uint32_t convTime,           // Set timing for Bus conversions   //
+                                           const uint8_t  devNo=UINT8_MAX);   //                                  //
+      void        setShuntConversion      (const uint32_t convTime,           // Set timing for Shunt conversions //
+                                           const uint8_t  devNo=UINT8_MAX);   //                                  //
+      uint16_t    getBusMilliVolts        (const uint8_t  devNo=0);           // Retrieve Bus voltage in mV       //
+      int32_t     getShuntMicroVolts      (const uint8_t  devNo=0);           // Retrieve Shunt voltage in uV     //
+      int32_t     getBusMicroAmps         (const uint8_t  devNo=0);           // Retrieve micro-amps              //
+      int32_t     getBusMicroWatts        (const uint8_t  devNo=0);           // Retrieve micro-watts             //
+      const char* getDeviceName           (const uint8_t  devNo=0);           // Retrieve device name (const char)//
+      void        reset                   (const uint8_t  devNo=0);           // Reset the device                 //
+      void        waitForConversion       (const uint8_t  devNo=UINT8_MAX);   // wait for conversion to complete  //
+      bool        AlertOnConversion       (const bool alertState,             // Enable pin change on conversion  //
+                                           const uint8_t devNo=UINT8_MAX);    //                                  //
+      bool        AlertOnShuntOverVoltage (const bool alertState,             // Enable pin change on conversion  //
+                                           const int32_t milliVolts,          //                                  //
+                                           const uint8_t devNo=UINT8_MAX);    //                                  //
+      bool        AlertOnShuntUnderVoltage(const bool alertState,             // Enable pin change on conversion  //
+                                           const int32_t milliVolts,          //                                  //
+                                           const uint8_t devNo=UINT8_MAX);    //                                  //
+      bool        AlertOnBusOverVoltage   (const bool alertState,             // Enable pin change on conversion  //
+                                           const int32_t milliVolts,          //                                  //
+                                           const uint8_t devNo=UINT8_MAX);    //                                  //
+      bool        AlertOnBusUnderVoltage  (const bool alertState,             // Enable pin change on conversion  //
+                                           const int32_t milliVolts,          //                                  //
+                                           const uint8_t devNo=UINT8_MAX);    //                                  //
+      bool        AlertOnPowerOverLimit   (const bool alertState,             // Enable pin change on conversion  //
+                                           const int32_t milliAmps,           //                                  //
+                                           const uint8_t devNo=UINT8_MAX);    //                                  //
     private:                                                                  // Private variables and methods    //
-      int16_t  readWord         (const uint8_t addr,                          // Read a word from an I2C address  //
-                                 const uint8_t deviceAddress);                //                                  //
-      void     writeWord        (const uint8_t addr, const uint16_t data,     // Write a word to an I2C address   //
-                                 const uint8_t deviceAddress);                //                                  //
-      void     readInafromEEPROM(const uint8_t deviceNumber);                 // Retrieve structure from EEPROM   //
-      void     writeInatoEEPROM (const uint8_t deviceNumber);                 // Write structure to EEPROM        //
-      void     initDevice       (const uint8_t deviceNumber);                 // Initialize any Device            //
-      uint8_t  _DeviceCount        = 0;                                       // Number of INAs detected          //
-      uint8_t  _currentINA         = UINT8_MAX;                               // Stores current INA device number //
+      int16_t   readWord         (const uint8_t addr,                         // Read a word from an I2C address  //
+                                  const uint8_t deviceAddress);               //                                  //
+      void      writeWord        (const uint8_t addr, const uint16_t data,    // Write a word to an I2C address   //
+                                  const uint8_t deviceAddress);               //                                  //
+      void      readInafromEEPROM(const uint8_t devNo);                       // Retrieve structure from EEPROM   //
+      void      writeInatoEEPROM (const uint8_t devNo);                       // Write structure to EEPROM        //
+      void      initDevice       (const uint8_t devNo);                       // Initialize any Device            //
+      uint8_t   _DeviceCount = 0;                                             // Number of INAs detected          //
+      uint8_t   _currentINA  = UINT8_MAX;                                     // Stores current INA device number //
       inaEEPROM inaEE;                                                        // Declare a single global value    //
-      inaDet   ina;                                                           // Declare a single global value    //
+      inaDet    ina;                                                          // Declare a single global value    //
   }; // of INA_Class definition                                               //                                  //
 #endif                                                                        //----------------------------------//
