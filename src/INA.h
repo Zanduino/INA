@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.5  2018-10-04 https://github.com/Sv-Zanshin Added getBusRaw() and getShuntRaw() functions                  **
 ** 1.0.5  2018-09-29 https://github.com/Sv-Zanshin Reformatted comments to different c++ coding style             **
 ** 1.0.4  2018-09-22 https://github.com/Sv-Zanshin Issue #27. EEPROM Calls don't work with ESP32                  **
 ** 1.0.4  2018-09-19 https://github.com/Sv-Zanshin Issue #28. Overflow error when >31Amps specified in begin()    **
@@ -185,12 +186,14 @@
                                            const uint8_t  devNo=UINT8_MAX);   //                                  //
       void        setShuntConversion      (const uint32_t convTime,           // Set timing for Shunt conversions //
                                            const uint8_t  devNo=UINT8_MAX);   //                                  //
-      uint16_t    getBusMilliVolts        (const uint8_t  devNo=0);           // Retrieve Bus voltage in mV       //
-      int32_t     getShuntMicroVolts      (const uint8_t  devNo=0);           // Retrieve Shunt voltage in uV     //
-      int32_t     getBusMicroAmps         (const uint8_t  devNo=0);           // Retrieve micro-amps              //
-      int32_t     getBusMicroWatts        (const uint8_t  devNo=0);           // Retrieve micro-watts             //
-      const char* getDeviceName           (const uint8_t  devNo=0);           // Retrieve device name (const char)//
-      void        reset                   (const uint8_t  devNo=0);           // Reset the device                 //
+      uint16_t    getBusMilliVolts        (const uint8_t  devNo = 0);         // Retrieve Bus voltage in mV       //
+      uint16_t    getBusRaw               (const uint8_t  devNo = 0);         // Retrieve Raw INA value for Bus   //
+      int32_t     getShuntMicroVolts      (const uint8_t  devNo = 0);         // Retrieve Shunt voltage in uV     //
+      int16_t     getShuntRaw             (const uint8_t  devNo = 0);         // Retrieve Raw INA value for Bus   //
+      int32_t     getBusMicroAmps         (const uint8_t  devNo = 0);         // Retrieve micro-amps              //
+      int32_t     getBusMicroWatts        (const uint8_t  devNo = 0);         // Retrieve micro-watts             //
+      const char* getDeviceName           (const uint8_t  devNo = 0);         // Retrieve device name (const char)//
+      void        reset                   (const uint8_t  devNo = 0);         // Reset the device                 //
       void        waitForConversion       (const uint8_t  devNo=UINT8_MAX);   // wait for conversion to complete  //
       bool        AlertOnConversion       (const bool alertState,             // Enable pin change on conversion  //
                                            const uint8_t devNo=UINT8_MAX);    //                                  //
