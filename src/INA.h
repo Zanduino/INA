@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.6  2018-10-07 https://github.com/Sv-Zanshin Optimized getBusRaw() and getShuntRaw() functions              **
 ** 1.0.5  2018-10-04 https://github.com/Sv-Zanshin Added getBusRaw() and getShuntRaw() functions                  **
 ** 1.0.5  2018-09-29 https://github.com/Sv-Zanshin Reformatted comments to different c++ coding style             **
 ** 1.0.4  2018-09-22 https://github.com/Sv-Zanshin Issue #27. EEPROM Calls don't work with ESP32                  **

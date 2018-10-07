@@ -462,19 +462,8 @@ uint16_t INA_Class::getBusMilliVolts(const uint8_t deviceNumber)
 ** Method getBusMilliVolts retrieves the bus voltage measurement                                                  **
 *******************************************************************************************************************/
 {                                                                             //                                  //
-  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
-  uint16_t busVoltage = readWord(ina.busVoltageRegister,ina.address);         // Get the raw value from register  //
-  if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2 ||    //                                  //
-      ina.type==INA219 )                                                      //                                  //
-  {                                                                           //                                  //
-        busVoltage = busVoltage >> 3;                                         // INA219 - 3LSB unused, so shift   //
-  } // of if-then an INA3221                                                  //                                  //
+  uint16_t busVoltage = getBusRaw(deviceNumber);                              // Get raw voltage from device      //
   busVoltage = (uint32_t)busVoltage*ina.busVoltage_LSB/100;                   // conversion to get milliVolts     //
-  if (!bitRead(ina.operatingMode,2) && bitRead(ina.operatingMode,1))          // If triggered mode and bus active //
-  {                                                                           //                                  //
-    int16_t configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);// Get the current register         //
-    writeWord(INA_CONFIGURATION_REGISTER,configRegister,ina.address);         // Write back to trigger next       //
-  } // of if-then triggered mode enabled                                      //                                  //
   return(busVoltage);                                                         // return computed milliVolts       //
 } // of method getBusMilliVolts()                                             //                                  //
 
@@ -503,28 +492,16 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber)
 ** Method getShuntMicroVolts retrieves the shunt voltage measurement                                              **
 *******************************************************************************************************************/
 {                                                                             //                                  //
-  int32_t shuntVoltage;                                                       // Declare local variable           //
-  readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
-  if (ina.type==INA260)                                                       // INA260 has a built-in shunt      //
+  int32_t shuntVoltage = getShuntRaw(deviceNumber);                           // Get raw readings from register   //
+  if (ina.type == INA260)                                                     // INA260 has a built-in shunt      //
   {                                                                           //                                  //
-    int32_t  busMicroAmps    = getBusMicroAmps(deviceNumber);                 // Get the amps on the bus          //
-             shuntVoltage    = busMicroAmps / 200;                            // 2mOhm resistor, Ohm's law        //
+    int32_t  busMicroAmps = getBusMicroAmps(deviceNumber);                    // Get the amps on the bus          //
+    shuntVoltage = busMicroAmps / 200;                                        // 2mOhm resistor, Ohm's law        //
   }                                                                           //                                  //
   else                                                                        //                                  //
   {                                                                           //                                  //
-    shuntVoltage = readWord(ina.shuntVoltageRegister,ina.address);            // Get the raw value from register  //
-    if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2)    // INA3221 doesn't use 3 LSB        //
-    {                                                                         //                                  //
-      if (shuntVoltage|0x8000) {                                              // If the shunt is negative, then   //
-        shuntVoltage = (shuntVoltage>>3) & 0xE000;                            // shift over 3, then 3 MSB to 1    //
-      }                                                                       //                                  //
-      else                                                                    //                                  //
-      {                                                                       //                                  //
-        shuntVoltage = shuntVoltage >> 3;                                     // INA3221 - 3LSB unused, so shift  //
-      } // of if-then-else we have a negative value                           //                                  //
-    } // of if-then we need to shift INA3221 reading over                     //                                  //
-    shuntVoltage = shuntVoltage*ina.shuntVoltage_LSB/10;                      // Convert to microvolts            //
-  } // of if-then-else an INA260 with inbuilt shunt                           //                                  //
+    shuntVoltage = shuntVoltage * ina.shuntVoltage_LSB / 10;                  // Convert to microvolts            //
+  } // of if-then-else an INA260                                              //                                  //
   if (!bitRead(ina.operatingMode,2) && bitRead(ina.operatingMode,0))          // If triggered and shunt active    //
   {                                                                           //                                  //
     int16_t configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address);// Get the current register         //
@@ -532,6 +509,7 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber)
   } // of if-then triggered mode enabled                                      //                                  //
   return(shuntVoltage);                                                       // return computed microvolts       //
 } // of method getShuntMicroVolts()                                           //                                  //
+
 int16_t INA_Class::getShuntRaw(const uint8_t deviceNumber)
 /*******************************************************************************************************************
 ** Method getShuntRaw returns the raw register value from the device                                              **
@@ -541,7 +519,8 @@ int16_t INA_Class::getShuntRaw(const uint8_t deviceNumber)
   readInafromEEPROM(deviceNumber);                                            // Load EEPROM to ina structure     //
   if (ina.type == INA260)                                                     // INA260 has a built-in shunt      //
   {                                                                           //                                  //
-    raw = 0;                                                                  // No register for shunt voltage    //
+    int32_t  busMicroAmps = getBusMicroAmps(deviceNumber);                    // Get the amps on the bus          //
+             raw          = busMicroAmps / 200 / 1000;                        // 2mOhm resistor, Ohm's law        //
   }                                                                           //                                  //
   else                                                                        //                                  //
   {                                                                           //                                  //
