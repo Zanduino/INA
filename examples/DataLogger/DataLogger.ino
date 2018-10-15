@@ -3,11 +3,27 @@
 ** trigger readings in the background and using a timer on the Arduino to trigger data averaging and storing or   **
 ** displaying the computed values.                                                                                **
 **                                                                                                                **
-** Detailed documentation can be found on the GitHub Wiki pages at https://github.com/SV-Zanshin/INA/wiki         **
+** The INA226 is set up to pull the alert pin down when a measurement is ready. The program has set the bus and   **
+** shunt to the maximum conversion time of 8.244ms and then averaging to 8, so each measurement will take about   **
+** 64ms. The interrupt vector "PCINT0_vect" is called and the readings from the INA226 are read and added to the  **
+** averages.                                                                                                      **
 **                                                                                                                **
-** Since the INA library allows multiple devices of different types and this program demonstrates interrupts and  **
-** background processing, it will limit itself to using the first INA226 detected. This is easily changed in the  **
-** if another device type or device number to test is required.                                                   **
+** A timer interrupt is defined in the setup() method that triggers a call to the vector "TIMER1_COMPA_vect" once **
+** every second.  The average values collected in the "PCINT0_vect" call are then taken and stored in memory. As  **
+** the amount of RAM is limited and the absolute readings are 2 Bytes long while the delta values to the previous **
+** measurement are usually quite small, a variable length Huffmann coding has been implemented at a nibble (4 bit)**
+** level to provide a higher-density method of storing data. Each array is declared at 600 Bytes (one array for   **
+** voltage measurements and one array for shunt voltage) and those 1200 Bytes total can store up to 18 minutes of **
+** per-second data, which would otherwise occupy over 4Kb memory. The Huffmann encoding method is described in    **
+** more detail in the interrupt code below.                                                                       **
+**                                                                                                                **
+** This example works on Atmel-Arduinos since it uses Atmel interrupts which are different on processors such as  **
+** the ESP32. The value of ARRAY_BYTES is set at 600, which works on Arduinos with 2K or more of RAM, smaller     **
+** processors would need to reduce this value in order to work correctly. The example is also coded for the       **
+** INA226, as a chip with an ALERT pin is required for the program to work; additionally the hard-coded LSB       **
+** values for the bus voltage and shunt voltage have been set to those used in the INA226.                        **
+**                                                                                                                **
+** Detailed documentation can be found on the GitHub Wiki pages at https://github.com/SV-Zanshin/INA/wiki         **
 **                                                                                                                **
 ** This example is for a INA226 set up to measure a 5-Volt load with a 0.1Ω resistor in place, this is the same   **
 ** setup that can be found in the Adafruit INA226 breakout board.  The complex calibration options are done at    **
@@ -52,86 +68,303 @@
 ** WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   **
 ** GNU General Public License for more details. You should have received a copy of the GNU General Public License **
 ** along with this program (see https://github.com/SV-Zanshin/INA/blob/master/LICENSE).  If not, see              **
-** <http://www.gnu.org/licenses/>.                                                                                **                                                                                                                **
-**                                                                                                                **
+** <http://www.gnu.org/licenses/>.                                                                                **
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.0   2018-10-03 https://github.com/SV-Zanshin Cloned and adapted example from old deprecated INA226 library **
+** 1.0.0   2018-10-13 https://github.com/SV-Zanshin Ready for publishing                                          **
+** 1.0.0   2018-10-03 https://github.com/SV-Zanshin Cloned and adapted example                                    **
 **                                                                                                                **
 *******************************************************************************************************************/
 #include <INA.h>                                                              // INA Library                      //
+#include "MB85_FRAM.h"                                                        // I2C FRAM Library                 //
 /*******************************************************************************************************************
 ** Declare program Constants                                                                                      **
 *******************************************************************************************************************/
 const uint8_t  INA_ALERT_PIN   =      8;                                      // Pin 8.                           //
 const uint8_t  GREEN_LED_PIN   =     13;                                      // Green LED (standard location)    //
 const uint32_t SERIAL_SPEED    = 115200;                                      // Use fast serial speed            //
+const uint16_t ARRAY_BYTES     =   600;                                       // Bytes in Bus/Shunt arrays        //
 /*******************************************************************************************************************
 ** Declare global variables, structures and instantiate classes                                                   **
 *******************************************************************************************************************/
-typedef struct {
-  uint64_t mV;
-  int64_t mA;
-} dataPoint;
-
          uint8_t  deviceNumber      = UINT8_MAX;                              // Device Number to use in example  //
-volatile uint64_t sumBusMilliVolts  =         0;                              // Sum of bus voltage readings      //
-volatile int64_t  sumBusMicroAmps   =         0;                              // Sum of bus amperage readings     //
+volatile uint64_t sumBusRaw         =         0;                              // Sum of bus raw values            //
+volatile int64_t  sumShuntRaw       =         0;                              // Sum of shunt raw values          //
 volatile uint8_t  readings          =         0;                              // Number of measurements taken     //
-volatile uint64_t lastBusMilliVolts =         0;                              // Value from last reading          //
-volatile int64_t  lastBusMicroAmps  =         0;                              // Value from last reading          //
+         uint8_t  chips_detected    =         0;                              // Number of I2C FRAM chips detected//
+volatile uint32_t fram_bus_index    =         0;                              // Index to the next free position  //
+volatile uint32_t fram_shunt_index  =         0;                              //                                  //
 INA_Class INA;                                                                // INA class instantiation          //
+MB85_FRAM_Class FRAM;
 
+void    writeNibble(uint8_t dataArray[1], const uint16_t nibblePos, const uint8_t nibbleData)
+/*******************************************************************************************************************
+** Method "writeNibble()" will write the LSB 4 bits of "nibbleData" to the "dataArray" nibble offset "nibblePos", **
+** each index position is 4 bits.                                                                                 **
+*******************************************************************************************************************/
+{
+  uint8_t writeByte = *(dataArray + (nibblePos / 2));                         // Read the correct byte and select //
+  if (nibblePos & 1)                                                          // whether the LSB or MSB is to be  //
+  {                                                                           // set                              //
+    writeByte = (writeByte & 0xF0) | (nibbleData & 0xF);                      // Keep MSB & set the LSB to value  //
+  }                                                                           //                                  //
+  else                                                                        //                                  //
+  {                                                                           //                                  //
+    writeByte = (nibbleData << 4) | (writeByte & 0xF);                        // Keep LSB & set the MSB to value  //
+  } // of if-then-else nibblePos is odd                                       //                                  //
+  *(dataArray + (nibblePos / 2)) = writeByte;                                 // Write the new value to array     //
+} // of method "writeNibble()"                                                //                                  //
+uint8_t readNibble( uint8_t dataArray[1], const uint16_t nibblePos)
+/*******************************************************************************************************************
+** Method "readNibble()" will read the nibble addressed by "nibblePos" into the write the 4 LSB bits of the return**
+** value. Each index position of the virtual array is 4 bits.                                                     **
+*******************************************************************************************************************/
+{
+  uint8_t returnVal = *(dataArray + (nibblePos / 2));                         // Read the correct byte and select //
+  if (nibblePos & 1)                                                          // whether the LSB or MSB is to be  //
+  {                                                                           // returned                         //
+    returnVal = returnVal & 0xF;                                              // Use the 4 LSB bits               //
+  }                                                                           //                                  //
+  else                                                                        //                                  //
+  {                                                                           //                                  //
+    returnVal = returnVal >> 4;                                               // Use the 4 MSB bits               //
+  } // of if-then-else nibblePos is odd                                       //                                  //
+  return returnVal;                                                           // Return the computed nibble       //
+}  // of method "readNibble()"                                                //                                  //
 ISR(PCINT0_vect)
 /*******************************************************************************************************************
 ** Declare interrupt service routine for the pin-change interrupt on pin 8 which is set in the setup() method     **
 *******************************************************************************************************************/
-{                                                                              //                                 //
+{                                                                             //                                  //
+  static uint16_t tempsumBusRaw;                                              // Declare as static to only init 1 //
+  static int16_t  tempsumShuntRaw;                                            // Declare as static to only init 1 //
   *digitalPinToPCMSK(INA_ALERT_PIN)&=~bit(digitalPinToPCMSKbit(INA_ALERT_PIN));// Disable PCMSK pin               //
   PCICR  &= ~bit(digitalPinToPCICRbit(INA_ALERT_PIN));                        // disable interrupt for the group  //
   digitalWrite(GREEN_LED_PIN, !digitalRead(GREEN_LED_PIN));                   // Toggle LED to show we are working//
   sei();                                                                      // Enable interrupts for I2C calls  //
-  sumBusMilliVolts += INA.getBusMilliVolts(deviceNumber);                     // Read the current value           //
-  sumBusMicroAmps  += INA.getBusMicroAmps(deviceNumber);                      // Read the current value           //
-  INA.waitForConversion(deviceNumber);                                        // Resets interrupt flag and starts //
+  tempsumBusRaw   = INA.getBusRaw(deviceNumber);                              // Read the current value into temp //
+  tempsumShuntRaw = INA.getShuntRaw(deviceNumber);                            // Read the current value into temp //
+  INA.waitForConversion(deviceNumber);                                        // Resets interrupt flag and start  //
   cli();                                                                      // Disable interrupts               //
+  sumBusRaw   += tempsumBusRaw;                                               // copy value while ints disabled   //
+  sumShuntRaw += tempsumShuntRaw;                                             // copy value while ints disabled   //
   readings++;                                                                 // Increment the number of readings //
   *digitalPinToPCMSK(INA_ALERT_PIN)|=bit(digitalPinToPCMSKbit(INA_ALERT_PIN));// Enable PCMSK pin                 //
   PCIFR  |= bit (digitalPinToPCICRbit(INA_ALERT_PIN));                        // clear any outstanding interrupt  //
   PCICR  |= bit (digitalPinToPCICRbit(INA_ALERT_PIN));                        // enable interrupt for the group   //
 } // of ISR handler for INT0 group of pins                                    //                                  //
+void writeDataToArray(uint8_t dataArray[1], uint16_t &nibbleIndex, const int16_t deltaData)
+/*******************************************************************************************************************
+** Function "writeDataToArray()" writes 4LSB from "nibbleData" to the "nibbleIndex" nibble in the "dataArray".    **
+** A Huffmann-like encoding with variable length is used to write the delta values to the appropriate array. Each **
+** array "index" element is one nibble (4 bits) and the MSB characters of the MSB nibble denote the record type.  **
+** if the MSB is "B0" then it is a 1-nibble long value, if the 2 MSB are "B10" then it is a 2 nibble value, if    **
+** "B110" then 3 nibbles, "B1110" denotes 4 and "B1111" denotes 5 nibbles. See the table below:                   **
+**                                                                                                                **
+** 24-Bit representation  Data Bits    Value Range                                                                **
+** =====================  ============ ===============                                                            **
+**  ----------------0xxx   3 bits data    -4  to     3                                                            **
+**  ------------10xxxxxx   6 bits data    -16 to    15                                                            **
+**  --------110xxxxxxxxx   9 bits data   -256 to   255                                                            **
+**  ----1110xxxxxxxxxxxx  12 bits data  -2048 to  2047                                                            **
+**  1111xxxxxxxxxxxxxxxx  16 bits data -32768 to 32767                                                            **
+**                                                                                                                **
+*******************************************************************************************************************/
+{                                                                              // Only allocate space once        //
+  if (deltaData >= -4 && deltaData <= 3)                                       // 1N, format 0xxx                 //
+  {                                                                            //                                 //
+    writeNibble(dataArray, nibbleIndex++, deltaData & B111);                   // Write 1N to array               //
+  }                                                                            //                                 //
+  else                                                                         //                                 //
+  {                                                                            //                                 //
+    if (deltaData >= -16 && deltaData <= 15)                                   // 2N, format 10xxxxxx             //
+    {                                                                          //                                 //
+      writeNibble(dataArray, nibbleIndex++, ((deltaData >> 4)&B11) | B1000);   // write MSB                       //
+      writeNibble(dataArray, nibbleIndex++, deltaData);                        // write LSB                       //
+    }                                                                          //                                 //
+    else                                                                       //                                 //
+    {                                                                          //                                 //
+      if (deltaData >= -256 && deltaData <= 255)                               // 3N, format 110xxxxxxxxx         // 
+      {                                                                        //                                 //
+        writeNibble(dataArray, nibbleIndex++, ((deltaData >> 8) & 1) | B1100); // 3 MSB to 110 and 9th bit        //
+        writeNibble(dataArray, nibbleIndex++, deltaData >> 4 & B1111);         // write 4 MSB bits of byte 1      //
+        writeNibble(dataArray, nibbleIndex++, deltaData);                      // write 4 LSB bits of byte 1      //
+      }                                                                        //                                 //
+      else                                                                     //                                 //
+      {                                                                        //                                 //
+        if (deltaData >= -2048 && deltaData <= 2047)                           // 4N, format 1110xxxxxxxxxxxx     //
+        {                                                                      //                                 //
+          writeNibble(dataArray, nibbleIndex++, B1110);                        // Header nibble                   //
+          writeNibble(dataArray, nibbleIndex++, deltaData >> 8);               // next nibble                     //
+          writeNibble(dataArray, nibbleIndex++, deltaData >> 4);               // next nibble                     //
+          writeNibble(dataArray, nibbleIndex++, deltaData);                    // LSB nibble                      //
+        }                                                                      //                                 //
+        else                                                                   //                                 //
+        {                                                                      // 5N, format 1111xxxxxxxxxxxxxxxx //
+          writeNibble(dataArray, nibbleIndex++, B1111);                        // Header nibble                   //
+          writeNibble(dataArray, nibbleIndex++, deltaData >> 12);              // MSB nibble                      //
+          writeNibble(dataArray, nibbleIndex++, deltaData >> 8);               // next nibble                     //
+          writeNibble(dataArray, nibbleIndex++, deltaData >> 4);               // next nibble                     //
+          writeNibble(dataArray, nibbleIndex++, deltaData);                    // LSB nibble                      //
+        } // if-then-else value fits in 4 or 5 nibbles                         //                                 //
+      } // if-then-else value fits in 3 nibbles                                //                                 //
+    } // if-then-else value fits in 2 nibbles                                  //                                 //
+  } // if-then-else value fits in 1 nibble                                     //                                 //
+} // of method "WriteDataToArray()"                                            //                                 //
+int16_t readDataFromArray(uint8_t dataArray[1], uint16_t &nibbleIndex)
+/*******************************************************************************************************************
+** Function "readDataToArray()" returns a 2-Byte signed integer from "dataArray" starting at "nibbleIndex" and    **
+** expanding the Array's internal Huffmann-encoding values. See the description of writeDataToArray() for details **
+*******************************************************************************************************************/
+{                                                                              //                                 //
+  int16_t outValue = 0;                                                        // Declare return variable         //
+  uint8_t controlBits = readNibble(dataArray, nibbleIndex++);                  // Read the header nibble          //
+  if (controlBits >> 3 == 0) // ----------------0xxx   3 bits data - 4  to     3                                  //
+  {                                                                            //                                 //
+    outValue = controlBits & B111;                                             // mask High Bit                   //
+    if (outValue >> 2 & B1) { outValue |= 0xFFF8; }                            // If it is a negative number      //
+  }                                                                            //                                 //
+  else                                                                         //                                 //
+  {                                                                            //                                 //
+    if (controlBits >> 2 == B10) // ------------10xxxxxx   6 bits data - 16 to    15                              //
+    {                                                                          //                                 //
+      outValue = (controlBits & B11) << 4;                                     // mask 2 High Bits                //
+      outValue |= readNibble(dataArray, nibbleIndex++);                        // move in 4 LSB                   //
+      if (outValue >> 5 & B1) { outValue |= 0xFFE0; }                          // If it is a negative number      //
+    }                                                                          //                                 //
+    else                                                                       //                                 //
+    {                                                                          //                                 //
+      if (controlBits >> 1 == B110) // --------110xxxxxxxxx   9 bits data - 256 to   255                          //
+      {                                                                        //                                 //
+        outValue = (controlBits & B1) << 8;                                    // mask 2 High Bits                //
+        outValue |= readNibble(dataArray, nibbleIndex++) << 4;                 // move in 4 middle bits           //
+        outValue |= readNibble(dataArray, nibbleIndex++);                      // move in 4 LSB                   //
+        if (outValue >> 8 & B1) { outValue |= 0xFE00; }                        // If it is a negative number      //
+      }                                                                        //                                 //
+      else                                                                     //                                 //
+      {                                                                        //                                 //
+        if (controlBits == B1110) // ----1110xxxxxxxxxxxx  12 bits data - 2048 to  2047                           //
+        {                                                                      //                                 //
+          outValue = readNibble(dataArray, nibbleIndex++) << 8;                // move in 4 high bits             //
+          outValue |= readNibble(dataArray, nibbleIndex++) << 4;               // move in 4 middle bits           //
+          outValue |= readNibble(dataArray, nibbleIndex++);                    // move in 4 low bits              //
+          if (outValue >> 11 & B1) { outValue |= 0xF000; }                     // If it is a negative number      //
+        }                                                                      //                                 //
+        else                                                                   //                                 //
+        {                                                                      //                                 //
+          if (controlBits == B1111) // 1111xxxxxxxxxxxxxxxx  16 bits data - 16384 to 16383                        //
+          {                                                                    //                                 //
+            outValue = readNibble(dataArray, nibbleIndex++) << 12;             // move in 4 high bits             //
+            outValue |= readNibble(dataArray, nibbleIndex++) << 8;             // move in 4 middle bits           //
+            outValue |= readNibble(dataArray, nibbleIndex++) << 4;             // move in 4 middle bits           //
+            outValue |= readNibble(dataArray, nibbleIndex++);                  // move in 4 low bits              //
+          } // if-then 5 nibbles                                               //                                 //
+        } // if-then-else 4 nibbles                                            //                                 //
+      } // if-then-else 3 nibbles                                              //                                 //
+    } // if-then-else 2 nibbles                                                //                                 //
+  } // if-then-else 1 nibble                                                   //                                 //
+  return(outValue);                                                            //                                 //
+} // of method "readDataFromArray()" 
 
 ISR(TIMER1_COMPA_vect)
 /*******************************************************************************************************************
 ** Declare interrupt service routine for TIMER1, which is set to trigger once every second                        **
 *******************************************************************************************************************/
-{                                                                              //                                 //
-  sei();                                                                       // Enable interrupts for I2C calls  //
-  Serial.print(F("Averaging ")); 
-  Serial.print(readings);
-  Serial.print(F("readings for 1 "));                        //                                  //
-  Serial.print(F(" seconds.\nBus voltage:   "));                            //                                  //
-  Serial.print((float)sumBusMilliVolts / readings / 1000.0, 4);                   //                                  //
-  Serial.print(F("V\nBus amperage:  "));                                    //                                  //
-  Serial.print((float)sumBusMicroAmps / readings / 1000.0, 4);                   //                                  //
-  Serial.print(F("mA\n\n"));                                                //                                  //
-  Serial.print("Delta Volts = "); Serial.println((int16_t)(lastBusMilliVolts - (sumBusMilliVolts / readings)));
-  Serial.print("Delta Amps  = "); Serial.println((int16_t)(lastBusMicroAmps - (sumBusMicroAmps / readings)));
-  cli();                                                                    // Disable interrupts               //
-  lastBusMilliVolts = sumBusMilliVolts / readings;
-  lastBusMicroAmps = sumBusMicroAmps / readings;
-  readings        = 0;                                                      // Reset values                     //
-  sumBusMilliVolts = 0;                                                      // Reset values                     //
-  sumBusMicroAmps = 0;                                                      // Reset values                     //
-}
+{                                                                              // Only allocate space once        //
+  static int16_t  deltaBus, deltaShunt;                                        // Difference value from last      //
+  static uint16_t busNibbleIndex   = 0;                                        // Array index in Nibbles          //
+  static uint16_t shuntNibbleIndex = 0;                                        // Array index in Nibbles          //
+  static int16_t  lastBusRaw       = 0;                                        // Value from last reading         //
+  static int16_t  lastShuntRaw     = 0;                                        // Value from last reading         //
+  static int16_t  baseBusRaw       = 0;                                        // Base value for delta readings   //
+  static int16_t  baseShuntRaw     = 0;                                        // Base value for delta readings   //
+  static uint16_t arrayReadings    = 0;                                        // Number of readings in array     //
+  static int8_t   busArray[ARRAY_BYTES];                                       // Array to store bus readings     //
+  static int8_t   shuntArray[ARRAY_BYTES];                                     // Array to store bus readings     //
+                                                                               //                                 //
+  if (busNibbleIndex == 0 && shuntNibbleIndex == 0 && millis() < 3000) {       // Skip first 2 seconds of readings//
+    baseBusRaw   = (int16_t)(sumBusRaw / readings);                            // after startup to allow settings //
+    lastBusRaw   = baseBusRaw;                                                 // to settle                       //
+    baseShuntRaw = (int16_t)(sumShuntRaw / readings);                          //                                 //
+    lastShuntRaw = baseShuntRaw;                                               //                                 //
+    readings     = 0;                                                          // then skip readings to let the   //
+    sumBusRaw    = 0;                                                          // sensor settle down              //
+    sumShuntRaw  = 0;                                                          // Reset values                    //
+    return;                                                                    //                                 //
+  } // of if-then first second after startup                                   //                                 //
+  deltaBus   = ((int16_t)(sumBusRaw   / readings) - lastBusRaw  );             // Compute the delta bus           //
+  deltaShunt = ((int16_t)(sumShuntRaw / readings) - lastShuntRaw);             // Compute the delta shunt         //
+  writeDataToArray(busArray,   busNibbleIndex,   deltaBus);                    // Add reading to Bus Array        //
+  writeDataToArray(shuntArray, shuntNibbleIndex, deltaShunt);                  // Add reading to Shunt Array      //
+  arrayReadings++;                                                             // increment the counter           //
+  lastBusRaw   = sumBusRaw / readings;                                         // Reset values                    //
+  lastShuntRaw = sumShuntRaw / readings;                                       // Reset values                    //
+  readings     = 0;                                                            // Reset values                    //
+  sumBusRaw    = 0;                                                            // Reset values                    //
+  sumShuntRaw  = 0;                                                            // Reset values                    //
+  /*****************************************************************************************************************
+  ** Once either of the 2 arrays has no more space available for another maximum length reading (5 nibbles),      **
+  ** then flush the accumulated readings.                                                                         **
+  *****************************************************************************************************************/
+  if ((busNibbleIndex+5)/2>=ARRAY_BYTES || (shuntNibbleIndex+5)/2>=ARRAY_BYTES)//                                 //
+  {                                                                            //                                 //
+    int16_t  busValue    = 0;                                                  // Contains current bus value      //
+    int16_t  shuntValue  = 0;                                                  // Contains current shunt value    //
+    uint16_t busIndex    = 0;                                                  // While-loop index variable       //
+    uint16_t shuntIndex  = 0;                                                  // While-loop index variable       //
+    uint8_t  controlBits = 0;                                                  // first nibble with control info  //
+    /***************************************************************************************************************
+    ** If there is a FRAM memory board attached, then copy the array contents to it                               **
+    ***************************************************************************************************************/
+    if (chips_detected > 0)
+    {
+      if ( (fram_bus_index   + sizeof(busArray)   < FRAM.totalBytes() / 2) &&
+           (fram_shunt_index + sizeof(shuntArray) < FRAM.totalBytes()    ) )
+      {
+        cli();                                                                   // Enable interrupts temporarily   //
+        Serial.print(F("Writing ")); Serial.print(sizeof(busArray) * 2); Serial.print(" Bytes to memory @"); Serial.print(fram_bus_index);Serial.print(".\n");
+        sei();
+        FRAM.write(fram_bus_index, busArray);
+        fram_bus_index   += arrayReadings;
+        FRAM.write(fram_shunt_index, shuntArray);
+        fram_shunt_index += arrayReadings;
+      } // of if-then there is space in the EEPROM
+    } // of if-then we have at least one EEPROM attached to the I2C bus
+    for (uint16_t readingNo = 1; readingNo <= arrayReadings; readingNo++)      // Process every reading in array  //
+    {                                                                          //                                 //
+      busValue = readDataFromArray(busArray, busIndex);                        // Get next bus value from array   //
+      baseBusRaw += busValue;                                                  // apply delta value to bus base   //
+      shuntValue = readDataFromArray(shuntArray, shuntIndex);                  // Get shunt next value from array //
+      baseShuntRaw += shuntValue;                                              // apply delta value to shunt base //
+      /*************************************************************************************************************
+      ** Insert code here to save data to static RAM or to a SD-Card or elsewhere                                 **
+      *************************************************************************************************************/
+      cli();                                                                   // Enable interrupts temporarily   //
+      Serial.print(millis() / 1000); 
+      Serial.print(" "); 
+      Serial.print(readingNo); 
+      Serial.print(" "); 
+      Serial.print(baseBusRaw*0.00125, 4); 
+      Serial.print("V "); 
+      Serial.print(0.0025*baseShuntRaw); 
+      Serial.println("mA");
+      sei();                                                                   // Disable interrupts again        //
 
-void setup()
+
+    } // of for-next each array reading                                        //                                 //
+    busNibbleIndex   = 0;                                                      // reset                           //
+    shuntNibbleIndex = 0;                                                      // reset                           //
+    arrayReadings    = 0;                                                      // reset                           //
+  } // of if-then the internal array is full                                   //                                 //
+} // of ISR "TIMER1_COMPA_vect"                                                //                                 //
+
 /*******************************************************************************************************************
 ** Method Setup(). This is an Arduino IDE method which is called first upon initial boot or restart. It is only   **
 ** called one time and all of the variables and other initialization calls are done here prior to entering the    **
 ** main loop for data measurement.                                                                                **
 *******************************************************************************************************************/
+void setup()                                                                  //                                  //
 {                                                                             //                                  //
   pinMode(GREEN_LED_PIN, OUTPUT);                                             // Define the green LED as an output//
   digitalWrite(GREEN_LED_PIN,true);                                           // Turn on the LED                  //
@@ -173,6 +406,24 @@ void setup()
   INA.setShuntConversion(82440,deviceNumber);                                 // Maximum conversion time 8.244ms  //
   INA.setMode(INA_MODE_CONTINUOUS_BOTH,deviceNumber);                         // Bus/shunt measured continuously  //
   INA.AlertOnConversion(true,deviceNumber);                                   // Make alert pin go low on finish  //
+
+  chips_detected = FRAM.begin(); // return number of memories
+  if (chips_detected > 0) {
+    fram_shunt_index = FRAM.totalBytes() / 2; // start the Shunt memory at halfway point
+    Serial.print("Found ");
+    Serial.print(chips_detected);
+    Serial.println(" MB85nnn memory chips");
+    for (uint8_t i = 0; i < chips_detected; i++) {
+      Serial.print("Memory ");
+      Serial.print(i);
+      Serial.print(" has ");
+      Serial.print(FRAM.memSize(i));
+      Serial.println(" bytes capacity.");
+    } // of for-next each memory
+  } // if-then we have found a FRAM memory
+
+
+
   cli();                                                                      // disable interrupts while setting //
   TCCR1A =     0;                                                             // TCCR1A register reset            //
   TCCR1B =     0;                                                             // TCCR1B register reset            //
@@ -184,34 +435,12 @@ void setup()
   sei();                                                                      // re-enable interrupts             //
 } // of method setup()                                                        //                                  //
 
-void loop()
 /*******************************************************************************************************************
 ** This is the main program for the Arduino IDE, it is called in an infinite loop. The INA226 measurements are    **
-** triggered by the interrupt handler each time a conversion is ready and stored in variables. The main infinite  **
-** doesn't call any INA library functions, that is done in the interrupt handler. Each time 10 readings have been **
-** collected the program will output the averaged values and measurements resume from that point onwards          **
+** triggered by the interrupt handler each time a conversion is ready, and another interrupt is triggered every   **
+** second to store the collected readings. Thus the main program is free to do other tasks.                       **
 *******************************************************************************************************************/
-{
-/*
-  static long lastMillis = millis();                                          // Store the last time we printed   //
-  if (readings>=20)                                                           // If it is time to display results //
-  {                                                                           //                                  //
-    Serial.print(millis()); Serial.print(" ");
-    Serial.print(F("Averaging readings taken over "));                        //                                  //
-    Serial.print((float)(millis()-lastMillis)/1000,2);                        //                                  //
-    Serial.print(F(" seconds.\nBus voltage:   "));                            //                                  //
-    Serial.print((float)sumBusMillVolts/readings/1000.0,4);                   //                                  //
-    Serial.print(F("V\nBus amperage:  "));                                    //                                  //
-    Serial.print((float)sumBusMicroAmps/readings/1000.0,4);                   //                                  //
-    Serial.print(F("mA\n\n"));                                                //                                  //
-    lastMillis = millis();                                                    //                                  //
-    cli();                                                                    // Disable interrupts               //
-    readings        = 0;                                                      // Reset values                     //
-    sumBusMillVolts = 0;                                                      // Reset values                     //
-    sumBusMicroAmps = 0;                                                      // Reset values                     //
-    startMillis     = 0;                                                      // Reset values                     //
-    sei();                                                                    // Enable interrupts                //
-  } // of if-then we've reached the required amount of readings               //                                  //
-  */
+void loop()                                                                   //                                  //
+{                                                                             //                                  //
+  delay(1000);
 } // of method loop                                                           //----------------------------------//
-

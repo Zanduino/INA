@@ -176,17 +176,16 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
   uint16_t originalRegister,tempRegister;                                     // Stores 16-bit register contents  //
   if (_DeviceCount==0)                                                        // Enumerate devices in first call  //
   {                                                                           //                                  //
-    #ifndef ESP8266                                                           // I2C begin() on Esplora problems  //
+    #if defined(ESP32) || defined(ESP2866)                                    //                                  //
+      EEPROM.begin(512);                                                      // If ESP32 then allocate 512 Bytes //
+      maxDevices = 512 / sizeof(inaEE);                                       // and compute number of devices    //
+    #else
       Wire.begin();                                                           // Start I2C communications         //
     #endif                                                                    //                                  //
     #ifdef __STM32F1__                                                        // Emulated EEPROM for STM32F1      //
       uint8_t maxDevices = EEPROM.maxcount() / sizeof(inaEE);                 // Compute number devices possible  //
     #else                                                                     // EEPROM Library V2.0 for Arduino  //
       uint8_t maxDevices = EEPROM.length() / sizeof(inaEE);                   // Compute number devices possible  //
-    #endif                                                                    //                                  //
-    #ifdef ESP32                                                              //                                  //
-      EEPROM.begin(512);                                                      // If ESP32 then allocate 512 Bytes //
-      maxDevices = 512 / sizeof(inaEE);                                       // and compute number of devices    //
     #endif                                                                    //                                  //
     for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++)      // Loop for each possible address   //
     {                                                                         //                                  //
