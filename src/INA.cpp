@@ -184,6 +184,8 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
     #endif                                                                    //                                  //
     #ifdef __STM32F1__                                                        // Emulated EEPROM for STM32F1      //
       uint8_t maxDevices = EEPROM.maxcount() / sizeof(inaEE);                 // Compute number devices possible  //
+    #elif defined(CORE_TEENSY)                                                // TEENSY doesn't have EEPROM.length//
+      maxDevices = 2048 / sizeof(inaEE);                                      // defined, so use 2Kb as value     //
     #else                                                                     // EEPROM Library V2.0 for Arduino  //
       uint8_t maxDevices = EEPROM.length() / sizeof(inaEE);                   // Compute number devices possible  //
     #endif                                                                    //                                  //

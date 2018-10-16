@@ -323,7 +323,7 @@ ISR(TIMER1_COMPA_vect)
            (fram_shunt_index + sizeof(shuntArray) < FRAM.totalBytes()    ) )
       {
         cli();                                                                   // Enable interrupts temporarily   //
-        Serial.print(F("Writing ")); Serial.print(sizeof(busArray) * 2); Serial.print(" Bytes to memory @"); Serial.print(fram_bus_index);Serial.print(".\n");
+        Serial.print(millis() / 1000 / 60); Serial.print(" "); Serial.print(F("Writing ")); Serial.print(sizeof(busArray) * 2); Serial.print(" Bytes to memory @"); Serial.print(fram_bus_index); Serial.print(".\n");
         sei();
         FRAM.write(fram_bus_index, busArray);
         fram_bus_index   += arrayReadings;
@@ -340,6 +340,7 @@ ISR(TIMER1_COMPA_vect)
       /*************************************************************************************************************
       ** Insert code here to save data to static RAM or to a SD-Card or elsewhere                                 **
       *************************************************************************************************************/
+/*
       cli();                                                                   // Enable interrupts temporarily   //
       Serial.print(millis() / 1000); 
       Serial.print(" "); 
@@ -350,7 +351,7 @@ ISR(TIMER1_COMPA_vect)
       Serial.print(0.0025*baseShuntRaw); 
       Serial.println("mA");
       sei();                                                                   // Disable interrupts again        //
-
+*/
 
     } // of for-next each array reading                                        //                                 //
     busNibbleIndex   = 0;                                                      // reset                           //
