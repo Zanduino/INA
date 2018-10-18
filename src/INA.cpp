@@ -180,12 +180,13 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
     #if defined(ESP32) || defined(ESP2866)                                    //                                  //
       EEPROM.begin(512);                                                      // If ESP32 then allocate 512 Bytes //
       maxDevices = 512 / sizeof(inaEE);                                       // and compute number of devices    //
-    #else
+    #else                                                                     //                                  //
       Wire.begin();                                                           // Start I2C communications         //
     #endif                                                                    //                                  //
-    #ifdef __STM32F1__                                                        // Emulated EEPROM for STM32F1      //
+    #if defined(__STM32F1__)                                                  // Emulated EEPROM for STM32F1      //
       maxDevices = EEPROM.maxcount() / sizeof(inaEE);                         // Compute number devices possible  //
-    #elif defined(CORE_TEENSY)                                                // TEENSY doesn't have EEPROM.length//
+    #elif defined(CORE_TEENSY) || defined(MK20DX128) || defined(MK20DX256) || \
+      defined(MKL26Z64) || defined(MK64FX512) || defined(MK66FX1M0)           // TEENSY doesn't have EEPROM.length//
       maxDevices = 2048 / sizeof(inaEE);                                      // defined, so use 2Kb as value     //
     #else                                                                     // EEPROM Library V2.0 for Arduino  //
       maxDevices = EEPROM.length() / sizeof(inaEE);                           // Compute number devices possible  //
