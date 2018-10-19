@@ -176,7 +176,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
   uint16_t originalRegister,tempRegister;                                     // Stores 16-bit register contents  //
   if (_DeviceCount==0)                                                        // Enumerate devices in first call  //
   {                                                                           //                                  //
-    uint8_t maxDevices = 0;                                                   // declare variable                 //
+    uint16_t maxDevices = 0;                                                   // declare variable                 //
     #if defined(ESP32) || defined(ESP2866)                                    //                                  //
       EEPROM.begin(512);                                                      // If ESP32 then allocate 512 Bytes //
       maxDevices = 512 / sizeof(inaEE);                                       // and compute number of devices    //
@@ -185,12 +185,12 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
     #endif                                                                    //                                  //
     #if defined(__STM32F1__)                                                  // Emulated EEPROM for STM32F1      //
       maxDevices = EEPROM.maxcount() / sizeof(inaEE);                         // Compute number devices possible  //
-    #elif defined(CORE_TEENSY) || defined(MK20DX128) || defined(MK20DX256) || \
-      defined(MKL26Z64) || defined(MK64FX512) || defined(MK66FX1M0)           // TEENSY doesn't have EEPROM.length//
+    #elif defined(CORE_TEENSY)                                                // TEENSY doesn't have EEPROM.length//
       maxDevices = 2048 / sizeof(inaEE);                                      // defined, so use 2Kb as value     //
     #else                                                                     // EEPROM Library V2.0 for Arduino  //
       maxDevices = EEPROM.length() / sizeof(inaEE);                           // Compute number devices possible  //
     #endif                                                                    //                                  //
+      if (maxDevices > 255) { maxDevices = 255; }                             // Limit to a 8-bit number          //
     for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++)      // Loop for each possible address   //
     {                                                                         //                                  //
       Wire.beginTransmission(deviceAddress);                                  // See if something is at address   //
@@ -201,7 +201,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
         tempRegister     = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);// Read the newly reset register    //
         if (tempRegister==INA_RESET_DEVICE )                                  // If the register isn't reset then //
         {                                                                     //                                  //
-           writeWord(INA_CONFIGURATION_REGISTER,originalRegister,deviceAddress);// Not an an INA, write back value//
+          writeWord(INA_CONFIGURATION_REGISTER,originalRegister,deviceAddress);// Not an an INA, write back value //
         }                                                                     //                                  //
         else                                                                  // otherwise we know it is an INA   //
         {                                                                     //                                  //

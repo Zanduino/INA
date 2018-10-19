@@ -31,7 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
-** 1.0.6  2018-10-16 https://github.com/Sv-Zanshin Issue #30. Added support for TEENSY in EEPROM calls            **
+** 1.0.6  2018-10-19 https://github.com/Sv-Zanshin Issue #30. Added TEENSY suuport & support large EEPROM         **
 ** 1.0.6  2018-10-14 https://github.com/Sv-Zanshin Added correct wire handling for ESP8266 and ESP32              **
 ** 1.0.6  2018-10-07 https://github.com/Sv-Zanshin Optimized getBusRaw() and getShuntRaw() functions              **
 ** 1.0.5  2018-10-04 https://github.com/Sv-Zanshin Added getBusRaw() and getShuntRaw() functions                  **
