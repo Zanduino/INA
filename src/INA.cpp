@@ -308,12 +308,8 @@ void INA_Class::initDevice(const uint8_t deviceNumber)
       else                      programmableGain = 3;                         // default gain x8 for +- 320mV     //
       tempRegister = 0x399F & INA219_CONFIG_PG_MASK;                          // Zero out the programmable gain   //
       tempRegister |= programmableGain<<INA219_PG_FIRST_BIT;                  // Overwrite the new values         //
+      bitSet(tempRegister, INA219_BRNG_BIT);                                  // set to 1 for 0-32 volts          //
       writeWord(INA_CONFIGURATION_REGISTER,tempRegister,ina.address);         // Write new value to config reg    //
-      tempBusmV = getBusMilliVolts(deviceNumber);                             // Get the voltage on the bus       //
-      if (tempBusmV > 20 && tempBusmV < 16000) {                              // If we have a voltage             //
-        bitClear(tempRegister,INA219_BRNG_BIT);                               // set to 0 for 0-16 volts          //
-        writeWord(INA_CONFIGURATION_REGISTER,tempRegister,ina.address);       // Write new value to config reg    //
-      } // if-then set the range to 0-16V                                     //                                  //
       break;                                                                  //                                  //
     case INA226:                                                              // Set up INA226, INA230 or INA231  //
     case INA230:                                                              //                                  //

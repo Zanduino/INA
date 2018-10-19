@@ -31,6 +31,7 @@
 **                                                                                                                **
 ** Vers.  Date       Developer                     Comments                                                       **
 ** ====== ========== ============================= ============================================================== **
+** 1.0.6  2018-10-19 https://github.com/Sv-Zanshin Issue #31. Use full 0-32V Range on INA219 all the time         **
 ** 1.0.6  2018-10-19 https://github.com/Sv-Zanshin Issue #30. Added TEENSY suuport & support large EEPROM         **
 ** 1.0.6  2018-10-14 https://github.com/Sv-Zanshin Added correct wire handling for ESP8266 and ESP32              **
 ** 1.0.6  2018-10-07 https://github.com/Sv-Zanshin Optimized getBusRaw() and getShuntRaw() functions              **
