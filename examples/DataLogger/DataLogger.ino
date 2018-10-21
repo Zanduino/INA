@@ -18,7 +18,7 @@
 ** more detail in the interrupt code below.                                                                       **
 **                                                                                                                **
 ** This example works on Atmel-Arduinos since it uses Atmel interrupts which are different on processors such as  **
-** the ESP32. The value of ARRAY_BYTES is set at 600, which works on Arduinos with 2K or more of RAM, smaller     **
+** the ESP32. The value of ARRAY_BYTES is set at 1200, which works on Arduinos with 2K or more of RAM, smaller    **
 ** processors would need to reduce this value in order to work correctly. The example is also coded for the       **
 ** INA226, as a chip with an ALERT pin is required for the program to work; additionally the hard-coded LSB       **
 ** values for the bus voltage and shunt voltage have been set to those used in the INA226.                        **
@@ -81,10 +81,10 @@
 /*******************************************************************************************************************
 ** Declare program Constants                                                                                      **
 *******************************************************************************************************************/
-const uint8_t  INA_ALERT_PIN   =      8;                                      // Pin 8.                           //
-const uint8_t  GREEN_LED_PIN   =     13;                                      // Green LED (standard location)    //
-const uint32_t SERIAL_SPEED    = 115200;                                      // Use fast serial speed            //
-const uint16_t ARRAY_BYTES     =   600;                                       // Bytes in Bus/Shunt arrays        //
+const uint8_t  INA_ALERT_PIN        =         8;                              // Pin 8.                           //
+const uint8_t  GREEN_LED_PIN        =        13;                              // Green LED (standard location)    //
+const uint32_t SERIAL_SPEED         =    115200;                              // Use fast serial speed            //
+const uint16_t ARRAY_BYTES          =      1200;                              // Bytes in data array              //
 /*******************************************************************************************************************
 ** Declare global variables, structures and instantiate classes                                                   **
 *******************************************************************************************************************/
@@ -93,12 +93,11 @@ volatile uint64_t sumBusRaw         =         0;                              //
 volatile int64_t  sumShuntRaw       =         0;                              // Sum of shunt raw values          //
 volatile uint8_t  readings          =         0;                              // Number of measurements taken     //
          uint8_t  chips_detected    =         0;                              // Number of I2C FRAM chips detected//
-volatile uint32_t fram_bus_index    =         0;                              // Index to the next free position  //
-volatile uint32_t fram_shunt_index  =         0;                              //                                  //
-INA_Class INA;                                                                // INA class instantiation          //
-MB85_FRAM_Class FRAM;
+volatile uint32_t framIndex         =         0;                              // Index to the next free position  //
+INA_Class       INA;                                                          // INA class instantiation          //
+MB85_FRAM_Class FRAM;                                                         // FRAM Memory class instantiation  //
 
-void    writeNibble(uint8_t dataArray[1], const uint16_t nibblePos, const uint8_t nibbleData)
+void    writeNibble(uint8_t dataArray[], const uint16_t nibblePos, const uint8_t nibbleData)
 /*******************************************************************************************************************
 ** Method "writeNibble()" will write the LSB 4 bits of "nibbleData" to the "dataArray" nibble offset "nibblePos", **
 ** each index position is 4 bits.                                                                                 **
@@ -115,7 +114,7 @@ void    writeNibble(uint8_t dataArray[1], const uint16_t nibblePos, const uint8_
   } // of if-then-else nibblePos is odd                                       //                                  //
   *(dataArray + (nibblePos / 2)) = writeByte;                                 // Write the new value to array     //
 } // of method "writeNibble()"                                                //                                  //
-uint8_t readNibble( uint8_t dataArray[1], const uint16_t nibblePos)
+uint8_t readNibble( uint8_t dataArray[], const uint16_t nibblePos)
 /*******************************************************************************************************************
 ** Method "readNibble()" will read the nibble addressed by "nibblePos" into the write the 4 LSB bits of the return**
 ** value. Each index position of the virtual array is 4 bits.                                                     **
@@ -154,7 +153,7 @@ ISR(PCINT0_vect)
   PCIFR  |= bit (digitalPinToPCICRbit(INA_ALERT_PIN));                        // clear any outstanding interrupt  //
   PCICR  |= bit (digitalPinToPCICRbit(INA_ALERT_PIN));                        // enable interrupt for the group   //
 } // of ISR handler for INT0 group of pins                                    //                                  //
-void writeDataToArray(uint8_t dataArray[1], uint16_t &nibbleIndex, const int16_t deltaData)
+void writeDataToArray(uint8_t dataArray[], uint16_t &nibbleIndex, const int16_t deltaData)
 /*******************************************************************************************************************
 ** Function "writeDataToArray()" writes 4LSB from "nibbleData" to the "nibbleIndex" nibble in the "dataArray".    **
 ** A Huffmann-like encoding with variable length is used to write the delta values to the appropriate array. Each **
@@ -212,7 +211,7 @@ void writeDataToArray(uint8_t dataArray[1], uint16_t &nibbleIndex, const int16_t
     } // if-then-else value fits in 2 nibbles                                  //                                 //
   } // if-then-else value fits in 1 nibble                                     //                                 //
 } // of method "WriteDataToArray()"                                            //                                 //
-int16_t readDataFromArray(uint8_t dataArray[1], uint16_t &nibbleIndex)
+int16_t readDataFromArray(uint8_t dataArray[], uint16_t &nibbleIndex)
 /*******************************************************************************************************************
 ** Function "readDataToArray()" returns a 2-Byte signed integer from "dataArray" starting at "nibbleIndex" and    **
 ** expanding the Array's internal Huffmann-encoding values. See the description of writeDataToArray() for details **
@@ -273,17 +272,15 @@ ISR(TIMER1_COMPA_vect)
 *******************************************************************************************************************/
 {                                                                              // Only allocate space once        //
   static int16_t  deltaBus, deltaShunt;                                        // Difference value from last      //
-  static uint16_t busNibbleIndex   = 0;                                        // Array index in Nibbles          //
-  static uint16_t shuntNibbleIndex = 0;                                        // Array index in Nibbles          //
+  static uint16_t arrayNibbleIndex = 0;                                        // Array index in Nibbles          //
   static int16_t  lastBusRaw       = 0;                                        // Value from last reading         //
   static int16_t  lastShuntRaw     = 0;                                        // Value from last reading         //
   static int16_t  baseBusRaw       = 0;                                        // Base value for delta readings   //
   static int16_t  baseShuntRaw     = 0;                                        // Base value for delta readings   //
   static uint16_t arrayReadings    = 0;                                        // Number of readings in array     //
-  static int8_t   busArray[ARRAY_BYTES];                                       // Array to store bus readings     //
-  static int8_t   shuntArray[ARRAY_BYTES];                                     // Array to store bus readings     //
+  static int8_t   dataArray[ARRAY_BYTES];                                      // Array for bus and shunt readings//
                                                                                //                                 //
-  if (busNibbleIndex == 0 && shuntNibbleIndex == 0 && millis() < 3000) {       // Skip first 2 seconds of readings//
+  if (arrayNibbleIndex == 0 && millis() < 3000) {                              // Skip first 3 seconds            //
     baseBusRaw   = (int16_t)(sumBusRaw / readings);                            // after startup to allow settings //
     lastBusRaw   = baseBusRaw;                                                 // to settle                       //
     baseShuntRaw = (int16_t)(sumShuntRaw / readings);                          //                                 //
@@ -295,8 +292,8 @@ ISR(TIMER1_COMPA_vect)
   } // of if-then first second after startup                                   //                                 //
   deltaBus   = ((int16_t)(sumBusRaw   / readings) - lastBusRaw  );             // Compute the delta bus           //
   deltaShunt = ((int16_t)(sumShuntRaw / readings) - lastShuntRaw);             // Compute the delta shunt         //
-  writeDataToArray(busArray,   busNibbleIndex,   deltaBus);                    // Add reading to Bus Array        //
-  writeDataToArray(shuntArray, shuntNibbleIndex, deltaShunt);                  // Add reading to Shunt Array      //
+  writeDataToArray(dataArray, arrayNibbleIndex, deltaBus  );                   // Add bus reading to array        //
+  writeDataToArray(dataArray, arrayNibbleIndex, deltaShunt);                   // Add shunt reading to array      //
   arrayReadings++;                                                             // increment the counter           //
   lastBusRaw   = sumBusRaw / readings;                                         // Reset values                    //
   lastShuntRaw = sumShuntRaw / readings;                                       // Reset values                    //
@@ -304,38 +301,40 @@ ISR(TIMER1_COMPA_vect)
   sumBusRaw    = 0;                                                            // Reset values                    //
   sumShuntRaw  = 0;                                                            // Reset values                    //
   /*****************************************************************************************************************
-  ** Once either of the 2 arrays has no more space available for another maximum length reading (5 nibbles),      **
-  ** then flush the accumulated readings.                                                                         **
+  ** Once the array could fill up on the next reading (2x max reading of 5 nibbles) then it is time to flush the  **
+  ** the accumulated readings.                                                                                    **
   *****************************************************************************************************************/
-  if ((busNibbleIndex+5)/2>=ARRAY_BYTES || (shuntNibbleIndex+5)/2>=ARRAY_BYTES)//                                 //
+  if ((arrayNibbleIndex+10)/2>=ARRAY_BYTES)                                    //                                 //
   {                                                                            //                                 //
-    int16_t  busValue    = 0;                                                  // Contains current bus value      //
-    int16_t  shuntValue  = 0;                                                  // Contains current shunt value    //
-    uint16_t busIndex    = 0;                                                  // While-loop index variable       //
-    uint16_t shuntIndex  = 0;                                                  // While-loop index variable       //
-    uint8_t  controlBits = 0;                                                  // first nibble with control info  //
+    int16_t  busValue        = 0;                                              // Contains current bus value      //
+    int16_t  shuntValue      = 0;                                              // Contains current shunt value    //
+    uint16_t workNibbleIndex = 0;                                              // Index into array for reading    //
+    uint8_t  controlBits     = 0;                                              // first nibble with control info  //
     /***************************************************************************************************************
     ** If there is a FRAM memory board attached, then copy the array contents to it                               **
     ***************************************************************************************************************/
-    if (chips_detected > 0)
-    {
-      if ( (fram_bus_index   + sizeof(busArray)   < FRAM.totalBytes() / 2) &&
-           (fram_shunt_index + sizeof(shuntArray) < FRAM.totalBytes()    ) )
-      {
-        cli();                                                                   // Enable interrupts temporarily   //
-        Serial.print(millis() / 1000 / 60); Serial.print(" "); Serial.print(F("Writing ")); Serial.print(sizeof(busArray) * 2); Serial.print(" Bytes to memory @"); Serial.print(fram_bus_index); Serial.print(".\n");
-        sei();
-        FRAM.write(fram_bus_index, busArray);
-        fram_bus_index   += arrayReadings;
-        FRAM.write(fram_shunt_index, shuntArray);
-        fram_shunt_index += arrayReadings;
-      } // of if-then there is space in the EEPROM
-    } // of if-then we have at least one EEPROM attached to the I2C bus
+    if (chips_detected > 0)                                                    // Only execute if there is memory //
+    {                                                                          //                                 //
+      if ( (framIndex + sizeof(dataArray) < FRAM.totalBytes()))                // Only write when space available //
+      {                                                                        //                                 //
+        cli();                                                                 // Enable interrupts temporarily   //
+        Serial.print(millis() / 1000 / 60);                                    //                                 //
+        Serial.print(" ");                                                     //                                 //
+        Serial.print(F("Writing "));                                           //                                 //
+        Serial.print(sizeof(dataArray));                                       //                                 //
+        Serial.print(" Bytes to memory @");                                    //                                 //
+        Serial.print(framIndex);                                               //                                 //
+        Serial.print(".\n");                                                   //                                 //
+        sei();                                                                 // Disable interrupts again        //
+        FRAM.write(framIndex, dataArray);                                      // Write the whole array to FRAM   //
+        framIndex += sizeof(dataArray);                                        // set index to new location       //
+      } // of if-then there is space in the EEPROM                             //                                 //
+    } // of if-then we have at least one EEPROM attached to the I2C bus        //                                 //
     for (uint16_t readingNo = 1; readingNo <= arrayReadings; readingNo++)      // Process every reading in array  //
     {                                                                          //                                 //
-      busValue = readDataFromArray(busArray, busIndex);                        // Get next bus value from array   //
+      busValue = readDataFromArray(dataArray, workNibbleIndex);                // Get next bus value from array   //
       baseBusRaw += busValue;                                                  // apply delta value to bus base   //
-      shuntValue = readDataFromArray(shuntArray, shuntIndex);                  // Get shunt next value from array //
+      shuntValue = readDataFromArray(dataArray, workNibbleIndex);              // Get shunt next value from array //
       baseShuntRaw += shuntValue;                                              // apply delta value to shunt base //
       /*************************************************************************************************************
       ** Insert code here to save data to static RAM or to a SD-Card or elsewhere                                 **
@@ -354,8 +353,7 @@ ISR(TIMER1_COMPA_vect)
 */
 
     } // of for-next each array reading                                        //                                 //
-    busNibbleIndex   = 0;                                                      // reset                           //
-    shuntNibbleIndex = 0;                                                      // reset                           //
+    arrayNibbleIndex = 0;                                                      // reset                           //
     arrayReadings    = 0;                                                      // reset                           //
   } // of if-then the internal array is full                                   //                                 //
 } // of ISR "TIMER1_COMPA_vect"                                                //                                 //
@@ -407,24 +405,18 @@ void setup()                                                                  //
   INA.setShuntConversion(82440,deviceNumber);                                 // Maximum conversion time 8.244ms  //
   INA.setMode(INA_MODE_CONTINUOUS_BOTH,deviceNumber);                         // Bus/shunt measured continuously  //
   INA.AlertOnConversion(true,deviceNumber);                                   // Make alert pin go low on finish  //
-
-  chips_detected = FRAM.begin(); // return number of memories
-  if (chips_detected > 0) {
-    fram_shunt_index = FRAM.totalBytes() / 2; // start the Shunt memory at halfway point
-    Serial.print("Found ");
-    Serial.print(chips_detected);
-    Serial.println(" MB85nnn memory chips");
-    for (uint8_t i = 0; i < chips_detected; i++) {
-      Serial.print("Memory ");
-      Serial.print(i);
-      Serial.print(" has ");
-      Serial.print(FRAM.memSize(i));
-      Serial.println(" bytes capacity.");
-    } // of for-next each memory
-  } // if-then we have found a FRAM memory
-
-
-
+  chips_detected = FRAM.begin();                                              // return number of memories        //
+  if (chips_detected > 0) {                                                   //                                  //
+    Serial.print(F("Found "));                                                //                                  //
+    Serial.print(chips_detected);                                             //                                  //
+    Serial.print(F(" FRAM with a total of "));                                //                                  //
+    uint32_t totalMemory = 0;                                                 //                                  //
+    for (uint8_t i = 0; i < chips_detected; i++) {                            //                                  //
+      totalMemory += FRAM.memSize(i);                                         // Add memory of chip to total      //
+    } // of for-next each memory                                              //                                  //
+    Serial.print(totalMemory/1024);                                           //                                  //
+    Serial.println(F("KB memory."));                                          //                                  //
+  } // if-then we have found a FRAM memory                                    //                                  //
   cli();                                                                      // disable interrupts while setting //
   TCCR1A =     0;                                                             // TCCR1A register reset            //
   TCCR1B =     0;                                                             // TCCR1B register reset            //
@@ -443,5 +435,5 @@ void setup()                                                                  //
 *******************************************************************************************************************/
 void loop()                                                                   //                                  //
 {                                                                             //                                  //
-  delay(1000);
+  delay(10000);
 } // of method loop                                                           //----------------------------------//
