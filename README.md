@@ -26,5 +26,7 @@ Great lengths have been taken to avoid the use of floating point in the library.
 
 Since the functionality differs between the supported devices there are some functions which will only work for certain devices.
 
+[![DOI](https://zenodo.org/badge/136879464.svg)](https://zenodo.org/badge/latestdoi/136879464)
+
 <img src="https://github.com/SV-Zanshin/INA/blob/master/images/horizontal_narrow.png" alt="INA" align="left" height="75px">
 <img src="https://www.sv-zanshin.com/r/images/site/gif/zanshintext.gif" align="right" width="75"/><img src="https://www.sv-zanshin.com/r/images/site/gif/zanshinkanjitiny.gif" align="right">
