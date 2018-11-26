@@ -278,7 +278,7 @@ ISR(TIMER1_COMPA_vect)
   static int16_t  baseBusRaw       = 0;                                        // Base value for delta readings   //
   static int16_t  baseShuntRaw     = 0;                                        // Base value for delta readings   //
   static uint16_t arrayReadings    = 0;                                        // Number of readings in array     //
-  static int8_t   dataArray[ARRAY_BYTES];                                      // Array for bus and shunt readings//
+  static uint8_t   dataArray[ARRAY_BYTES];                                     // Array for bus and shunt readings//
                                                                                //                                 //
   if (arrayNibbleIndex == 0 && millis() < 3000) {                              // Skip first 3 seconds            //
     baseBusRaw   = (int16_t)(sumBusRaw / readings);                            // after startup to allow settings //
@@ -339,7 +339,7 @@ ISR(TIMER1_COMPA_vect)
       /*************************************************************************************************************
       ** Insert code here to save data to static RAM or to a SD-Card or elsewhere                                 **
       *************************************************************************************************************/
-/*
+
       cli();                                                                   // Enable interrupts temporarily   //
       Serial.print(millis() / 1000); 
       Serial.print(" "); 
@@ -350,7 +350,7 @@ ISR(TIMER1_COMPA_vect)
       Serial.print(0.0025*baseShuntRaw); 
       Serial.println("mA");
       sei();                                                                   // Disable interrupts again        //
-*/
+
 
     } // of for-next each array reading                                        //                                 //
     arrayNibbleIndex = 0;                                                      // reset                           //
