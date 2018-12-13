@@ -183,7 +183,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
   if (_DeviceCount==0)                                                        // Enumerate devices in first call  //
   {                                                                           //                                  //
     uint16_t maxDevices = 0;                                                  // declare variable                 //
-    #if defined(ESP32) || defined(ESP2866)                                    //                                  //
+    #if defined(ESP32) || defined(ESP8266)                                    //                                  //
       EEPROM.begin(512);                                                      // If ESP32 then allocate 512 Bytes //
       maxDevices = 512 / sizeof(inaEE);                                       // and compute number of devices    //
     #else                                                                     //                                  //
