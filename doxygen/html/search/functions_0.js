@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['alertonbusovervoltage',['AlertOnBusOverVoltage',['../class_i_n_a___class.html#a214da03849e558f1f89316a0596aa921',1,'INA_Class']]],
-  ['alertonbusundervoltage',['AlertOnBusUnderVoltage',['../class_i_n_a___class.html#ae37caf4df4ded2479cd8cc6bf62674c4',1,'INA_Class']]],
-  ['alertonconversion',['AlertOnConversion',['../class_i_n_a___class.html#a91b02c9090899204c714f87f21547e5b',1,'INA_Class']]],
-  ['alertonpoweroverlimit',['AlertOnPowerOverLimit',['../class_i_n_a___class.html#aa5551fb028e2907c2fbc482063d0c826',1,'INA_Class']]],
-  ['alertonshuntovervoltage',['AlertOnShuntOverVoltage',['../class_i_n_a___class.html#a2ea60069c82a34152de4262543bbfb46',1,'INA_Class']]],
-  ['alertonshuntundervoltage',['AlertOnShuntUnderVoltage',['../class_i_n_a___class.html#a4252bd44c4d1e82fa790b0692c1d5f2a',1,'INA_Class']]]
+  ['alertonbusovervoltage',['AlertOnBusOverVoltage',['../class_i_n_a___class.html#a366822f39fde7608e948b794102fbf9b',1,'INA_Class']]],
+  ['alertonbusundervoltage',['AlertOnBusUnderVoltage',['../class_i_n_a___class.html#aa3387310e4782f8917a230f721b8a9f5',1,'INA_Class']]],
+  ['alertonconversion',['AlertOnConversion',['../class_i_n_a___class.html#adaf8ce6a76373492ef3c23b4fb6b25c2',1,'INA_Class']]],
+  ['alertonpoweroverlimit',['AlertOnPowerOverLimit',['../class_i_n_a___class.html#afd878b3b6ed310e1b3b9903565061f26',1,'INA_Class']]],
+  ['alertonshuntovervoltage',['AlertOnShuntOverVoltage',['../class_i_n_a___class.html#aa93cee80dc865cf26b7c1f7a2ffe4f62',1,'INA_Class']]],
+  ['alertonshuntundervoltage',['AlertOnShuntUnderVoltage',['../class_i_n_a___class.html#a1cccab2ac6d6f5b6ec845c5211635321',1,'INA_Class']]]
 ];

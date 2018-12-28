@@ -199,13 +199,13 @@ Version | Date       | Developer                      | Comments
       ///         device gets the two specified values set for it. Can be called multiple times, but the 3 parameter
       ///         version will only function after the 2 parameter version finds all devices
       /// @param[in] maxBusAmps Integer value holding the maximum expected bus amperage, this value is used to 
-      ///                   compute a device's internal power register
+      ///                       compute a device's internal power register
       /// @param[in] microOhmR Shunt resistance in micro-ohms, this value is used to compute a device's internal 
-      ///                  power register
-      /// @param[in] devNo Device number to explicitly set the maxBusAmps and microOhmR values, by default
-      ///              all devices found get set to the same initial values for these 2 parameters
+      ///                      power register
+      /// @param[in] deviceNumber Device number to explicitly set the maxBusAmps and microOhmR values, by default
+      ///                         all devices found get set to the same initial values for these 2 parameters
       /// @return The integer number of INAxxxx devices found on the I2C bus
-      uint8_t begin (const uint8_t  maxBusAmps, const uint32_t microOhmR, const uint8_t  devNo = UINT8_MAX );
+      uint8_t begin (const uint8_t  maxBusAmps, const uint32_t microOhmR, const uint8_t  deviceNumber = UINT8_MAX );
 
       /// @brief Adjust the I2C bus speed
       /// @details I2C allows various bus speeds, see the enumerated type I2C_MODES for the standard speeds. The valid
@@ -216,126 +216,126 @@ Version | Date       | Developer                      | Comments
       /// @brief Set the INA monitoring mode
       /// @details The ina_Mode enumerated type describes the various modes which INA devices can be set to.
       /// @param[in] mode enumerated mode for the INA device
-      /// @param[in] devNo [optional] When specified, only that specified device number gets changed, otherwise all
+      /// @param[in] deviceNumber [optional] When specified, only that specified device number gets changed, otherwise all
       ///                     devices are set to the same mode
-      void setMode (const uint8_t  mode, const uint8_t devNo = UINT8_MAX);
+      void setMode (const uint8_t  mode, const uint8_t deviceNumber = UINT8_MAX);
 
       /// @brief Set the INA averaging mode
       /// @details INA devices can have up to an averaging rate of 1024. 
       /// @param[in] averages The number of averages taken by the INA device per measurement
-      /// @param[in] devNo [optional] When specified, only that specified device number gets changed, otherwise all
+      /// @param[in] deviceNumber [optional] When specified, only that specified device number gets changed, otherwise all
       ///                     devices are set to the same averaging rate
-      void setAveraging (const uint16_t averages, const uint8_t devNo = UINT8_MAX);
+      void setAveraging (const uint16_t averages, const uint8_t deviceNumber = UINT8_MAX);
 
       /// @brief Set the INA bus conversion rate in microseconds
       /// @details INA devices can have a conversion rate of up to 68100 microseconds.
       /// @param[in] convTime The conversion time in microseconds, invalid values are rounded to the nearest valid value
-      /// @param[in] devNo [optional] When specified, only that specified device number gets changed, otherwise all
+      /// @param[in] deviceNumber [optional] When specified, only that specified device number gets changed, otherwise all
       ///                     devices are set to the same averaging rate
-      void setBusConversion(const uint32_t convTime, const uint8_t  devNo = UINT8_MAX);
+      void setBusConversion(const uint32_t convTime, const uint8_t deviceNumber = UINT8_MAX);
 
       /// @brief Set the INA shunt conversion rate in microseconds
       /// @details INA devices can have a shunt conversion rate of up to 68100 microseconds.
       /// @param[in] convTime The conversion time in microseconds, invalid values are rounded to the nearest valid value
-      /// @param[in] devNo [optional] When specified, only that specified device number gets changed, otherwise all
+      /// @param[in] deviceNumber [optional] When specified, only that specified device number gets changed, otherwise all
       ///                     devices are set to the same averaging rate
-      void setShuntConversion (const uint32_t convTime, const uint8_t  devNo = UINT8_MAX);
+      void setShuntConversion (const uint32_t convTime, const uint8_t  deviceNumber = UINT8_MAX);
 
       /// @brief Read the last INA bus millivolt value from the specified device
       /// @details The converted millivolt value is returned and if the device is in triggered mode the next
       ///         conversion is started
-      /// @param[in]  devNo Device number
+      /// @param[in]  deviceNumber Device number
       /// @return integer value of bus voltage returned in millivolts
-      uint16_t getBusMilliVolts (const uint8_t devNo = 0);
+      uint16_t getBusMilliVolts (const uint8_t deviceNumber = 0);
 
       /// @brief Read the last INA raw value from the specified device
       /// @details The raw measured value is returned and if the device is in triggered mode the next
       ///         conversion is started
-      /// @param[in] devNo Device number
+      /// @param[in] deviceNumber Device number
       /// @return integer raw value of bus voltage reading
-      uint16_t getBusRaw (const uint8_t devNo = 0);
+      uint16_t getBusRaw (const uint8_t deviceNumber = 0);
 
       /// @brief Read the last INA shunt microvolt value from the specified device
       /// @details The converted microvolt value is returned and if the device is in triggered mode the next
       ///         conversion is started
-      /// @param[in] devNo Device number
+      /// @param[in] deviceNumber Device number
       /// @return integer value of shunt voltage returned in microvolts
-      int32_t getShuntMicroVolts (const uint8_t devNo = 0);
+      int32_t getShuntMicroVolts (const uint8_t deviceNumber = 0);
 
       /// @brief Read the last INA shunt raw value from the specified device
       /// @details The raw shunt measured value is returned and if the device is in triggered mode the next
       ///         conversion is started
-      /// @param[in] devNo Device number
+      /// @param[in] deviceNumber Device number
       /// @return integer raw value of shunt voltage reading
-      int16_t getShuntRaw (const uint8_t devNo = 0);
+      int16_t getShuntRaw (const uint8_t deviceNumber = 0);
 
       /// @brief Read the last INA bus microamps value from the specified device
       /// @details The converted bus microamps value is returned and if the device is in triggered mode the next
       ///         conversion is started
-      /// @param[in] devNo Device number
+      /// @param[in] deviceNumber Device number
       /// @return integer value of bus voltage returned in microamps
-      int32_t getBusMicroAmps (const uint8_t devNo = 0);
+      int32_t getBusMicroAmps (const uint8_t deviceNumber = 0);
 
       /// @brief Read the last INA bus microwatts value from the specified device
       /// @details The converted bus microwatts value is returned and if the device is in triggered mode the next
       ///         conversion is started
-      /// @param[in] devNo Device number
+      /// @param[in] deviceNumber Device number
       /// @return integer value of bus watts returned in microwatts
-      int32_t getBusMicroWatts (const uint8_t  devNo = 0);
+      int32_t getBusMicroWatts (const uint8_t  deviceNumber = 0);
 
       /// @brief Return the INA device name for a device
-      /// @param[in] devNo Device number
+      /// @param[in] deviceNumber Device number
       /// @return char* of the device name
-      const char* getDeviceName (const uint8_t devNo = 0);
+      const char* getDeviceName (const uint8_t deviceNumber = 0);
 
       /// @brief Reset the INA device
-      /// @param[in] devNo Device number
-      void reset (const uint8_t devNo = 0);
+      /// @param[in] deviceNumber Device number
+      void reset (const uint8_t deviceNumber = 0);
 
       /// @brief Wait for the currently running INA device to finish a conversion
-      /// @param[in] devNo Device number
-      void waitForConversion (const uint8_t devNo = UINT8_MAX);
+      /// @param[in] deviceNumber Device number
+      void waitForConversion (const uint8_t deviceNumber = UINT8_MAX);
 
       /// @brief Set the INA device to pull its ALERT pin low when a conversion finishes
       /// @param[in] alertState Boolean true or false to denote the requested setting
-      /// @param[in] devNo [optional] Device number, if not specified then all devices are set
+      /// @param[in] deviceNumber [optional] Device number, if not specified then all devices are set
       /// @return boolean true when the alert could be set
-      bool AlertOnConversion (const bool alertState, const uint8_t devNo = UINT8_MAX);
+      bool AlertOnConversion (const bool alertState, const uint8_t deviceNumber = UINT8_MAX);
 
       /// @brief Set the INA device to pull its ALERT pin low when shunt voltage exceeds a value
       /// @param[in] alertState Boolean true or false to denote the requested setting
       /// @param[in] milliVolts Alert level at which to trigger the alarm
-      /// @param[in] devNo [optional] Device number, if not specified then all devices are set
+      /// @param[in] deviceNumber [optional] Device number, if not specified then all devices are set
       /// @return boolean true when the alert could be set
-      bool AlertOnShuntOverVoltage (const bool alertState, const int32_t milliVolts, const uint8_t devNo = UINT8_MAX);
+      bool AlertOnShuntOverVoltage (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
 
       /// @brief Set the INA device to pull its ALERT pin low when shunt voltage goes below a value
       /// @param[in] alertState Boolean true or false to denote the requested setting
       /// @param[in] milliVolts Alert level at which to trigger the alarm
-      /// @param[in] devNo [optional] Device number, if not specified then all devices are set
+      /// @param[in] deviceNumber [optional] Device number, if not specified then all devices are set
       /// @return boolean true when the alert could be set
-      bool AlertOnShuntUnderVoltage(const bool alertState, const int32_t milliVolts, const uint8_t devNo = UINT8_MAX);
+      bool AlertOnShuntUnderVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
 
       /// @brief Set the INA device to pull its ALERT pin low when bus voltage goes above a value
       /// @param[in] alertState Boolean true or false to denote the requested setting
       /// @param[in] milliVolts Alert level at which to trigger the alarm
-      /// @param[in] devNo [optional] Device number, if not specified then all devices are set
+      /// @param[in] deviceNumber [optional] Device number, if not specified then all devices are set
       /// @return boolean true when the alert could be set
-      bool AlertOnBusOverVoltage (const bool alertState, const int32_t milliVolts, const uint8_t devNo = UINT8_MAX);
+      bool AlertOnBusOverVoltage (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
 
       /// @brief Set the INA device to pull its ALERT pin low when bus voltage goes below a value
       /// @param[in] alertState Boolean true or false to denote the requested setting
       /// @param[in] milliVolts Alert level at which to trigger the alarm
-      /// @param[in] devNo [optional] Device number, if not specified then all devices are set
+      /// @param[in] deviceNumber [optional] Device number, if not specified then all devices are set
       /// @return boolean true when the alert could be set
-      bool AlertOnBusUnderVoltage (const bool alertState, const int32_t milliVolts, const uint8_t devNo=UINT8_MAX);
+      bool AlertOnBusUnderVoltage (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber =UINT8_MAX);
 
       /// @brief Set the INA device to pull its ALERT pin low when power value goes above a value
       /// @param[in] alertState Boolean true or false to denote the requested setting
       /// @param[in] milliAmps Alert level at which to trigger the alarm
-      /// @param[in] devNo [optional] Device number, if not specified then all devices are set
+      /// @param[in] deviceNumber [optional] Device number, if not specified then all devices are set
       /// @return boolean true when the alert could be set
-      bool AlertOnPowerOverLimit (const bool alertState, const int32_t milliAmps, const uint8_t devNo=UINT8_MAX);
+      bool AlertOnPowerOverLimit (const bool alertState, const int32_t milliAmps, const uint8_t deviceNumber =UINT8_MAX);
 
     private:
       /// @brief Read 2 bytes from the I2C bus
@@ -351,16 +351,16 @@ Version | Date       | Developer                      | Comments
       void writeWord (const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);
 
       /// @brief Read INA device information from EEPROM
-      /// @param[in] devNo Device number to retreive information from
-      void readInafromEEPROM(const uint8_t devNo);
+      /// @param[in] deviceNumber Device number to retreive information from
+      void readInafromEEPROM(const uint8_t deviceNumber);
 
       /// @brief Write INA device information to EEPROM
-      /// @param[in] devNo Device number to retreive information from
-      void writeInatoEEPROM (const uint8_t devNo);
+      /// @param[in] deviceNumber Device number to retreive information from
+      void writeInatoEEPROM (const uint8_t deviceNumber);
 
       /// @brief Initialize INA device
-      /// @param[in] devNo Device number to initialize
-      void initDevice (const uint8_t devNo);
+      /// @param[in] deviceNumber Device number to initialize
+      void initDevice (const uint8_t deviceNumber);
 
       uint8_t   _DeviceCount = 0;         ///< Total number of devices detected
       uint8_t   _currentINA  = UINT8_MAX; ///< Stores current INA device number

@@ -69,5 +69,5 @@ var searchData=
   ['inadet',['inaDet',['../structina_det.html',1,'inaDet'],['../structina_det.html#a2b76a0733906eff2af92e8f5fb129eab',1,'inaDet::inaDet()'],['../structina_det.html#ad0436ed38df2a05ecb1993028b7f69b7',1,'inaDet::inaDet(inaEEPROM inaEE)'],['../_i_n_a_8h.html#ab2deadb66c4e51402becbdc62b752d28',1,'inaDet():&#160;INA.h']]],
   ['inaee',['inaEE',['../class_i_n_a___class.html#a7cdb9f7ce02f10ee9133edf47fcd0ee7',1,'INA_Class']]],
   ['inaeeprom',['inaEEPROM',['../structina_e_e_p_r_o_m.html',1,'']]],
-  ['initdevice',['initDevice',['../class_i_n_a___class.html#aad38771bc9c5d63d915cd168986a98d6',1,'INA_Class']]]
+  ['initdevice',['initDevice',['../class_i_n_a___class.html#a7a4ffe7ada32bb7387c9cd19c4f93c31',1,'INA_Class']]]
 ];
