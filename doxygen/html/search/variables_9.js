@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['type',['type',['../structina_e_e_p_r_o_m.html#a5c629d0b50a2cf2875b1bd4499784ba7',1,'inaEEPROM']]]
+  ['power_5flsb',['power_LSB',['../structina_det.html#a89925d2b9b7f423d99b279d48bebaa9d',1,'inaDet']]]
 ];

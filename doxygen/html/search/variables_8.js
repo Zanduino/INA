@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['shuntvoltage_5flsb',['shuntVoltage_LSB',['../structina_det.html#af335147428136ed384284199f2851dad',1,'inaDet']]],
-  ['shuntvoltageregister',['shuntVoltageRegister',['../structina_det.html#ac4be0ffeea4b335fc5db8ea6bca92b81',1,'inaDet']]]
+  ['operatingmode',['operatingMode',['../structina_e_e_p_r_o_m.html#a6d4cfec5849d160bb8baf896d7de3a01',1,'inaEEPROM']]]
 ];
