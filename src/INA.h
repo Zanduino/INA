@@ -7,6 +7,7 @@
 
 @section Library_intro_section Description
 
+@image html horizontal_narrow.png height=40
 Class definition header for the INA class. This library gives a common interface to various INA power monitor
 devices, see https://github.com/SV-Zanshin/INA/wiki or the code below for a full list of currently supported
 devices.  The INA devices have a 3-5V power supply and, depending upon the model, can measure voltages up to
