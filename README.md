@@ -1,6 +1,6 @@
 <img src="images/horizontal_narrow.png" alt="INA" align="right" height="40px">
 
-# INA2*xx* Devices
+# INA2*xx* Devices [![Build Status](https://travis-ci.org/SV-Zanshin/INA.svg?branch=master)](https://travis-ci.org/SV-Zanshin/INA) [![DOI](https://zenodo.org/badge/136879464.svg)](https://zenodo.org/badge/latestdoi/136879464)
 _Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors at the same time.  Details of the library methods and example programs are to be found [at the INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
 
 Texas Instruments produces this family of power monitors and the library supports the following devices:
@@ -27,8 +27,6 @@ The library locates all INA2xx devices on the I2C chain. Each unit can be indivi
 Great lengths have been taken to avoid the use of floating point in the library. This keeps the library size down because floating point support doesn't have to be compiled into the code. The results are returned as 32-bit integersTo keep the original level of precision without loss but to allow the full range of voltages and amperes to be returned the amperage .
 
 Since the functionality differs between the supported devices there are some functions which will only work for certain devices.
-
-[![DOI](https://zenodo.org/badge/136879464.svg)](https://zenodo.org/badge/latestdoi/136879464)
 
 <img src="https://github.com/SV-Zanshin/INA/blob/master/images/horizontal_narrow.png" alt="INA" align="left" height="75px">
 <img src="https://www.sv-zanshin.com/r/images/site/gif/zanshintext.gif" align="right" width="75"/><img src="https://www.sv-zanshin.com/r/images/site/gif/zanshinkanjitiny.gif" align="right">
