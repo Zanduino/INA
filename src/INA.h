@@ -39,6 +39,7 @@ Written by Arnd\@SV-Zanshin
 
 Version | Date       | Developer                      | Comments
 ------- | ---------- | ------------------------------ | --------
+1.0.7   | 2019-01-20 | https://github.com/Sv-Zanshin  | Issues #36 & #37. Changed for Travis-CI and automated doxygen
 1.0.7   | 2018-12-27 | https://github.com/Sv-Zanshin  | Issue #33. Change program documentation to doxygen format
 1.0.6   | 2018-12-13 | https://github.com/delboy711   | Issue #32. Incorrect ESP2866 rather than ESP8266
 1.0.6   | 2018-10-19 | https://github.com/Sv-Zanshin  | Issue #31. Use full 0-32V Range on INA219 all the time

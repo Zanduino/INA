@@ -53,7 +53,7 @@ Written by Arnd\@SV-Zanshin
 Version | Date       | Developer                      | Comments
 ------- | ---------- | ------------------------------ | --------
 1.0.2   | 2018-12-28 | https://github.com/SV-Zanshin  | Converted comments to doxygen format
-1.0.0   | 2018-06-23 | https://github.com/SV-Zanshin  | Cloned and adapted example from old deprecated INA226 library 
+1.0.0   | 2018-06-23 | https://github.com/SV-Zanshin  | Cloned and adapted example from old deprecated INA226 library
 
 */
 
@@ -63,73 +63,73 @@ Version | Date       | Developer                      | Comments
 #include <INA.h>  // Include the INA library
 
 #if defined(_VMICRO_INTELLISENSE)
-  #define UINT8_MAX (__CONCAT(INT8_MAX, U) * 2U + 1U)
+#define UINT8_MAX (__CONCAT(INT8_MAX, U) * 2U + 1U)
 #endif
 /*******************************************************************************************************************
 ** Declare program Constants                                                                                      **
 *******************************************************************************************************************/
-const uint8_t  INA_ALERT_PIN   =      8; ///< Pin-Change pin used for the INA "ALERT" functionality
-const uint8_t  GREEN_LED_PIN   =     13; ///< Arduino standard green LED
-const uint32_t SERIAL_SPEED    = 115200; ///< Use fast serial speed
+const uint8_t  INA_ALERT_PIN = 8; ///< Pin-Change pin used for the INA "ALERT" functionality
+const uint8_t  GREEN_LED_PIN = 13; ///< Arduino standard green LED
+const uint32_t SERIAL_SPEED = 115200; ///< Use fast serial speed
 
 /*******************************************************************************************************************
 ** Declare global variables and instantiate classes                                                               **
 *******************************************************************************************************************/
 INA_Class INA;                                 ///< INA class instantiation
-volatile uint8_t  deviceNumber    = UINT8_MAX; ///< Device Number to use in example, init used for detection loop
-volatile uint64_t sumBusMillVolts =         0; ///< Sum of bus voltage readings
-volatile int64_t  sumBusMicroAmps =         0; ///< Sum of bus amperage readings
-volatile uint8_t  readings        =         0; ///< Number of measurements taken
+volatile uint8_t  deviceNumber = UINT8_MAX; ///< Device Number to use in example, init used for detection loop
+volatile uint64_t sumBusMillVolts = 0; ///< Sum of bus voltage readings
+volatile int64_t  sumBusMicroAmps = 0; ///< Sum of bus amperage readings
+volatile uint8_t  readings = 0; ///< Number of measurements taken
 
 /// @brief Interrupt service routine for the PCTIN0_vect
 /// @details Routine is called whenever the INA_ALERT_PIN changes value
-ISR (PCINT0_vect)
+ISR(PCINT0_vect)
 {
-  *digitalPinToPCMSK(INA_ALERT_PIN)&=~bit(digitalPinToPCMSKbit(INA_ALERT_PIN)); // Disable PCMSK pin
-  PCICR  &= ~bit(digitalPinToPCICRbit(INA_ALERT_PIN));                          // disable interrupt for the group
+  *digitalPinToPCMSK(INA_ALERT_PIN) &= ~bit(digitalPinToPCMSKbit(INA_ALERT_PIN)); // Disable PCMSK pin
+  PCICR &= ~bit(digitalPinToPCICRbit(INA_ALERT_PIN));                          // disable interrupt for the group
   sei(); // Enable interrupts (for I2C calls)
-  digitalWrite(GREEN_LED_PIN,!digitalRead(GREEN_LED_PIN)); // Toggle LED
+  digitalWrite(GREEN_LED_PIN, !digitalRead(GREEN_LED_PIN)); // Toggle LED
   sumBusMillVolts += INA.getBusMilliVolts(deviceNumber);   // Add current value to sum
   sumBusMicroAmps += INA.getBusMicroAmps(deviceNumber);    // Add current value to sum
   readings++;
   INA.waitForConversion(deviceNumber);  // Wait for conversion and reset INA interrupt flag
   cli(); // Disable interrupts
-  *digitalPinToPCMSK(INA_ALERT_PIN)|=bit(digitalPinToPCMSKbit(INA_ALERT_PIN));// Enable PCMSK pin
-  PCIFR  |= bit (digitalPinToPCICRbit(INA_ALERT_PIN));                        // clear any outstanding interrupt
-  PCICR  |= bit (digitalPinToPCICRbit(INA_ALERT_PIN));                        // enable interrupt for the group
+  *digitalPinToPCMSK(INA_ALERT_PIN) |= bit(digitalPinToPCMSKbit(INA_ALERT_PIN));// Enable PCMSK pin
+  PCIFR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));                        // clear any outstanding interrupt
+  PCICR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));                        // enable interrupt for the group
 } // of ISR handler for INT0 group of pins
 
 /// @brief   Arduino IDE method called once upon device start/restart
 /// @details It is only called one time and all of the variables and other initialization calls are done in this 
 ///          method prior to entering the main loop for data measurement.
-void setup() 
+void setup()
 {
   pinMode(GREEN_LED_PIN, OUTPUT);
-  digitalWrite(GREEN_LED_PIN,true);
-  pinMode(INA_ALERT_PIN,INPUT_PULLUP); // Declare pin with pull-up resistor
-  *digitalPinToPCMSK(INA_ALERT_PIN)|=bit(digitalPinToPCMSKbit(INA_ALERT_PIN));// Enable PCMSK pin
-  PCIFR |= bit (digitalPinToPCICRbit(INA_ALERT_PIN));                         // clear any outstanding interrupt
-  PCICR |= bit (digitalPinToPCICRbit(INA_ALERT_PIN));                         // enable interrupt for the group
+  digitalWrite(GREEN_LED_PIN, true);
+  pinMode(INA_ALERT_PIN, INPUT_PULLUP); // Declare pin with pull-up resistor
+  *digitalPinToPCMSK(INA_ALERT_PIN) |= bit(digitalPinToPCMSKbit(INA_ALERT_PIN));// Enable PCMSK pin
+  PCIFR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));                         // clear any outstanding interrupt
+  PCICR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));                         // enable interrupt for the group
   Serial.begin(SERIAL_SPEED);
-  #ifdef  __AVR_ATmega32U4__  // If this is a 32U4 processor, wait 2 seconds for initialization 
-    delay(2000);
-  #endif
+#ifdef  __AVR_ATmega32U4__  // If this is a 32U4 processor, wait 2 seconds for initialization 
+  delay(2000);
+#endif
   Serial.print(F("\n\nBackground INA Read V1.0.1\n"));
   uint8_t devicesFound = 0;
   while (deviceNumber == UINT8_MAX) // Loop until we find the first device
-  {                                           
-    devicesFound = INA.begin(1,100000); // ±1Amps maximum for 0.1Ω resistor
-    for (uint8_t i=0;i<devicesFound;i++) 
+  {
+    devicesFound = INA.begin(1, 100000); // ±1Amps maximum for 0.1Ω resistor
+    for (uint8_t i = 0; i < devicesFound; i++)
     {
-       // Change the "INA226" in the following statement to whatever device you have attached and want to measure //
-      if (strcmp(INA.getDeviceName(i),"INA226")==0) 
+      // Change the "INA226" in the following statement to whatever device you have attached and want to measure //
+      if (strcmp(INA.getDeviceName(i), "INA226") == 0)
       {
         deviceNumber = i;
         INA.reset(deviceNumber); // Reset device to default settings
         break;
       } // of if-then we have found an INA226
     } // of for-next loop through all devices found
-    if (deviceNumber == UINT8_MAX) 
+    if (deviceNumber == UINT8_MAX)
     {
       Serial.print(F("No INA found. Waiting 5s and retrying...\n"));
       delay(5000);
@@ -138,11 +138,11 @@ void setup()
   Serial.print(F("Found INA at device number "));
   Serial.println(deviceNumber);
   Serial.println();
-  INA.setAveraging(64,deviceNumber);                  // Average each reading 64 times
-  INA.setBusConversion(8244,deviceNumber);            // Maximum conversion time 8.244ms
-  INA.setShuntConversion(8244,deviceNumber);          // Maximum conversion time 8.244ms
-  INA.setMode(INA_MODE_CONTINUOUS_BOTH,deviceNumber); // Bus/shunt measured continuously
-  INA.AlertOnConversion(true,deviceNumber);           // Make alert pin go low on finish
+  INA.setAveraging(64, deviceNumber);                  // Average each reading 64 times
+  INA.setBusConversion(8244, deviceNumber);            // Maximum conversion time 8.244ms
+  INA.setShuntConversion(8244, deviceNumber);          // Maximum conversion time 8.244ms
+  INA.setMode(INA_MODE_CONTINUOUS_BOTH, deviceNumber); // Bus/shunt measured continuously
+  INA.AlertOnConversion(true, deviceNumber);           // Make alert pin go low on finish
 } // of method setup()
 
 
@@ -152,21 +152,21 @@ void setup()
 ///          infinite doesn't call any INA library functions, that is done in the interrupt handler. Each time 10 
 ///          readings have been collected the program will output the averaged values and measurements resume from 
 ///          that point onwards
-void loop() 
+void loop()
 {
   static long lastMillis = millis(); // Store the last time we printed something
-  if (readings >= 10) 
+  if (readings >= 10)
   {
     Serial.print(F("Averaging readings taken over "));
-    Serial.print((float)(millis()-lastMillis)/1000,2);
+    Serial.print((float)(millis() - lastMillis) / 1000, 2);
     Serial.print(F(" seconds.\nBus voltage:   "));
-    Serial.print((float)sumBusMillVolts/readings/1000.0,4);
+    Serial.print((float)sumBusMillVolts / readings / 1000.0, 4);
     Serial.print(F("V\nBus amperage:  "));
-    Serial.print((float)sumBusMicroAmps/readings/1000.0,4);
+    Serial.print((float)sumBusMicroAmps / readings / 1000.0, 4);
     Serial.print(F("mA\n\n"));
     lastMillis = millis();
     cli(); // Disable interrupts to reset values
-    readings        = 0;
+    readings = 0;
     sumBusMillVolts = 0;
     sumBusMicroAmps = 0;
     sei(); // Enable interrupts again
