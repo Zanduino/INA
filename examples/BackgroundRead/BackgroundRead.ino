@@ -1,4 +1,4 @@
-﻿/*!
+/*!
 
 @file BackgroundRead.ino
 
@@ -119,7 +119,7 @@ void setup()
   uint8_t devicesFound = 0;
   while (deviceNumber == UINT8_MAX) // Loop until we find the first device
   {
-    devicesFound = INA.begin(1, 100000); // ±1Amps maximum for 0.1 Ohm resistor
+    devicesFound = INA.begin(1, 100000); // +/- 1 Amps maximum for 0.1 Ohm resistor
     for (uint8_t i = 0; i < devicesFound; i++)
     {
       // Change the "INA226" in the following statement to whatever device you have attached and want to measure //
