@@ -1,0 +1,41 @@
+######################################################################################################
+## Travis-CI control file                                                                           ##
+##                                                                                                  ##
+## Date       Developer           Comments                                                          ##
+## ========== =================== ================================================================= ##
+## 2019-01-20 Arnd@SV-Zanshin     Linked to Adafruit script rather than manually defining all tests ##
+## 2019-01-19 Arnd@SV-Zanshin     Initial coding                                                    ##
+##                                                                                                  ##
+######################################################################################################
+language: c
+sudo: false
+
+# Blacklist
+branches:
+  except:
+    - gh-pages
+    
+git:
+  depth: false
+  quiet: true
+env:
+  global:
+    - PRETTYNAME="SV-Zanshin INA2xx Arduino Library"
+    - DOXYFILE: $TRAVIS_BUILD_DIR/Doxyfile
+
+before_install:
+  - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
+
+install:
+  - arduino --install-library "Adafruit Unified Sensor","Adafruit GFX Library","Adafruit SSD1306"
+
+script:
+  - build_main_platforms
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+
+after_success:
+  - source <(curl -SLs  https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/doxy_gen_and_deploy.sh)
