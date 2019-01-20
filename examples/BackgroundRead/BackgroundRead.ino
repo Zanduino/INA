@@ -1,4 +1,5 @@
 ﻿/*!
+
 @file BackgroundRead.ino
 
 @brief Example program for the INA Library demonstrating background reads
@@ -68,18 +69,18 @@ Version | Date       | Developer                      | Comments
 /*******************************************************************************************************************
 ** Declare program Constants                                                                                      **
 *******************************************************************************************************************/
-const uint8_t  INA_ALERT_PIN = 8; ///< Pin-Change pin used for the INA "ALERT" functionality
-const uint8_t  GREEN_LED_PIN = 13; ///< Arduino standard green LED
-const uint32_t SERIAL_SPEED = 115200; ///< Use fast serial speed
+const uint8_t  INA_ALERT_PIN =      8; ///< Pin-Change pin used for the INA "ALERT" functionality
+const uint8_t  GREEN_LED_PIN =     13; ///< Arduino standard green LED
+const uint32_t SERIAL_SPEED  = 115200; ///< Use fast serial speed
 
 /*******************************************************************************************************************
 ** Declare global variables and instantiate classes                                                               **
 *******************************************************************************************************************/
 INA_Class INA;                                 ///< INA class instantiation
-volatile uint8_t  deviceNumber = UINT8_MAX; ///< Device Number to use in example, init used for detection loop
-volatile uint64_t sumBusMillVolts = 0; ///< Sum of bus voltage readings
-volatile int64_t  sumBusMicroAmps = 0; ///< Sum of bus amperage readings
-volatile uint8_t  readings = 0; ///< Number of measurements taken
+volatile uint8_t  deviceNumber    = UINT8_MAX; ///< Device Number to use in example, init used for detection loop
+volatile uint64_t sumBusMillVolts = 0;         ///< Sum of bus voltage readings
+volatile int64_t  sumBusMicroAmps = 0;         ///< Sum of bus amperage readings
+volatile uint8_t  readings        = 0;         ///< Number of measurements taken
 
 /// @brief Interrupt service routine for the PCTIN0_vect
 /// @details Routine is called whenever the INA_ALERT_PIN changes value
