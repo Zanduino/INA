@@ -1,0 +1,26 @@
+var class_i_n_a___class =
+[
+    [ "INA_Class", "class_i_n_a___class.html#a36af91b502d9068b9e996f035b1be3b3", null ],
+    [ "~INA_Class", "class_i_n_a___class.html#a4fe9caacf344f74de9c4716d3613f160", null ],
+    [ "AlertOnBusOverVoltage", "class_i_n_a___class.html#a366822f39fde7608e948b794102fbf9b", null ],
+    [ "AlertOnBusUnderVoltage", "class_i_n_a___class.html#aa3387310e4782f8917a230f721b8a9f5", null ],
+    [ "AlertOnConversion", "class_i_n_a___class.html#adaf8ce6a76373492ef3c23b4fb6b25c2", null ],
+    [ "AlertOnPowerOverLimit", "class_i_n_a___class.html#afd878b3b6ed310e1b3b9903565061f26", null ],
+    [ "AlertOnShuntOverVoltage", "class_i_n_a___class.html#aa93cee80dc865cf26b7c1f7a2ffe4f62", null ],
+    [ "AlertOnShuntUnderVoltage", "class_i_n_a___class.html#a1cccab2ac6d6f5b6ec845c5211635321", null ],
+    [ "begin", "class_i_n_a___class.html#ac8ddb4e06be0ca4e7bcdd60e5c5b8fb7", null ],
+    [ "getBusMicroAmps", "class_i_n_a___class.html#a32fe0142f84f3c24df148ae8e4856452", null ],
+    [ "getBusMicroWatts", "class_i_n_a___class.html#a373bb011a41aec8e836da0a95a682e0c", null ],
+    [ "getBusMilliVolts", "class_i_n_a___class.html#a995bbc997800fc72583a9051fa6bea74", null ],
+    [ "getBusRaw", "class_i_n_a___class.html#a3c2215f1e78c743d152f0347bd8c971d", null ],
+    [ "getDeviceName", "class_i_n_a___class.html#ad57ab46ebb63d0f878934dacc821f5a6", null ],
+    [ "getShuntMicroVolts", "class_i_n_a___class.html#a50fbaa1bfc005d7121fbd07b390069ea", null ],
+    [ "getShuntRaw", "class_i_n_a___class.html#a6bb50d33fcef00524620d2afb254512c", null ],
+    [ "reset", "class_i_n_a___class.html#a926651f68857ea52b4713d1911825ee7", null ],
+    [ "setAveraging", "class_i_n_a___class.html#a2bd7642c0f5335568bf9476161b3732f", null ],
+    [ "setBusConversion", "class_i_n_a___class.html#ae18a4f29bf43fee68361664c04add689", null ],
+    [ "setI2CSpeed", "class_i_n_a___class.html#a927c09e2c25700411413a8beb3ff855a", null ],
+    [ "setMode", "class_i_n_a___class.html#a9b29502921330b36fc8edcb8c424d7af", null ],
+    [ "setShuntConversion", "class_i_n_a___class.html#ad6dda7b302348a2bd6d1efedbbf1d5bf", null ],
+    [ "waitForConversion", "class_i_n_a___class.html#a212e209f6ee3b4115fe10ac707baec87", null ]
+];
