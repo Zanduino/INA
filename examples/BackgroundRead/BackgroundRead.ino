@@ -14,7 +14,7 @@ Detailed documentation can be found on the GitHub Wiki pages at https://github.c
 Since the INA library allows multiple devices of different types and this program demonstrates interrupts and
 background processing, it will limit itself to using the first INA226 detected. This is easily changed in the
 if another device type or device number to test is required.\n
-This example is for a INA226 set up to measure a 5-Volt load with a 0.1Ω resistor in place, this is the same
+This example is for a INA226 set up to measure a 5-Volt load with a 0.1Ohm resistor in place, this is the same
 setup that can be found in the Adafruit INA226 breakout board.  The complex calibration options are done at
 runtime using the 2 parameters specified in the "begin()" call and the library has gone to great lengths to
 avoid the use of floating point to conserve space and minimize runtime.  This demo program uses floating point
@@ -119,7 +119,7 @@ void setup()
   uint8_t devicesFound = 0;
   while (deviceNumber == UINT8_MAX) // Loop until we find the first device
   {
-    devicesFound = INA.begin(1, 100000); // ±1Amps maximum for 0.1Ω resistor
+    devicesFound = INA.begin(1, 100000); // ±1Amps maximum for 0.1 Ohm resistor
     for (uint8_t i = 0; i < devicesFound; i++)
     {
       // Change the "INA226" in the following statement to whatever device you have attached and want to measure //
