@@ -1,6 +1,6 @@
 <img src="images/horizontal_narrow.png" alt="INA" align="right" height="40px">
 
-# INA2*xx* Devices [![Build Status](https://travis-ci.org/SV-Zanshin/INA.svg?branch=master)](https://travis-ci.org/SV-Zanshin/INA) [![DOI](https://zenodo.org/badge/136879464.svg)](https://zenodo.org/badge/latestdoi/136879464)
+# INA2*xx* Devices<br>[![Build Status](https://travis-ci.org/SV-Zanshin/INA.svg?branch=master)](https://travis-ci.org/SV-Zanshin/INA) [![DOI](https://zenodo.org/badge/136879464.svg)](https://zenodo.org/badge/latestdoi/136879464) [![arduino-library-badge](https://www.ardu-badge.com/badge/INA.svg?)](https://www.ardu-badge.com/INA)
 _Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors at the same time.  Details of the library methods and example programs are to be found [at the INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
 
 Texas Instruments produces this family of power monitors and the library supports the following devices:
