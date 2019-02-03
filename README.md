@@ -22,11 +22,12 @@ Texas Instruments has a document which documents and details additional differen
 ## Library description
 The library locates all INA2xx devices on the I2C chain. Each unit can be individually configured with 2 setup parameters describing the expected maximum voltage, shunt/resistor values which then set the internal configuration registers is ready to begin accurate measurements.  The details of how to setup the library along with all of the publicly available methods can be found on the [INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
 
-
-
 Great lengths have been taken to avoid the use of floating point in the library. This keeps the library size down because floating point support doesn't have to be compiled into the code. The results are returned as 32-bit integersTo keep the original level of precision without loss but to allow the full range of voltages and amperes to be returned the amperage .
 
 Since the functionality differs between the supported devices there are some functions which will only work for certain devices.
+
+## Documentation
+The documentation has been done using Doxygen and can be found at [doxygen documentation](https://sv-zanshin.github.io/INA/html/index.html)
 
 <img src="https://github.com/SV-Zanshin/INA/blob/master/images/horizontal_narrow.png" alt="INA" align="left" height="75px">
 <img src="https://www.sv-zanshin.com/r/images/site/gif/zanshintext.gif" align="right" width="75"/><img src="https://www.sv-zanshin.com/r/images/site/gif/zanshinkanjitiny.gif" align="right">
