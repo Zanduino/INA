@@ -38,6 +38,7 @@ Written by Arnd\@SV-Zanshin
 
 Version | Date       | Developer                      | Comments
 ------- | ---------- | ------------------------------ | --------
+1.0.8   | 2019-01-20 | https://github.com/Sv-Zanshin  | Issues #38. Add getDeviceAddress() function
 1.0.7   | 2019-01-20 | https://github.com/Sv-Zanshin  | Issues #36 & #37. Changed for Travis-CI and automated doxygen
 1.0.7   | 2018-12-27 | https://github.com/Sv-Zanshin  | Issue #33. Change program documentation to doxygen format
 1.0.6   | 2018-12-13 | https://github.com/delboy711   | Issue #32. Incorrect ESP2866 rather than ESP8266
@@ -288,6 +289,11 @@ Version | Date       | Developer                      | Comments
       /// @param[in] deviceNumber Device number
       /// @return char* of the device name
       const char* getDeviceName (const uint8_t deviceNumber = 0);
+
+      /// @brief Return the INA device address for a device
+      /// @param[in] deviceNumber Device number
+      /// @return unsigned 8-bit integer of the device address
+      uint8_t getDeviceAddress(const uint8_t deviceNumber = 0);
 
       /// @brief Reset the INA device
       /// @param[in] deviceNumber Device number

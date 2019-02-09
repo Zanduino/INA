@@ -40,6 +40,7 @@ Written by Arnd\@SV-Zanshin
 
 Version | Date       | Developer                      | Comments
 ------- | ---------- | ------------------------------ | --------
+1.0.3   | 2019-02-09 | https://github.com/SV-Zanshin  | Issue #38. Added device number to display
 1.0.2   | 2018-12-29 | https://github.com/SV-Zanshin  | Converted comments to doxygen format
 1.0.1   | 2018-09-22 | https://github.com/SV-Zanshin  | Cleaned up comments, added INA wait loop, removed F("") calls
 1.0.0   | 2018-06-22 | https://github.com/SV-Zanshin  | Initial release
@@ -100,12 +101,13 @@ void setup()
 void loop() 
 {
   static uint16_t loopCounter = 0; // Count the number of iterations
-  Serial.print("# Type   Bus V   Shunt mV Bus mA    Bus mW\n");
-  Serial.print("= ====== ======= ======== ========= ========\n");
+  Serial.print("# Ad Type   Bus V   Shunt mV Bus mA    Bus mW\n");
+  Serial.print("= == ====== ======= ======== ========= ========\n");
   for (uint8_t i=0;i<devicesFound;i++) // Loop through all devices
   {
     Serial.print(i+1); Serial.print(" ");
     Serial.print(INA.getDeviceName(i)); Serial.print(" ");
+    Serial.print(INA.getDeviceAddress(i)); Serial.print(" ");
     Serial.print((float)INA.getBusMilliVolts(i)/1000.0,4);    // convert mV to Volts
     Serial.print("V ");
     Serial.print((float)INA.getShuntMicroVolts(i)/1000.0,3);  // convert uV to Millivolts

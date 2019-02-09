@@ -309,8 +309,8 @@ void INA_Class::initDevice(const uint8_t deviceNumber)
 {
   ina.operatingMode = INA_DEFAULT_OPERATING_MODE; // Default to continuous mode
   writeInatoEEPROM(deviceNumber);                 // Store the structure to EEPROM
-  uint8_t programmableGain;
-  uint16_t calibration, maxShuntmV, tempRegister, tempBusmV; // Calibration temporary variables
+  uint8_t programmableGain, dummy;                // Added unused "dummy" for bug https://github.com/arduino/Arduino/issues/7949
+  uint16_t calibration, maxShuntmV, tempRegister; // Calibration temporary variables
   switch (ina.type)
   {
     case INA219: // Set up INA219 or INA220
@@ -475,6 +475,15 @@ const char* INA_Class::getDeviceName(const uint8_t deviceNumber)
     default        : return("UNKNOWN");
   } // of switch type
 } // of method getDeviceName()
+
+/*!
+* Method getDeviceAddress returns a I2C address of the device specified in the input parameter.
+*/
+uint8_t INA_Class::getDeviceAddress(const uint8_t deviceNumber)
+{
+  readInafromEEPROM(deviceNumber); // Load EEPROM to ina structure
+  return(ina.address);
+} // of method getDeviceAddress()
 
 /*!
 * Method getBusMillivolts returns the bus voltage in millivolts
