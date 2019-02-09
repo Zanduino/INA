@@ -59,14 +59,16 @@
 /*******************************************************************************************************************
 ** Declare program constants, global variables and instantiate INA class                                          **
 *******************************************************************************************************************/
-const uint32_t SERIAL_SPEED = 115200;  ///< Use fast serial speed
-uint8_t        devicesFound = 0;       ///< Number of INAs found
-INA_Class      INA;                    ///< INA class instantiation
+const uint32_t SERIAL_SPEED = 115200; ///< Use fast serial speed
+uint8_t        devicesFound = 0;      ///< Number of INAs found
+INA_Class      INA;                   ///< INA class instantiation
 
 /***************************************************************************************************************//*!
 * @brief    Arduino method called once at startup to initialize the system
 * @details  This is an Arduino IDE method which is called first upon boot or restart. It is only called one time
-*           and then control goes to the main "loop()" method, from which control never returns
+*           and then control goes to the main "loop()" method, from which control never returns. The serial port
+*           is initialized and the INA.begin() method called to find all INA devices on the I2C bus and then the
+*           devices are initialized to given conversion and averaging rates.
 * @return   void
 *******************************************************************************************************************/
 void setup() 

@@ -422,6 +422,7 @@ void INA_Class::setBusConversion(const uint32_t convTime, const uint8_t deviceNu
 /***************************************************************************************************************//*!
 * @brief     specifies the conversion rate in microseconds, rounded to the nearest valid value
 * @details   INA devices can have a conversion rate of up to 68100 microseconds
+* @param[in] convTime Conversion time in microseconds. Out-of-Range values are set to the closest valid value
 * @param[in] deviceNumber to return the device name for[optional] When specified, only that specified device number gets changed, otherwise all
 *            devices are set to the same averaging rate
 *******************************************************************************************************************/
