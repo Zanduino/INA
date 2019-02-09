@@ -1,37 +1,21 @@
-/*!
-@file INA.cpp
-
-@brief INA Class library definitions file
-
-@section Library_definition_intro_section File Description
-See the INA.h header file comments for version information. Detailed documentation for the library can be
-found on the GitHub Wiki pages at https://github.com/SV-Zanshin/INA/wiki
-
-@section header_license GNU General Public License v3.0
-
-This program is free software : you can redistribute it and/or modify it under the terms of the GNU General
-Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
-option) any later version.This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.You should have received a copy of the GNU General Public License
-along with this program(see https://github.com/SV-Zanshin/INA/blob/master/LICENSE).  If not, see
-<http://www.gnu.org/licenses/>.
-
-@section cpp_author Author
-
-Written by Arnd\@SV-Zanshin
-
-*/
-
+/***************************************************************************************************************//*!
+* @file INA.cpp
+* 
+* @section INAcpp_intro_section Description
+*
+* Arduino Library for accessing the INA2xx Family of power measurement devices\n\n
+* See main library header file "INA.h" for details and license information
+*******************************************************************************************************************/
 #include "INA.h"                ///< Include the header definition
 #include <Wire.h>               ///< I2C Library definition
 #include <EEPROM.h>             ///< Include the EEPROM library
-inaDet::inaDet(){}              ///< Constructor for structure
-inaDet::inaDet(inaEEPROM inaEE) ///< Constructor from saved EEPROM values
-
-/*!
-* Class constructor using saved values from EEPROM
-*/
+inaDet::inaDet(){}              ///< Empty constructor for INA Detail structure
+/***************************************************************************************************************//*!
+* @brief     INA Detail Class Constructor (Overloaded)
+* @details   Construct the class using the saved EEPROM data structure
+* @param[in] inaEE Saved EEPROM Values
+*******************************************************************************************************************/
+inaDet::inaDet(inaEEPROM inaEE)
 {
   type          = inaEE.type;
   operatingMode = inaEE.operatingMode;
@@ -47,7 +31,7 @@ inaDet::inaDet(inaEEPROM inaEE) ///< Constructor from saved EEPROM values
     busVoltage_LSB       = INA219_BUS_VOLTAGE_LSB;
     shuntVoltage_LSB     = INA219_SHUNT_VOLTAGE_LSB;
     current_LSB          = (uint64_t)maxBusAmps * 1000000000 / 32767; // Get the best possible LSB in nA
-    power_LSB            = (uint32_t)20*current_LSB; // Fixed multiplier per device
+    power_LSB            = (uint32_t)20*current_LSB;                  // Fixed multiplier per device
     break;
   case INA226:
   case INA230:
@@ -62,33 +46,33 @@ inaDet::inaDet(inaEEPROM inaEE) ///< Constructor from saved EEPROM values
     break;
   case INA260:
     busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;
-    shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER; // Register not present
+    shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER;             // Register not present
     currentRegister      = INA260_CURRENT_REGISTER;
     busVoltage_LSB       = INA260_BUS_VOLTAGE_LSB;
-    current_LSB          = 1250000;  // Fixed LSB of 1.25mv
-    power_LSB            = 10000000; // Fixed multiplier per device
+    current_LSB          = 1250000;                                   // Fixed LSB of 1.25mv
+    power_LSB            = 10000000;                                  // Fixed multiplier per device
     break;
   case INA3221_0:
   case INA3221_1:
   case INA3221_2:
     busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;
     shuntVoltageRegister = INA3221_SHUNT_VOLTAGE_REGISTER;
-    currentRegister      = 0; // INA3221 has no current Register
+    currentRegister      = 0;                                         // INA3221 has no current Register
     busVoltage_LSB       = INA3221_BUS_VOLTAGE_LSB;
     shuntVoltage_LSB     = INA3221_SHUNT_VOLTAGE_LSB;
-    current_LSB          = 0; // INA3221 has no current register
-    power_LSB            = 0; // INA3221 has no power register
+    current_LSB          = 0;                                         // INA3221 has no current register
+    power_LSB            = 0;                                         // INA3221 has no power register
     if (type==INA3221_1)
     {
-      busVoltageRegister   += 2; // Register for 2nd bus voltage
-      shuntVoltageRegister += 2; // Register for 2nd shunt voltage
+      busVoltageRegister   += 2;                                      // Register for 2nd bus voltage
+      shuntVoltageRegister += 2;                                      // Register for 2nd shunt voltage
     }
     else
     {
       if (type==INA3221_2)
       {
-        busVoltageRegister   += 4; // Register for 3rd bus voltage
-        shuntVoltageRegister += 4; // Register for 3rd shunt voltage
+        busVoltageRegister   += 4;                                    // Register for 3rd bus voltage
+        shuntVoltageRegister += 4;                                    // Register for 3rd shunt voltage
       } // of if-then INA322_2
     } // of if-then-else INA3221_1
     break;
@@ -97,10 +81,14 @@ inaDet::inaDet(inaEEPROM inaEE) ///< Constructor from saved EEPROM values
 INA_Class::INA_Class()  {} ///< Unused Class constructor
 INA_Class::~INA_Class() {} ///< Unused Class destructor
 
-/*!
-* Read 2 bytes from the specified I2C address. Standard I2C protocol is used, but a delay of I2C_DELAY microseconds
-* has been added to let the INAxxx devices have time to get the return data ready.
-*/
+/***************************************************************************************************************//*!
+* @brief     Read 2 bytes from the specified I2C address
+* @details   Standard I2C protocol is used, but a delay of I2C_DELAY microseconds has been added to let the INAxxx 
+*            devices have sufficient time to get the return data ready.
+* @param[in] addr I2C address to read from
+* @param[in] deviceAddress Address on the I2C device to read from
+* @return    integer value read from the I2C device
+*******************************************************************************************************************/
 int16_t INA_Class::readWord(const uint8_t addr, const uint8_t deviceAddress)
 {
   Wire.beginTransmission(deviceAddress);       // Address the I2C device
@@ -114,10 +102,14 @@ int16_t INA_Class::readWord(const uint8_t addr, const uint8_t deviceAddress)
   return returnData;
 } // of method readWord()
 
-/*!
-* Write 2 bytes to the specified I2C address. Standard I2C protocol is used, but a delay of I2C_DELAY microseconds
-* has been added after the transmission to let the INAxxx devices have time to store the data.
-*/
+/***************************************************************************************************************//*!
+* @brief     Write 2 bytes to the specified I2C address
+* @details   Standard I2C protocol is used, but a delay of I2C_DELAY microseconds has been added to let the INAxxx
+*            devices have sufficient time to process the data
+* @param[in] addr I2C address to write to
+* @param[in] data 2 Bytes to write to the device
+* @param[in] deviceAddress Address on the I2C device to write to 
+*******************************************************************************************************************/
 void INA_Class::writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress)
 {
   Wire.beginTransmission(deviceAddress); // Address the I2C device
@@ -128,13 +120,15 @@ void INA_Class::writeWord(const uint8_t addr, const uint16_t data, const uint8_t
   delayMicroseconds(I2C_DELAY);          // delay required for sync
 } // of method writeWord()
 
-/*!
-* Retrieve the stored information for a device from EEPROM. Since this method is private and access is controlled,
-* no range error checking is performed
-*/
+/***************************************************************************************************************//*!
+* @brief     Read INA device information from EEPROM
+* @details   Retrieve the stored information for a device from EEPROM. Since this method is private and access is
+*            controlled, no range error checking is performed
+* @param[in] deviceNumber Index to device array
+*******************************************************************************************************************/
 void INA_Class::readInafromEEPROM(const uint8_t deviceNumber)
 {
-  if (deviceNumber !=_currentINA)// Don't bother if we already have device data
+  if (deviceNumber !=_currentINA) // Don't bother if we already have the correct device data
   {
     #ifdef __STM32F1__                         // STM32F1 has no built-in EEPROM
       uint16_t e = deviceNumber *sizeof(inaEE); // it uses flash memory to emulate
@@ -151,9 +145,12 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber)
   } // of if-then we have a new device
 } // of method readInafromEEPROM()
 
-/*!
-* Write the current INA device structure to EEPROM
-*/
+/***************************************************************************************************************//*!
+* @brief     Write INA device information to EEPROM
+* @details   Write the stored information for a device from EEPROM. Since this method is private and access is
+*            controlled, no range error checking is performed
+* @param[in] deviceNumber Index to device array
+*******************************************************************************************************************/
 void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber)
 {
   inaEE = ina; // only save relevant part of ina to EEPROM
@@ -172,19 +169,34 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber)
   #endif
 } // of method writeInatoEEPROM()
 
-/*!
-* Set a new I2C speed. No error checking is done
-*/
+/***************************************************************************************************************//*!
+* @brief     Set a new I2C speed
+* @details   I2C allows various bus speeds, see the enumerated type I2C_MODES for the standard speeds. The valid
+*            speeds are  100KHz, 400KHz, 1MHz and 3.4MHz. Default to 100KHz when not specified. No range checking 
+*            is done.
+* @param[in] i2cSpeed [optional] changes the I2C speed to the rate specified in Herz
+*******************************************************************************************************************/
 void INA_Class::setI2CSpeed(const uint32_t i2cSpeed )
 {
   Wire.setClock(i2cSpeed);
 } // of method setI2CSpeed
 
-/*!
-* Initializes the contents of the class. searches for possible devices and sets the INA Configuration details, 
-* without which meaningful readings cannot be made. If it is called without the option deviceNumber parameter 
-* then the settings are applied to all devices, otherwise just that specific device is targeted.
-*/
+/***************************************************************************************************************//*!
+* @brief     Initializes the contents of the class
+* @details   searches for possible devices and sets the INA Configuration details, without which meaningful readings
+*            cannot be made. If it is called without the optional deviceNumber parameter then the settings are 
+*            applied to all devices, otherwise just that specific device is targeted. If the optional third 
+*            parameter, devNo, is specified that specific device gets the two specified values set for it. Can be 
+*            called multiple times, but the 3 parameter version will only function after the 2 parameter version 
+*            finds all devices
+* @param[in] maxBusAmps Integer value holding the maximum expected bus amperage, this value is used to
+*            compute a device's internal power register
+* @param[in] microOhmR Shunt resistance in micro-ohms, this value is used to compute a device's internal
+*            power register
+* @param[in] deviceNumber Device number to explicitly set the maxBusAmps and microOhmR values, by default
+*            all devices found get set to the same initial values for these 2 parameters
+* @return    The integer number of INAxxxx devices found on the I2C bus
+*******************************************************************************************************************/
 uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, const uint8_t deviceNumber )
 {
   uint16_t originalRegister,tempRegister;
@@ -301,15 +313,16 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
   return _DeviceCount;
 } // of method begin()
 
-/*!
-* Initializes the given device, using the settings from the structure. This includes (re)computing the device's
-* calibration values.
-*/
+/***************************************************************************************************************//*!
+* @brief     Initializes the the given devices using the settings from the internal structure
+* @details   This includes (re)computing the device's calibration values.
+* @param[in] deviceNumber Device number to explicitly initialize.
+*******************************************************************************************************************/
 void INA_Class::initDevice(const uint8_t deviceNumber)
 {
   ina.operatingMode = INA_DEFAULT_OPERATING_MODE; // Default to continuous mode
   writeInatoEEPROM(deviceNumber);                 // Store the structure to EEPROM
-  uint8_t programmableGain, dummy;                // Added unused "dummy" for bug https://github.com/arduino/Arduino/issues/7949
+  uint8_t programmableGain, dummy;                // Unused "dummy", https://github.com/arduino/Arduino/issues/7949
   uint16_t calibration, maxShuntmV, tempRegister; // Calibration temporary variables
   switch (ina.type)
   {
@@ -343,9 +356,13 @@ void INA_Class::initDevice(const uint8_t deviceNumber)
   } // of switch type
 } // of method initDevice()
 
-/*!
-* Method setBusConversion specifies the conversion rate in microseconds, rounded to the nearest valid value
-*/
+/***************************************************************************************************************//*!
+* @brief     specifies the conversion rate in microseconds, rounded to the nearest valid value
+* @details   INA devices can have a conversion rate of up to 68100 microseconds
+* @param[in] convTime The conversion time in microseconds, invalid values are rounded to the nearest valid value
+* @param[in] deviceNumber [optional] When specified, only that specified device number gets changed, otherwise all
+*            devices are set to the same averaging rate
+*******************************************************************************************************************/
 void INA_Class::setBusConversion(const uint32_t convTime, const uint8_t deviceNumber ) 
 {
   int16_t configRegister, convRate;
@@ -402,9 +419,12 @@ void INA_Class::setBusConversion(const uint32_t convTime, const uint8_t deviceNu
   } // for-next each device loop
 } // of method setBusConversion()
 
-/*!
-* Method setShuntConversion specifies the conversion rate in microseconds, rounded to the nearest valid value
-*/
+/***************************************************************************************************************//*!
+* @brief     specifies the conversion rate in microseconds, rounded to the nearest valid value
+* @details   INA devices can have a conversion rate of up to 68100 microseconds
+* @param[in] deviceNumber to return the device name for[optional] When specified, only that specified device number gets changed, otherwise all
+*            devices are set to the same averaging rate
+*******************************************************************************************************************/
 void INA_Class::setShuntConversion(const uint32_t convTime, const uint8_t deviceNumber )
 {
   int16_t configRegister, convRate;
@@ -456,11 +476,15 @@ void INA_Class::setShuntConversion(const uint32_t convTime, const uint8_t device
   } // for-next each device loop
 } // of method setShuntConversion()
 
-/*!
-* Method getDeviceName returns a character buffer with the name of the device specified in the input parameter.
-*/
+/***************************************************************************************************************//*!
+* @brief     returns a character buffer with the name of the device specified in the input parameter
+* @details   See function definition for list of possible return values
+* @param[in] deviceNumber to return the device name of
+* @return char* of the device name
+*******************************************************************************************************************/
 const char* INA_Class::getDeviceName(const uint8_t deviceNumber)
 {
+  if (deviceNumber > _DeviceCount) return("");
   readInafromEEPROM(deviceNumber); // Load EEPROM to ina structure
   switch ( ina.type )
   {
@@ -476,18 +500,26 @@ const char* INA_Class::getDeviceName(const uint8_t deviceNumber)
   } // of switch type
 } // of method getDeviceName()
 
-/*!
-* Method getDeviceAddress returns a I2C address of the device specified in the input parameter.
-*/
+/***************************************************************************************************************//*!
+* @brief     returns a I2C address of the device specified in the input parameter
+* @details   Return the I2C address of the specified device, if the number is out of range 0 is returned
+* @param[in] deviceNumber to return the device name of
+* @return uint8_t unsigned integer for the I2C address of the device. 0 if value is out-of-range
+*******************************************************************************************************************/
 uint8_t INA_Class::getDeviceAddress(const uint8_t deviceNumber)
 {
+  if (deviceNumber > _DeviceCount) return 0; 
   readInafromEEPROM(deviceNumber); // Load EEPROM to ina structure
   return(ina.address);
 } // of method getDeviceAddress()
 
-/*!
-* Method getBusMillivolts returns the bus voltage in millivolts
-*/
+/***************************************************************************************************************//*!
+* @brief     returns the bus voltage in millivolts
+* @details   The converted millivolt value is returned and if the device is in triggered mode the next
+*            conversion is started
+* @param[in] deviceNumber to return the device bus millivolts for
+* @return uint16_t unsigned integer for the bus millivoltage
+*******************************************************************************************************************/
 uint16_t INA_Class::getBusMilliVolts(const uint8_t deviceNumber)
 {
   uint16_t busVoltage = getBusRaw(deviceNumber);                     // Get raw voltage from device
@@ -495,9 +527,13 @@ uint16_t INA_Class::getBusMilliVolts(const uint8_t deviceNumber)
   return(busVoltage);
 } // of method getBusMilliVolts()
 
-/*!
-* Method getBusRaw returns the raw unconverted bus voltage reading from the device
-*/
+/***************************************************************************************************************//*!
+* @brief     returns the raw unconverted bus voltage reading from the device
+* @details   The raw measured value is returned and if the device is in triggered mode the next
+*            conversion is started
+* @param[in] deviceNumber to return the raw device bus voltage reading
+* @return    uint16_t unsigned integer for the raw bus measurement
+*******************************************************************************************************************/
 uint16_t INA_Class::getBusRaw(const uint8_t deviceNumber)
 {
   readInafromEEPROM(deviceNumber);                              // Load EEPROM to ina structure from EEPROM
@@ -514,9 +550,13 @@ uint16_t INA_Class::getBusRaw(const uint8_t deviceNumber)
   return(raw);
 } // of method getBusRaw()
 
-/*!
-* Method getShuntMicroVolts() returns the shunt reading converted to microvolts
-*/
+/***************************************************************************************************************//*!
+* @brief     returns the shunt reading converted to microvolts
+* @details   The computed microvolts value is returned and if the device is in triggered mode the next
+*            conversion is started
+* @param[in] deviceNumber to return the value for
+* @return    int32_t signed integer for the shunt microvolts
+*******************************************************************************************************************/
 int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber)
 {
   int32_t shuntVoltage = getShuntRaw(deviceNumber);
@@ -537,9 +577,12 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber)
   return(shuntVoltage);
 } // of method getShuntMicroVolts()
 
-/*!
-* Method getShuntRaw() returns the raw unconverted shunt reading
-*/
+/***************************************************************************************************************//*!
+* @brief     returns the raw shunt reading 
+* @details   The raw reading is returned and if the device is in triggered mode the next conversion is started
+* @param[in] deviceNumber to return the value for
+* @return    int16_t signed integer for the raw shunt reading
+*******************************************************************************************************************/
 int16_t INA_Class::getShuntRaw(const uint8_t deviceNumber)
 {
   int16_t raw;
@@ -565,9 +608,12 @@ int16_t INA_Class::getShuntRaw(const uint8_t deviceNumber)
   return(raw);
 } // of method getShuntMicroVolts()
 
-/*!
-* Method getBusMicroAmps() returns the computed microamps measured on the bus for the specified device
-*/
+/***************************************************************************************************************//*!
+* @brief     returns the computed microamps measured on the bus for the specified device
+* @details   The computed reading is returned and if the device is in triggered mode the next conversion is started
+* @param[in] deviceNumber to return the value for
+* @return    int32_t signed integer for computed microamps on the bus
+*******************************************************************************************************************/
 int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber)
 {
   readInafromEEPROM(deviceNumber); // Load EEPROM to ina structure
@@ -583,9 +629,12 @@ int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber)
   return(microAmps);
 } // of method getBusMicroAmps()
 
-/*!
-* Method getBusMicroWatts() returns the computed microwatts measured on the bus for the specified device
-*/
+/***************************************************************************************************************//*!
+* @brief     returns the computed microwatts measured on the bus for the specified device
+* @details   The computed reading is returned and if the device is in triggered mode the next conversion is started
+* @param[in] deviceNumber to return the value for
+* @return    int32_t signed integer for computed microwatts on the bus
+*******************************************************************************************************************/
 int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) 
 {
   int32_t microWatts = 0;
@@ -601,9 +650,11 @@ int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber)
   return(microWatts);
 } // of method getBusMicroWatts()
 
-/*!
-* Method reset() performs a software reset call for all (when the parameter is not specified) or a single INA device
-*/
+/***************************************************************************************************************//*!
+* @brief     performs a software reset for the specified device
+* @details   If no device is specified, then all devices are reset
+* @param[in] deviceNumber to reset
+*******************************************************************************************************************/
 void INA_Class::reset(const uint8_t deviceNumber)
 {
    for(uint8_t i=0;i<_DeviceCount;i++) // Loop for each device found
@@ -617,10 +668,12 @@ void INA_Class::reset(const uint8_t deviceNumber)
   } // for-next each device loop
 } // of method reset
 
-/*!
-* Method setMode() sets the operating mode from the list given in enumerated type "ina_Mode" for a device or for 
-* all devices if the parameter "deviceNumber" is not specified
-*/
+/***************************************************************************************************************//*!
+* @brief     sets the operating mode from the list given in enumerated type "ina_Mode" for a device
+* @details   If no device is specified, then all devices are set to the given mode
+* @param[in] mode Mode (see "ina_Mode" enumerated type for list of valid values
+* @param[in] deviceNumber to reset (Optional, when not set then all devices have their mode changed)
+*******************************************************************************************************************/
 void INA_Class::setMode(const uint8_t mode, const uint8_t deviceNumber)
 {
    int16_t configRegister;
@@ -639,11 +692,12 @@ void INA_Class::setMode(const uint8_t mode, const uint8_t deviceNumber)
   } // for-next each device loop
 } // of method setMode()
 
-/*!
-* Method waitForConverstion() will not return until the conversion for the specified device is finished or if no
-* device number is specified it will wait until all devices have finished their current conversion. If the conversion
-* has completed already then the flag (and interrupt pin, if activated) is also reset.
-*/
+/***************************************************************************************************************//*!
+* @brief     will not return until the conversion for the specified device is finished
+* @details   if no device number is specified it will wait until all devices have finished their current conversion. 
+*            If the conversion has completed already then the flag (and interrupt pin, if activated) is also reset.
+* @param[in] deviceNumber to reset (Optional, when not set then all devices have their mode changed)
+*******************************************************************************************************************/
 void INA_Class::waitForConversion(const uint8_t deviceNumber)
 {
   uint16_t cvBits = 0;
@@ -679,11 +733,15 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber)
   } // for-next each device loop
 } // of method waitForConversion()
 
-/*!
-* Method AlertOnConversion configures the INA devices which support this functionality to pull the ALERT pin low
-* when a conversion is complete. This call is ignored and returns false when called for an invalid device
-* as the INA219 doesn't have this pin it won't work for that device.
-*/
+/***************************************************************************************************************//*!
+* @brief     configures the INA devices which support this functionality to pull the ALERT pin low when a conversion 
+*            is complete
+* @details   This call is ignored and returns false when called for an invalid device as the INA219 doesn't have 
+*            this pin it won't work for that device.
+* @param[in] alertState Boolean true or false to denote the requested setting
+* @param[in] deviceNumber to reset (Optional, when not set then all devices have their mode changed)
+* @return    Returns "true" on success, otherwise false
+*******************************************************************************************************************/
 bool INA_Class::AlertOnConversion(const bool alertState, const uint8_t deviceNumber)
 {
   uint16_t alertRegister;
@@ -712,11 +770,15 @@ bool INA_Class::AlertOnConversion(const bool alertState, const uint8_t deviceNum
   return(returnCode);
 } // of method AlertOnConversion
 
-/*!
-* Method AlertOnShuntOverVoltageConversion configures the INA devices which support this functionality to pull
-* the ALERT pin low when the shunt current exceeds the value given in the parameter in millivolts. This call is
-* ignored and returns false when called for an invalid device
-*/
+/***************************************************************************************************************//*!
+* @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the shunt 
+*            current exceeds the value given in the parameter in millivolts
+* @details   This call is ignored and returns false when called for an invalid device
+* @param[in] alertState Boolean true or false to denote the requested setting
+* @param[in] milliVolts alert level at which to trigger the alarm
+* @param[in] deviceNumber to reset (Optional, when not set then all devices have their mode changed)
+* @return    Returns "true" on success, otherwise false
+*******************************************************************************************************************/
 bool INA_Class::AlertOnShuntOverVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber)
 {
   uint16_t alertRegister;
@@ -749,11 +811,15 @@ bool INA_Class::AlertOnShuntOverVoltage(const bool alertState, const int32_t mil
   return(returnCode);
 } // of method AlertOnShuntOverVoltage
 
-/*!
-* Method AlertOnShuntUnderVoltageConversion configures the INA devices which support this functionality to pull
-* the ALERT pin low when the shunt current goes below the value given in the parameter in millivolts. This call
-* is ignored and returns false when called for an invalid device
-*/
+/***************************************************************************************************************//*!
+* @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the shunt 
+*            current goes below the value given in the parameter in millivolts
+* @details   This call is ignored and returns false when called for an invalid device
+* @param[in] alertState Boolean true or false to denote the requested setting
+* @param[in] milliVolts alert level at which to trigger the alarm
+* @param[in] deviceNumber to reset (Optional, when not set then all devices have their alert changed)
+* @return    Returns "true" on success, otherwise false
+*******************************************************************************************************************/
 bool INA_Class::AlertOnShuntUnderVoltage(const bool alertState,const int32_t milliVolts, const uint8_t deviceNumber)
 {
   uint16_t alertRegister;
@@ -785,11 +851,15 @@ bool INA_Class::AlertOnShuntUnderVoltage(const bool alertState,const int32_t mil
   return(returnCode);
 } // of method AlertOnShuntUnderVoltage
 
-/*!
-* Method AlertOnBusOverVoltageConversion configures the INA devices which support this functionality to pull
-* the ALERT pin low when the bus current goes aboe the value given in the parameter in millivolts. This call is
-* ignored and returns false when called for an invalid device
-*/
+/***************************************************************************************************************//*!
+* @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the bus 
+*            current goes aboe the value given in the parameter in millivolts
+* @details   This call is ignored and returns false when called for an invalid device
+* @param[in] alertState Boolean true or false to denote the requested setting
+* @param[in] milliVolts alert level at which to trigger the alarm
+* @param[in] deviceNumber to reset (Optional, when not set then all devices have their alert changed)
+* @return    Returns "true" on success, otherwise false
+*******************************************************************************************************************/
 bool INA_Class::AlertOnBusOverVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber)
 {
   uint16_t alertRegister;
@@ -822,11 +892,15 @@ bool INA_Class::AlertOnBusOverVoltage(const bool alertState, const int32_t milli
   return(returnCode);
 } // of method AlertOnBusOverVoltageConversion
 
-/*!
-* Method AlertOnBusUnderVoltage configures the INA devices which support this functionality to pull
-* the ALERT pin low when the bus current goes aboe the value given in the parameter in millivolts. This call is
-* ignored and returns false when called for an invalid device
-*/
+/***************************************************************************************************************//*!
+* @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the bus 
+*            current goes above the value given in the parameter in millivolts.
+* @details   This call is ignored and returns false when called for an invalid device
+* @param[in] alertState Boolean true or false to denote the requested setting
+* @param[in] milliVolts alert level at which to trigger the alarm
+* @param[in] deviceNumber to reset (Optional, when not set then all devices have their alert changed)
+* @return    Returns "true" on success, otherwise false
+*******************************************************************************************************************/
 bool INA_Class::AlertOnBusUnderVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber)
 {
   uint16_t alertRegister;
@@ -859,11 +933,15 @@ bool INA_Class::AlertOnBusUnderVoltage(const bool alertState, const int32_t mill
   return(returnCode);
 } // of method AlertOnBusUnderVoltage
 
-/*!
-* Method AlertOnPowerOverLimit configures the INA devices which support this functionality to pull the ALERT pin 
-* low when the power exceeds the value set in the parameter in millivolts. This call is ignored and returns false 
-* when called for an invalid device
-*/
+/***************************************************************************************************************//*!
+* @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the power 
+*            exceeds the value set in the parameter in milliamps
+* @details   This call is ignored and returns false when called for an invalid device
+* @param[in] alertState Boolean true or false to denote the requested setting
+* @param[in] milliAmps alert level at which to trigger the alarm
+* @param[in] deviceNumber to reset (Optional, when not set then all devices have their alert changed)
+* @return    Returns "true" on success, otherwise false
+*******************************************************************************************************************/
 bool INA_Class::AlertOnPowerOverLimit(const bool alertState, const int32_t milliAmps, const uint8_t deviceNumber) 
 {
   uint16_t alertRegister;
@@ -893,10 +971,12 @@ bool INA_Class::AlertOnPowerOverLimit(const bool alertState, const int32_t milli
   return(returnCode);
 } // of method AlertOnPowerOverLimit
 
-
-/*!
-* Method setAveraging sets the hardware averaging for one or all devices
-*/
+/***************************************************************************************************************//*!
+* @brief     sets the hardware averaging for one or all devices
+* @details   Out-of-Range averaging is brought down to the highest allowed value
+* @param[in] averages Number of  averages to set (0-128)
+* @param[in] deviceNumber to reset (Optional, when not set then all devices have their averaging changed)
+*******************************************************************************************************************/
 void INA_Class::setAveraging(const uint16_t averages, const uint8_t deviceNumber)
 {
   uint16_t averageIndex;
