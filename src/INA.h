@@ -55,9 +55,7 @@
 * 1.0.3   | 2018-09-04 | https://github.com/delboy711   | Issue #26. Incorrect INA3221 negative current readings
 * 1.0.3   | 2018-08-18 | https://github.com/SV-Zanshin  | Issue #22. Reduce EEPROM Footprint
 * 1.0.3   | 2018-08-18 | https://github.com/SV-Zanshin  | Issue #21. Rename I2C Constants to avoid redefinition STM32F1
-* 1.0.2   | 2018-07-22 | https://github.com/SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName", 
-*                                                         8B. Changed datatype in structure to bit - level length 
-*                                                         definitions, saving additional 3 bytes
+* 1.0.2   | 2018-07-22 | https://github.com/SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName", 8B. Changed datatype in structure to bit-level length definitions, saving additional 3 bytes
 * 1.0.2   | 2018-07-21 | https://github.com/avaldeve    | Issue #12. Incorrect const datatype for I2C Speeds
 * 1.0.2   | 2018-07-12 | https://github.com/coelner     | Issue #9. Esplora doesn't accept "Wire.begin()"
 * 1.0.2   | 2018-07-08 | https://github.com/SV-Zanshin  | Issue #2. Finished testing INA3221 across all functions
