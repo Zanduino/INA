@@ -141,6 +141,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad57ab46ebb63d0f878934dacc821f5a6"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i_n_a___class.html#ad57ab46ebb63d0f878934dacc821f5a6">getDeviceName</a> (const uint8_t <a class="el" href="_background_read_8ino.html#aa288141c88c2063ca23516ce595d6a94">deviceNumber</a>=0)</td></tr>
 <tr class="memdesc:ad57ab46ebb63d0f878934dacc821f5a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the INA device name for a device.  <a href="#ad57ab46ebb63d0f878934dacc821f5a6">More...</a><br /></td></tr>
 <tr class="separator:ad57ab46ebb63d0f878934dacc821f5a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac699c05cbdbf3c248b483f762b886096"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i_n_a___class.html#ac699c05cbdbf3c248b483f762b886096">getDeviceAddress</a> (const uint8_t <a class="el" href="_background_read_8ino.html#aa288141c88c2063ca23516ce595d6a94">deviceNumber</a>=0)</td></tr>
+<tr class="memdesc:ac699c05cbdbf3c248b483f762b886096"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the INA device address for a device.  <a href="#ac699c05cbdbf3c248b483f762b886096">More...</a><br /></td></tr>
+<tr class="separator:ac699c05cbdbf3c248b483f762b886096"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a926651f68857ea52b4713d1911825ee7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i_n_a___class.html#a926651f68857ea52b4713d1911825ee7">reset</a> (const uint8_t <a class="el" href="_background_read_8ino.html#aa288141c88c2063ca23516ce595d6a94">deviceNumber</a>=0)</td></tr>
 <tr class="memdesc:a926651f68857ea52b4713d1911825ee7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the INA device.  <a href="#a926651f68857ea52b4713d1911825ee7">More...</a><br /></td></tr>
 <tr class="separator:a926651f68857ea52b4713d1911825ee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -634,6 +637,34 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>integer raw value of bus voltage reading</dd></dl>
 <p>Method getBusRaw returns the raw unconverted bus voltage reading from the device </p>
+
+</div>
+</div>
+<a id="ac699c05cbdbf3c248b483f762b886096"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac699c05cbdbf3c248b483f762b886096">&#9670;&nbsp;</a></span>getDeviceAddress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t INA_Class::getDeviceAddress </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>deviceNumber</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the INA device address for a device. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">deviceNumber</td><td>Device number </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>unsigned 8-bit integer of the device address</dd></dl>
+<p>Method getDeviceAddress returns a I2C address of the device specified in the input parameter. </p>
 
 </div>
 </div>

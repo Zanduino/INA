@@ -13,6 +13,7 @@ var class_i_n_a___class =
     [ "getBusMicroWatts", "class_i_n_a___class.html#a373bb011a41aec8e836da0a95a682e0c", null ],
     [ "getBusMilliVolts", "class_i_n_a___class.html#a995bbc997800fc72583a9051fa6bea74", null ],
     [ "getBusRaw", "class_i_n_a___class.html#a3c2215f1e78c743d152f0347bd8c971d", null ],
+    [ "getDeviceAddress", "class_i_n_a___class.html#ac699c05cbdbf3c248b483f762b886096", null ],
     [ "getDeviceName", "class_i_n_a___class.html#ad57ab46ebb63d0f878934dacc821f5a6", null ],
     [ "getShuntMicroVolts", "class_i_n_a___class.html#a50fbaa1bfc005d7121fbd07b390069ea", null ],
     [ "getShuntRaw", "class_i_n_a___class.html#a6bb50d33fcef00524620d2afb254512c", null ],
