@@ -97,10 +97,10 @@ $(document).ready(function(){initNavTree('_display_readings_8ino.html','');});
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a4fc01d736fe50cf5b977f755b675f11d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#a4fc01d736fe50cf5b977f755b675f11d">setup</a> ()</td></tr>
-<tr class="memdesc:a4fc01d736fe50cf5b977f755b675f11d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arduino IDE method called once upon device start/restart.  <a href="#a4fc01d736fe50cf5b977f755b675f11d">More...</a><br /></td></tr>
+<tr class="memdesc:a4fc01d736fe50cf5b977f755b675f11d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arduino method called once at startup to initialize the system.  <a href="#a4fc01d736fe50cf5b977f755b675f11d">More...</a><br /></td></tr>
 <tr class="separator:a4fc01d736fe50cf5b977f755b675f11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe461d27b9c48d5921c00d521181f12f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#afe461d27b9c48d5921c00d521181f12f">loop</a> ()</td></tr>
-<tr class="memdesc:afe461d27b9c48d5921c00d521181f12f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arduino IDE method called after setup and never exited.  <a href="#afe461d27b9c48d5921c00d521181f12f">More...</a><br /></td></tr>
+<tr class="memdesc:afe461d27b9c48d5921c00d521181f12f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arduino method for the main program loop.  <a href="#afe461d27b9c48d5921c00d521181f12f">More...</a><br /></td></tr>
 <tr class="separator:afe461d27b9c48d5921c00d521181f12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -169,8 +169,8 @@ Changelog</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Arduino IDE method called after setup and never exited. </p>
-<p>This is the main program for the Arduino IDE, it is called in an infinite loop. The INA devices detected in the <a class="el" href="_display_readings_8ino.html#a4fc01d736fe50cf5b977f755b675f11d" title="Arduino IDE method called once upon device start/restart. ">setup()</a> call are cycled through and their readings are displayed to the serial port </p>
+<p>Arduino method for the main program loop. </p>
+<p>This is the main program for the Arduino IDE, it is an infinite loop and keeps on repeating. </p><dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
 </div>
 </div>
@@ -189,8 +189,8 @@ Changelog</h1>
       </table>
 </div><div class="memdoc">
 
-<p>Arduino IDE method called once upon device start/restart. </p>
-<p>It is only called one time and all of the variables and other initialization calls are done in this method prior to entering the main loop for data measurement. </p>
+<p>Arduino method called once at startup to initialize the system. </p>
+<p>This is an Arduino IDE method which is called first upon boot or restart. It is only called one time and then control goes to the main "loop()" method, from which control never returns. The serial port is initialized and the INA.begin() method called to find all INA devices on the I2C bus and then the devices are initialized to given conversion and averaging rates. </p><dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
 </div>
 </div>
