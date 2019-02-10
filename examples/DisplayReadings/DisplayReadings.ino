@@ -57,6 +57,9 @@
   #include "WProgram.h"
 #endif
 #include <INA.h> // Zanshin INA Library
+#if defined(_SAM3XA_) || defined(ARDUINO_ARCH_SAMD)
+#include <avr/dtostrf.h> // Needed for the SAM3XA (Arduino Zero)
+#endif
 /*******************************************************************************************************************
 ** Declare program constants, global variables and instantiate INA class                                          **
 *******************************************************************************************************************/

@@ -39,6 +39,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.8   | 2019-02-10 | https://github.com/Sv-Zanshin  | Issue #39. Allow non-AVR processors without EEPROM to run
 * 1.0.8   | 2019-02-09 | https://github.com/Sv-Zanshin  | Cleaned up doxygen comment formatting in .h and .cpp files
 * 1.0.8   | 2019-02-09 | https://github.com/Sv-Zanshin  | Issues #38. Add getDeviceAddress() function
 * 1.0.7   | 2019-01-20 | https://github.com/Sv-Zanshin  | Issues #36 & #37. Changed for Travis-CI and automated doxygen
@@ -188,6 +189,7 @@
   const uint16_t INA3221_CONFIG_BADC_MASK       =  0x01C0; ///< INA3221 Bits 7-10  masked
   const uint8_t  INA3221_MASK_REGISTER          =     0xF; ///< INA32219 Mask register
   const uint8_t  I2C_DELAY                      =      10; ///< Microsecond delay on I2C writes
+
   /*************************************************************************************************************//*!
   * @class   INA_Class
   * @brief   Forward definitions for the INA_Class
@@ -229,5 +231,9 @@
       uint8_t     _currentINA  = UINT8_MAX; ///< Stores current INA device number
       inaEEPROM   inaEE;                    ///< INA device structure
       inaDet      ina;                      ///< INA device structure
+      #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) ||  (__STM32F1__)
+      #else
+        inaEEPROM _EEPROMEmulation[32];     ///< Actual array of up to 32 devices
+      #endif
   }; // of INA_Class definition
 #endif
