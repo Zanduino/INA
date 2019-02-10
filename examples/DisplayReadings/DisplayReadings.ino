@@ -41,6 +41,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.3   | 2019-02-10 | https://github.com/SV-Zanshin  | Issue #38. Made pretty-print columns line up
 * 1.0.3   | 2019-02-09 | https://github.com/SV-Zanshin  | Issue #38. Added device number to display
 * 1.0.2   | 2018-12-29 | https://github.com/SV-Zanshin  | Converted comments to doxygen format
 * 1.0.1   | 2018-09-22 | https://github.com/SV-Zanshin  | Cleaned up comments, added INA wait loop, removed F("") calls
@@ -87,7 +88,7 @@ void setup()
   devicesFound = INA.begin(1,100000); // Set to an expected 1 Amp maximum and a 100000 microOhm resistor
   while (INA.begin(1, 100000) == 0)
   {
-    Serial.println("No INA device found, retrying in 10s...");
+    Serial.println("No INA device found, retrying in 10 seconds...");
      delay(10000); // Wait 10 seconds before retrying 
   } // while no devices detected
   Serial.print(" - Detected ");
@@ -102,27 +103,29 @@ void setup()
 
 /***************************************************************************************************************//*!
 * @brief    Arduino method for the main program loop
-* @details  This is the main program for the Arduino IDE, it is an infinite loop and keeps on repeating.
+* @details  This is the main program for the Arduino IDE, it is an infinite loop and keeps on repeating. In order
+*           to format the output use is made of the "sprintf()" function, but in the Arduino implementation it has
+*           no support for floating point output, so the "dtostrf()" function is used to convert the floating point
+*           numbers into formatted strings.
 * @return   void
 *******************************************************************************************************************/
 void loop() 
 {
   static uint16_t loopCounter = 0; // Count the number of iterations
-  Serial.print("# Ad Type   Bus V   Shunt mV Bus mA    Bus mW\n");
-  Serial.print("= == ====== ======= ======== ========= ========\n");
+  static char     sprintfBuffer[100]; // Buffer to format output
+  static char busChar[8], shuntChar[10], busMAChar[10], busMWChar[10]; // Floating point string buffers
+
+  Serial.print("Nr Adr Type   Bus      Shunt       Bus         Bus\n");
+  Serial.print("== === ====== ======== =========== =========== ===========\n");
   for (uint8_t i=0;i<devicesFound;i++) // Loop through all devices
   {
-    Serial.print(i+1); Serial.print(" ");
-    Serial.print(INA.getDeviceName(i)); Serial.print(" ");    // Show device Name
-    Serial.print(INA.getDeviceAddress(i)); Serial.print(" "); // Show device Number
-    Serial.print((float)INA.getBusMilliVolts(i)/1000.0,4);    // Convert mV to Volts
-    Serial.print("V ");
-    Serial.print((float)INA.getShuntMicroVolts(i)/1000.0,3);  // Convert uV to Millivolts
-    Serial.print("mV ");
-    Serial.print((float)INA.getBusMicroAmps(i)/1000.0,4);     // Convert uA to Milliamps
-    Serial.print("mA ");
-    Serial.print((float)INA.getBusMicroWatts(i) / 1000.0, 4); // Convert uA to Milliwatts
-    Serial.print("mW\n");
+    dtostrf(INA.getBusMilliVolts(i)   / 1000.0, 7, 4, busChar  ); // Convert floating point to character
+    dtostrf(INA.getShuntMicroVolts(i) / 1000.0, 9, 4, shuntChar); // Convert floating point to character
+    dtostrf(INA.getBusMicroAmps(i)    / 1000.0, 9, 4, busMAChar); // Convert floating point to character
+    dtostrf(INA.getBusMicroWatts(i)   / 1000.0, 9, 4, busMWChar); // Convert floating point to character
+    sprintf(sprintfBuffer, "%2d %3d %s %sV %smV %smA %smW\n", i+1, INA.getDeviceAddress(i),
+            INA.getDeviceName(i), busChar, shuntChar, busMAChar, busMWChar);
+    Serial.print(sprintfBuffer);
   } // for-next each INA device loop
   Serial.println();
   delay(5000); // Wait 5 seconds before next reading
