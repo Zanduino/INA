@@ -470,7 +470,8 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Initializes the contents of the class. </p>
-<p>searches for possible devices and sets the INA Configuration details, without which meaningful readings cannot be made. If it is called without the optional deviceNumber parameter then the settings are applied to all devices, otherwise just that specific device is targeted. If the optional third parameter, devNo, is specified that specific device gets the two specified values set for it. Can be called multiple times, but the 3 parameter version will only function after the 2 parameter version finds all devices </p><dl class="params"><dt>Parameters</dt><dd>
+<p>searches for possible devices and sets the INA Configuration details, without which meaningful readings cannot be made. If it is called without the optional deviceNumber parameter then the settings are applied to all devices, otherwise just that specific device is targeted. If the optional third parameter, devNo, is specified that specific device gets the two specified values set for it. Can be called multiple times, but the 3 parameter version will only function after the 2 parameter version finds all devices.<br />
+ The AVR-based devices </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">maxBusAmps</td><td>Integer value holding the maximum expected bus amperage, this value is used to compute a device's internal power register </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">microOhmR</td><td>Shunt resistance in micro-ohms, this value is used to compute a device's internal power register </td></tr>
