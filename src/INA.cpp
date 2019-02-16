@@ -226,6 +226,8 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
       maxDevices = EEPROM.maxcount() / sizeof(inaEE); // Compute number devices possible
     #elif defined(CORE_TEENSY)                        // TEENSY doesn't have EEPROM.length
       maxDevices = 2048 / sizeof(inaEE);              // defined, so use 2Kb as value
+    #elif defined(ARDUINO_SAMD_ZERO)
+      maxDevices = 32;
     #else
       maxDevices = EEPROM.length() / sizeof(inaEE);   // Compute number devices possible
     #endif
