@@ -39,6 +39,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.8   | 2019-02-16 | https://github.com/Sv-Zanshin  | Corrected and tested ESP32 implementation
 * 1.0.8   | 2019-02-10 | https://github.com/Sv-Zanshin  | Issue #39. Allow non-AVR processors without EEPROM to run
 * 1.0.8   | 2019-02-09 | https://github.com/Sv-Zanshin  | Cleaned up doxygen comment formatting in .h and .cpp files
 * 1.0.8   | 2019-02-09 | https://github.com/Sv-Zanshin  | Issues #38. Add getDeviceAddress() function
@@ -79,6 +80,7 @@
 #else
   #include "WProgram.h"
 #endif
+
 #ifndef INA__Class_h
   /*! Guard code definition to prevent multiple includes */
   #define INA__Class_h
@@ -199,34 +201,34 @@
     public:
       INA_Class();
       ~INA_Class();
-      uint8_t     begin                    (const uint8_t  maxBusAmps, const uint32_t microOhmR, const uint8_t  deviceNumber = UINT8_MAX );
-      void        setI2CSpeed              (const uint32_t i2cSpeed = INA_I2C_STANDARD_MODE);
-      void        setMode                  (const uint8_t  mode, const uint8_t deviceNumber = UINT8_MAX);
-      void        setAveraging             (const uint16_t averages, const uint8_t deviceNumber = UINT8_MAX);
-      void        setBusConversion         (const uint32_t convTime, const uint8_t deviceNumber = UINT8_MAX);
-      void        setShuntConversion       (const uint32_t convTime, const uint8_t  deviceNumber = UINT8_MAX);
-      uint16_t    getBusMilliVolts         (const uint8_t deviceNumber = 0);
-      uint16_t    getBusRaw                (const uint8_t deviceNumber = 0);
-      int32_t     getShuntMicroVolts       (const uint8_t deviceNumber = 0);
-      int16_t     getShuntRaw              (const uint8_t deviceNumber = 0);
-      int32_t     getBusMicroAmps          (const uint8_t deviceNumber = 0);
-      int32_t     getBusMicroWatts         (const uint8_t deviceNumber = 0);
-      const char* getDeviceName            (const uint8_t deviceNumber = 0);
-      uint8_t     getDeviceAddress         (const uint8_t deviceNumber = 0);
-      void        reset                    (const uint8_t deviceNumber = 0);
-      void        waitForConversion        (const uint8_t deviceNumber = UINT8_MAX);
-      bool        AlertOnConversion        (const bool alertState, const uint8_t deviceNumber = UINT8_MAX);
-      bool        AlertOnShuntOverVoltage  (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
-      bool        AlertOnShuntUnderVoltage (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
-      bool        AlertOnBusOverVoltage    (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
-      bool        AlertOnBusUnderVoltage   (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber =UINT8_MAX);
-      bool        AlertOnPowerOverLimit    (const bool alertState, const int32_t milliAmps, const uint8_t deviceNumber =UINT8_MAX);
+      uint8_t     begin                   (const uint8_t  maxBusAmps, const uint32_t microOhmR, const uint8_t  deviceNumber = UINT8_MAX );
+      void        setI2CSpeed             (const uint32_t i2cSpeed = INA_I2C_STANDARD_MODE);
+      void        setMode                 (const uint8_t  mode, const uint8_t deviceNumber = UINT8_MAX);
+      void        setAveraging            (const uint16_t averages, const uint8_t deviceNumber = UINT8_MAX);
+      void        setBusConversion        (const uint32_t convTime, const uint8_t deviceNumber = UINT8_MAX);
+      void        setShuntConversion      (const uint32_t convTime, const uint8_t  deviceNumber = UINT8_MAX);
+      uint16_t    getBusMilliVolts        (const uint8_t deviceNumber = 0);
+      uint16_t    getBusRaw               (const uint8_t deviceNumber = 0);
+      int32_t     getShuntMicroVolts      (const uint8_t deviceNumber = 0);
+      int16_t     getShuntRaw             (const uint8_t deviceNumber = 0);
+      int32_t     getBusMicroAmps         (const uint8_t deviceNumber = 0);
+      int32_t     getBusMicroWatts        (const uint8_t deviceNumber = 0);
+      const char* getDeviceName           (const uint8_t deviceNumber = 0);
+      uint8_t     getDeviceAddress        (const uint8_t deviceNumber = 0);
+      void        reset                   (const uint8_t deviceNumber = 0);
+      void        waitForConversion       (const uint8_t deviceNumber = UINT8_MAX);
+      bool        AlertOnConversion       (const bool alertState, const uint8_t deviceNumber = UINT8_MAX);
+      bool        AlertOnShuntOverVoltage (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
+      bool        AlertOnShuntUnderVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
+      bool        AlertOnBusOverVoltage   (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
+      bool        AlertOnBusUnderVoltage  (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber =UINT8_MAX);
+      bool        AlertOnPowerOverLimit   (const bool alertState, const int32_t milliAmps, const uint8_t deviceNumber =UINT8_MAX);
     private:
-      int16_t     readWord                 (const uint8_t addr, const uint8_t deviceAddress);
-      void        writeWord                (const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);
-      void        readInafromEEPROM        (const uint8_t deviceNumber);
-      void        writeInatoEEPROM         (const uint8_t deviceNumber);
-      void        initDevice               (const uint8_t deviceNumber);
+      int16_t     readWord                (const uint8_t addr, const uint8_t deviceAddress);
+      void        writeWord               (const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);
+      void        readInafromEEPROM       (const uint8_t deviceNumber);
+      void        writeInatoEEPROM        (const uint8_t deviceNumber);
+      void        initDevice              (const uint8_t deviceNumber);
       uint8_t     _DeviceCount = 0;         ///< Total number of devices detected
       uint8_t     _currentINA  = UINT8_MAX; ///< Stores current INA device number
       inaEEPROM   inaEE;                    ///< INA device structure

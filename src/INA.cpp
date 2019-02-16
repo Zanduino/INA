@@ -211,8 +211,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
   uint16_t originalRegister,tempRegister;
   if (_DeviceCount==0) // Enumerate all devices on first call
   {
-    uint16_t maxDevices = 0;
-
+    uint16_t maxDevices = 32;
     /****************************************************************************************************
     ** The AVR devices need to use EEPROM to save memory, some other devices have emulation for EEPROM **
     ** functionality while some devices have no such function calls. This library caters for these     **
@@ -220,23 +219,17 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
     ** the assumption that if the platform has no EEPROM call then it has sufficient RAM available at  **
     ** runtime to allocate sufficient space for 32 devices.                                            **
     ****************************************************************************************************/
-    #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) ||  (__STM32F1__)
-      #if defined(ESP32) || defined(ESP8266)
+    #if defined(ESP32) || defined(ESP8266)
       EEPROM.begin(512);                // If ESP32 then allocate 512 Bytes
       maxDevices = 512 / sizeof(inaEE); // and compute number of devices
-      #else
-        Wire.begin(); // Start I2C communications
-      #endif
-      #if defined(__STM32F1__)                          // Emulated EEPROM for STM32F1
-        maxDevices = EEPROM.maxcount() / sizeof(inaEE); // Compute number devices possible
-      #elif defined(CORE_TEENSY)                        // TEENSY doesn't have EEPROM.length
-        maxDevices = 2048 / sizeof(inaEE);              // defined, so use 2Kb as value
-      #else
-        maxDevices = EEPROM.length() / sizeof(inaEE);   // Compute number devices possible
-      #endif
+    #elif defined(__STM32F1__)                          // Emulated EEPROM for STM32F1
+      maxDevices = EEPROM.maxcount() / sizeof(inaEE); // Compute number devices possible
+    #elif defined(CORE_TEENSY)                        // TEENSY doesn't have EEPROM.length
+      maxDevices = 2048 / sizeof(inaEE);              // defined, so use 2Kb as value
     #else
-      maxDevices = 32;
+      maxDevices = EEPROM.length() / sizeof(inaEE);   // Compute number devices possible
     #endif
+    Wire.begin();
 
     if (maxDevices > 255) // Limit number of devices to an 8-bit number
     {
@@ -245,8 +238,15 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
     for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++) // Loop for each possible I2C address
     {
       Wire.beginTransmission(deviceAddress);
+      Serial.println(deviceAddress, HEX);
       if (Wire.endTransmission() == 0 && _DeviceCount < maxDevices) // If no error and EEPROM has space
       {
+
+
+        Serial.print("Found at address 0x"); Serial.println(deviceAddress,HEX);
+
+
+
         originalRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);// Save original register settings
         writeWord(INA_CONFIGURATION_REGISTER,INA_RESET_DEVICE,deviceAddress); // Forces INAs to reset
         tempRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress); // Read the newly reset register

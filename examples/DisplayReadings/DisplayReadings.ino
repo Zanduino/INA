@@ -6,9 +6,10 @@
 *
 * @section DisplayReadings_section Description
 *
-* Program to demonstrate the INA library for the Arduino IDE. All INA2xx devices on the I2C bus are located and
-* the program does a simple infinite loop to retrieve and display measurements for the bus voltage and current
-* running through each INA device found.\n\n
+* Program to demonstrate the INA library for the Arduino. When started, the library searches the I2C bus for all
+* INA2xx devices. Then the example program goes into an infinite loop and displays the power measurements 
+* (bus voltage and current) for all devices.\n\n
+*
 * Detailed documentation can be found on the GitHub Wiki pages at https://github.com/SV-Zanshin/INA/wiki \n\n
 * This example is for a INA set up to measure a 5-Volt load with a 0.1 Ohm resistor in place, this is the same
 * setup that can be found in the Adafruit INA219 breakout board.  The complex calibration options are done at
@@ -16,6 +17,7 @@
 * avoid the use of floating point to conserve space and minimize runtime.  This demo program uses floating point
 * only to convert and display the data conveniently. The INA devices have 15 bits of precision, and even though
 * the current and watt information is returned using 32-bit integers the precision remains the same.\n\n
+*
 * The library supports multiple INA devices and multiple INA device types. The Atmel's EEPROM is used to store
 * the 96 bytes of static information per device using https://www.arduino.cc/en/Reference/EEPROM function calls.
 * Although up to 16 devices could theoretically be present on the I2C bus the actual limit is determined by the
@@ -41,6 +43,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.4   | 2019-02-16 | https://github.com/SV-Zanshin  | Reformatted and refactored for legibility and clarity
 * 1.0.3   | 2019-02-10 | https://github.com/SV-Zanshin  | Issue #38. Made pretty-print columns line up
 * 1.0.3   | 2019-02-09 | https://github.com/SV-Zanshin  | Issue #38. Added device number to display
 * 1.0.2   | 2018-12-29 | https://github.com/SV-Zanshin  | Converted comments to doxygen format
@@ -57,14 +60,16 @@
   #include "WProgram.h"
 #endif
 #include <INA.h> // Zanshin INA Library
+// The SAM3XA architecture needs to include this library, it is already included automatically on other platforms //
 #if defined(_SAM3XA_) || defined(ARDUINO_ARCH_SAMD)
 #include <avr/dtostrf.h> // Needed for the SAM3XA (Arduino Zero)
 #endif
+
 /*******************************************************************************************************************
 ** Declare program constants, global variables and instantiate INA class                                          **
 *******************************************************************************************************************/
-const uint32_t SERIAL_SPEED = 115200; ///< Use fast serial speed
-uint8_t        devicesFound = 0;      ///< Number of INAs found
+const uint32_t SERIAL_SPEED = 115200; ///< Use fast serial speed 
+uint8_t        devicesFound =      0; ///< Number of INAs found
 INA_Class      INA;                   ///< INA class instantiation
 
 /***************************************************************************************************************//*!
@@ -81,7 +86,7 @@ void setup()
   #ifdef  __AVR_ATmega32U4__ // If a 32U4 processor, then wait 2 seconds for the serial interface to initialize
     delay(2000);
   #endif
-  Serial.print("\n\nDisplay INA Readings V1.0.0\n");
+  Serial.print("\n\nDisplay INA Readings V1.0.4\n");
   Serial.print(" - Searching & Initializing INA devices\n");
   /****************************************************************************************
   ** The INA.begin call initializes the device(s) found with an expected ±1 Amps maximum **
@@ -116,7 +121,7 @@ void loop()
 {
   static uint16_t loopCounter = 0; // Count the number of iterations
   static char     sprintfBuffer[100]; // Buffer to format output
-  static char busChar[8], shuntChar[10], busMAChar[10], busMWChar[10]; // Floating point string buffers
+  static char     busChar[8], shuntChar[10], busMAChar[10], busMWChar[10]; // Floating point string output buffers
 
   Serial.print("Nr Adr Type   Bus      Shunt       Bus         Bus\n");
   Serial.print("== === ====== ======== =========== =========== ===========\n");
@@ -134,5 +139,5 @@ void loop()
   delay(5000); // Wait 5 seconds before next reading
   Serial.print("Loop iteration ");
   Serial.print(++loopCounter);
-  Serial.println("\n");
+  Serial.print("\n\n");
 } // method loop()

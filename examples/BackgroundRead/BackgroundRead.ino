@@ -11,6 +11,8 @@
 * background while allowing the main Arduino code to continue processing normally until it is ready to consume
 * the readings.\n\n
 *
+* The example program uses the Arduino AVR-based interrupt mechanism and will not function on other platforms\n\n
+*
 * Detailed documentation can be found on the GitHub Wiki pages at https://github.com/SV-Zanshin/INA/wiki \n\n
 * Since the INA library allows multiple devices of different types and this program demonstrates interrupts and
 * background processing, it will limit itself to using the first INA226 detected. This is easily changed in the
@@ -56,12 +58,16 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
-* 1.0.3   | 2019-12-09 | https://github.com/SV-Zanshin  | Cleaned up doxygen formatting
+* 1.0.4   | 2019-02-16 | https://github.com/SV-Zanshin  | ifdef so that sketch won't compile on incompatible platforms
+* 1.0.3   | 2019-01-09 | https://github.com/SV-Zanshin  | Cleaned up doxygen formatting
 * 1.0.2   | 2018-12-28 | https://github.com/SV-Zanshin  | Converted comments to doxygen format
 * 1.0.0   | 2018-06-23 | https://github.com/SV-Zanshin  | Cloned and adapted example from old deprecated INA226
 *                                                         library
 *
 *******************************************************************************************************************/
+#if !defined(__AVR__)
+#error Example program only functions on Atmel AVR-Based platforms
+#endif
 
 /*******************************************************************************************************************
 ** Declare all include files                                                                                      **
