@@ -241,12 +241,6 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
       Serial.println(deviceAddress, HEX);
       if (Wire.endTransmission() == 0 && _DeviceCount < maxDevices) // If no error and EEPROM has space
       {
-
-
-        Serial.print("Found at address 0x"); Serial.println(deviceAddress,HEX);
-
-
-
         originalRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);// Save original register settings
         writeWord(INA_CONFIGURATION_REGISTER,INA_RESET_DEVICE,deviceAddress); // Forces INAs to reset
         tempRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress); // Read the newly reset register
