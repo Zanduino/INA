@@ -122,13 +122,13 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_
 <div class="textblock"><p>Example program for the INA Library demonstrating reading an INA device and displaying results. </p>
 <h1><a class="anchor" id="DisplayReadings_section"></a>
 Description</h1>
-<p>Program to demonstrate the INA library for the Arduino IDE. All INA2xx devices on the I2C bus are located and the program does a simple infinite loop to retrieve and display measurements for the bus voltage and current running through each INA device found.<br />
+<p>Program to demonstrate the INA library for the Arduino. When started, the library searches the I2C bus for all INA2xx devices. Then the example program goes into an infinite loop and displays the power measurements (bus voltage and current) for all devices.<br />
 <br />
-Detailed documentation can be found on the GitHub Wiki pages at <a href="https://github.com/SV-Zanshin/INA/wiki">https://github.com/SV-Zanshin/INA/wiki</a> <br />
+ Detailed documentation can be found on the GitHub Wiki pages at <a href="https://github.com/SV-Zanshin/INA/wiki">https://github.com/SV-Zanshin/INA/wiki</a> <br />
 <br />
 This example is for a INA set up to measure a 5-Volt load with a 0.1 Ohm resistor in place, this is the same setup that can be found in the Adafruit INA219 breakout board. The complex calibration options are done at runtime using the 2 parameters specified in the "begin()" call and the library has gone to great lengths to avoid the use of floating point to conserve space and minimize runtime. This demo program uses floating point only to convert and display the data conveniently. The INA devices have 15 bits of precision, and even though the current and watt information is returned using 32-bit integers the precision remains the same.<br />
 <br />
-The library supports multiple INA devices and multiple INA device types. The Atmel's EEPROM is used to store the 96 bytes of static information per device using <a href="https://www.arduino.cc/en/Reference/EEPROM">https://www.arduino.cc/en/Reference/EEPROM</a> function calls. Although up to 16 devices could theoretically be present on the I2C bus the actual limit is determined by the available EEPROM - ATmega328 UNO has 1024k so can support up to 10 devices but the ATmega168 only has 512 bytes which limits it to supporting at most 5 INAs. Support has been added for the ESP32 based Arduinos, these use the EEPROM calls differently and need specific code.</p>
+ The library supports multiple INA devices and multiple INA device types. The Atmel's EEPROM is used to store the 96 bytes of static information per device using <a href="https://www.arduino.cc/en/Reference/EEPROM">https://www.arduino.cc/en/Reference/EEPROM</a> function calls. Although up to 16 devices could theoretically be present on the I2C bus the actual limit is determined by the available EEPROM - ATmega328 UNO has 1024k so can support up to 10 devices but the ATmega168 only has 512 bytes which limits it to supporting at most 5 INAs. Support has been added for the ESP32 based Arduinos, these use the EEPROM calls differently and need specific code.</p>
 <h1><a class="anchor" id="DisplayReadings_license"></a>
 GNU General Public License v3.0</h1>
 <p>This program is free software : you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.You should have received a copy of the GNU General Public License along with this program(see <a href="https://github.com/SV-Zanshin/INA/blob/master/LICENSE">https://github.com/SV-Zanshin/INA/blob/master/LICENSE</a>). If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
@@ -140,6 +140,8 @@ Changelog</h1>
 <table class="doxtable">
 <tr>
 <th>Version </th><th>Date </th><th>Developer </th><th>Comments  </th></tr>
+<tr>
+<td>1.0.4 </td><td>2019-02-16 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Reformatted and refactored for legibility and clarity </td></tr>
 <tr>
 <td>1.0.3 </td><td>2019-02-10 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Issue #38. Made pretty-print columns line up </td></tr>
 <tr>
