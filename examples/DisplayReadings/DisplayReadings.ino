@@ -88,11 +88,11 @@ void setup()
   #endif
   Serial.print("\n\nDisplay INA Readings V1.0.4\n");
   Serial.print(" - Searching & Initializing INA devices\n");
-  /****************************************************************************************
-  ** The INA.begin call initializes the device(s) found with an expected ±1 Amps maximum **
-  ** current and for a 0.1Ohm resistor, and since no specific device is given as the 3rd **
-  ** parameter all devices are initially set to these values.                            **
-  ****************************************************************************************/
+  /*****************************************************************************************************************
+  ** The INA.begin call initializes the device(s) found with an expected ±1 Amps maximum current and for a 0.1Ohm **
+  ** resistor, and since no specific device is given as the 3rd parameter all devices are initially set to these  **
+  ** values.                                                                                                      **
+  *****************************************************************************************************************/
   devicesFound = INA.begin(1,100000); // Set to an expected 1 Amp maximum and a 100000 microOhm resistor
   while (INA.begin(1, 100000) == 0)
   {

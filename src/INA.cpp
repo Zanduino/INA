@@ -80,11 +80,12 @@ inaDet::inaDet(inaEEPROM inaEE)
     break;
   } // of switch type
 } // of constructor
+
 INA_Class::INA_Class()  {} ///< Unused Class constructor
 INA_Class::~INA_Class() {} ///< Unused Class destructor
 
 /***************************************************************************************************************//*!
-* @brief     Read 2 bytes from the specified I2C address
+* @brief     Read one word (2 bytes) from the specified I2C address
 * @details   Standard I2C protocol is used, but a delay of I2C_DELAY microseconds has been added to let the INAxxx 
 *            devices have sufficient time to get the return data ready.
 * @param[in] addr I2C address to read from
@@ -130,23 +131,23 @@ void INA_Class::writeWord(const uint8_t addr, const uint16_t data, const uint8_t
 *******************************************************************************************************************/
 void INA_Class::readInafromEEPROM(const uint8_t deviceNumber)
 {
-  if (deviceNumber == _currentINA || deviceNumber > _DeviceCount) return; // Don't do anything if we already have the correct device addressed
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) ||  (__STM32F1__)
-#ifdef __STM32F1__                           // STM32F1 has no built-in EEPROM
+  if (deviceNumber==_currentINA || deviceNumber>_DeviceCount) return; // Do nothing if correct device addressed
+  #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) ||  (__STM32F1__)
+  #ifdef __STM32F1__                           // STM32F1 has no built-in EEPROM
     uint16_t e = deviceNumber * sizeof(inaEE); // it uses flash memory to emulate
-  uint16_t *ptr = (uint16_t*)&inaEE;         // "EEPROM" calls are uint16_t type
-  for (uint8_t n = sizeof(inaEE); n; --n)    // Implement EEPROM.get template
-  {
-    EEPROM.read(e++, ptr++); // for ina (inaDet type)
-  } // of for-next each byte
-#else
+    uint16_t *ptr = (uint16_t*)&inaEE;         // "EEPROM" calls are uint16_t type
+    for (uint8_t n = sizeof(inaEE); n; --n)    // Implement EEPROM.get template
+    {
+      EEPROM.read(e++, ptr++); // for ina (inaDet type)
+    } // of for-next each byte
+  #else
     EEPROM.get(deviceNumber * sizeof(inaEE), inaEE); // Read EEPROM values to structure
-#endif
-#else
+  #endif
+  #else
     inaEE = _EEPROMEmulation[deviceNumber];
-#endif
+  #endif
     _currentINA = deviceNumber;
-    ina = inaEE; // see inaDet constructor
+    ina         = inaEE; // see inaDet constructor
 } // of method readInafromEEPROM()
 
 /***************************************************************************************************************//*!
@@ -212,13 +213,13 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
   if (_DeviceCount==0) // Enumerate all devices on first call
   {
     uint16_t maxDevices = 32;
-    /****************************************************************************************************
-    ** The AVR devices need to use EEPROM to save memory, some other devices have emulation for EEPROM **
-    ** functionality while some devices have no such function calls. This library caters for these     **
-    ** differences, with specialized calls for those platforms which have EEPROM calls and it makes    **
-    ** the assumption that if the platform has no EEPROM call then it has sufficient RAM available at  **
-    ** runtime to allocate sufficient space for 32 devices.                                            **
-    ****************************************************************************************************/
+    /***************************************************************************************************************
+    ** The AVR devices need to use EEPROM to save memory, some other devices have emulation for EEPROM            **
+    ** functionality while some devices have no such function calls. This library caters for these differences,   **
+    ** with specialized calls for those platforms which have EEPROM calls and it makes the assumption that if the **
+    ** platform has no EEPROM call then it has sufficient RAM available at runtime to allocate sufficient space   **
+    ** for 32 devices.                                                                                            **
+    ***************************************************************************************************************/
     #if defined(ESP32) || defined(ESP8266)
       EEPROM.begin(512);                // If ESP32 then allocate 512 Bytes
       maxDevices = 512 / sizeof(inaEE); // and compute number of devices
@@ -240,19 +241,19 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
     for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++) // Loop for each possible I2C address
     {
       Wire.beginTransmission(deviceAddress);
-      Serial.println(deviceAddress, HEX);
-      if (Wire.endTransmission() == 0 && _DeviceCount < maxDevices) // If no error and EEPROM has space
+      uint8_t good = Wire.endTransmission();
+      if (good == 0 && _DeviceCount < maxDevices) // If no error and EEPROM has space
       {
         originalRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);// Save original register settings
         writeWord(INA_CONFIGURATION_REGISTER,INA_RESET_DEVICE,deviceAddress); // Forces INAs to reset
-        tempRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress); // Read the newly reset register
-        if (tempRegister==INA_RESET_DEVICE ) // If the register isn't reset then this is not an INA
+        tempRegister = readWord(INA_CONFIGURATION_REGISTER,deviceAddress);    // Read the newly reset register
+        if ( tempRegister == INA_RESET_DEVICE ) // If the register wasn't reset then this is not an INA
         {
           writeWord(INA_CONFIGURATION_REGISTER,originalRegister,deviceAddress); // write back original value
         }
         else
         {
-          if (tempRegister==0x399F)
+          if ( tempRegister == 0x399F )
           {
             inaEE.type = INA219;
           }
@@ -346,24 +347,24 @@ void INA_Class::initDevice(const uint8_t deviceNumber)
   {
     case INA219: // Set up INA219 or INA220
       // Compute calibration register
-      calibration  = (uint64_t)409600000 / ((uint64_t)ina.current_LSB*(uint64_t)ina.microOhmR/(uint64_t)100000);                                       //                                  //
-      writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address); // Write calibration value to device register
+      calibration  = (uint64_t)409600000 / ((uint64_t)ina.current_LSB*(uint64_t)ina.microOhmR/(uint64_t)100000);
+      writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address);    // Write calibration value to device register
       /* Determine optimal programmable gain so that there is no chance of an overflow yet with maximum accuracy */
-      maxShuntmV = ina.maxBusAmps*ina.microOhmR/1000; // Compute maximum shunt millivolts
-      if      (maxShuntmV<=40)  programmableGain = 0; // gain x1 for +- 40mV
-      else if (maxShuntmV<=80)  programmableGain = 1; // gain x2 for +- 80mV
-      else if (maxShuntmV<=160) programmableGain = 2; // gain x4 for +- 160mV
-      else                      programmableGain = 3; // default gain x8 for +- 320mV
-      tempRegister  = 0x399F & INA219_CONFIG_PG_MASK;        // Zero out the programmable gain
-      tempRegister |= programmableGain<<INA219_PG_FIRST_BIT; // Overwrite the new values
-      bitSet(tempRegister, INA219_BRNG_BIT);                  // set to 1 for 0-32 volts
+      maxShuntmV = ina.maxBusAmps*ina.microOhmR/1000;                 // Compute maximum shunt millivolts
+      if      (maxShuntmV<=40)  programmableGain = 0;                 // gain x1 for +- 40mV
+      else if (maxShuntmV<=80)  programmableGain = 1;                 // gain x2 for +- 80mV
+      else if (maxShuntmV<=160) programmableGain = 2;                 // gain x4 for +- 160mV
+      else                      programmableGain = 3;                 // default gain x8 for +- 320mV
+      tempRegister  = 0x399F & INA219_CONFIG_PG_MASK;                 // Zero out the programmable gain
+      tempRegister |= programmableGain<<INA219_PG_FIRST_BIT;          // Overwrite the new values
+      bitSet(tempRegister, INA219_BRNG_BIT);                          // set to 1 for 0-32 volts
       writeWord(INA_CONFIGURATION_REGISTER,tempRegister,ina.address); // Write new value to config register
       break;
     case INA226:
     case INA230:
     case INA231:
       // Compute calibration register
-      calibration = (uint64_t)51200000 / ((uint64_t)ina.current_LSB*(uint64_t)ina.microOhmR/(uint64_t)100000);                                        //                                  //
+      calibration = (uint64_t)51200000 / ((uint64_t)ina.current_LSB*(uint64_t)ina.microOhmR/(uint64_t)100000);
       writeWord(INA_CALIBRATION_REGISTER,calibration,ina.address); // Write calibration value to device register
       break;
     case INA260:
@@ -453,17 +454,17 @@ void INA_Class::setShuntConversion(const uint32_t convTime, const uint8_t device
       readInafromEEPROM(i); // Load EEPROM to ina structure
       configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address); // Get the current register contents
       switch (ina.type) {
-        case INA219 : if      (convTime>= 68100) convRate = 15;
-                      else if (convTime>= 34050) convRate = 14;
-                      else if (convTime>= 17020) convRate = 13;
-                      else if (convTime>=  8510) convRate = 12;
-                      else if (convTime>=  4260) convRate = 11;
-                      else if (convTime>=  2130) convRate = 10;
-                      else if (convTime>=  1060) convRate =  9;
-                      else if (convTime>=   532) convRate =  8;
-                      else if (convTime>=   276) convRate =  2;
-                      else if (convTime>=   148) convRate =  1;
-                      else                       convRate =  0;
+        case INA219 : if      (convTime >= 68100) convRate = 15;
+                      else if (convTime >= 34050) convRate = 14;
+                      else if (convTime >= 17020) convRate = 13;
+                      else if (convTime >=  8510) convRate = 12;
+                      else if (convTime >=  4260) convRate = 11;
+                      else if (convTime >=  2130) convRate = 10;
+                      else if (convTime >=  1060) convRate =  9;
+                      else if (convTime >=   532) convRate =  8;
+                      else if (convTime >=   276) convRate =  2;
+                      else if (convTime >=   148) convRate =  1;
+                      else                        convRate =  0;
                       configRegister &= ~INA219_CONFIG_SADC_MASK; // zero out the averages part
                       configRegister |= convRate << 3;            // shift in the BADC averages
                       break;
@@ -473,18 +474,19 @@ void INA_Class::setShuntConversion(const uint32_t convTime, const uint8_t device
         case INA3221_0:
         case INA3221_1:
         case INA3221_2:
-        case INA260 : if      (convTime>= 82440) convRate = 7;
-                      else if (convTime>= 41560) convRate = 6;
-                      else if (convTime>= 21160) convRate = 5;
-                      else if (convTime>= 11000) convRate = 4;
-                      else if (convTime>=   588) convRate = 3;
-                      else if (convTime>=   332) convRate = 2;
-                      else if (convTime>=   204) convRate = 1;
-                      else                       convRate = 0;
-                      if (ina.type==INA226    || ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2) 
+        case INA260 : if      (convTime >= 82440) convRate = 7;
+                      else if (convTime >= 41560) convRate = 6;
+                      else if (convTime >= 21160) convRate = 5;
+                      else if (convTime >= 11000) convRate = 4;
+                      else if (convTime >=   588) convRate = 3;
+                      else if (convTime >=   332) convRate = 2;
+                      else if (convTime >=   204) convRate = 1;
+                      else                        convRate = 0;
+                      if (ina.type==INA226 || ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2)
                       {                                             // Select mask depending on device
                         configRegister &= ~INA226_CONFIG_SADC_MASK; // zero out the averages part
-                      } else {
+                      } else
+                      {
                         configRegister &= ~INA260_CONFIG_SADC_MASK;
                       } // of if-then-else either INA226/INA3221 or a INA260
                       configRegister |= convRate << 3; // shift in the averages to register
@@ -557,7 +559,7 @@ uint16_t INA_Class::getBusRaw(const uint8_t deviceNumber)
 {
   readInafromEEPROM(deviceNumber);                              // Load EEPROM to ina structure from EEPROM
   uint16_t raw = readWord(ina.busVoltageRegister, ina.address); // Get the raw value from register
-  if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2 || ina.type==INA219)                                                       //                                  //
+  if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2 || ina.type==INA219)
   {
     raw = raw >> 3; // INA219 & INA3221 - the 3 LSB unused, so shift right
   } // of if-then an INA219 or INA3221

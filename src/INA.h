@@ -42,8 +42,8 @@
 * 1.0.8   | 2019-02-16 | https://github.com/Sv-Zanshin  | Corrected and tested ESP32 implementation
 * 1.0.8   | 2019-02-10 | https://github.com/Sv-Zanshin  | Issue #39. Allow non-AVR processors without EEPROM to run
 * 1.0.8   | 2019-02-09 | https://github.com/Sv-Zanshin  | Cleaned up doxygen comment formatting in .h and .cpp files
-* 1.0.8   | 2019-02-09 | https://github.com/Sv-Zanshin  | Issues #38. Add getDeviceAddress() function
-* 1.0.7   | 2019-01-20 | https://github.com/Sv-Zanshin  | Issues #36 & #37. Changed for Travis-CI and automated doxygen
+* 1.0.8   | 2019-02-09 | https://github.com/Sv-Zanshin  | Issue #38. Add getDeviceAddress() function
+* 1.0.7   | 2019-01-20 | https://github.com/Sv-Zanshin  | Issue #36&37. Changed for Travis-CI and automated doxygen
 * 1.0.7   | 2018-12-27 | https://github.com/Sv-Zanshin  | Issue #33. Change program documentation to doxygen format
 * 1.0.6   | 2018-12-13 | https://github.com/delboy711   | Issue #32. Incorrect ESP2866 rather than ESP8266
 * 1.0.6   | 2018-10-19 | https://github.com/Sv-Zanshin  | Issue #31. Use full 0-32V Range on INA219 all the time
@@ -56,8 +56,10 @@
 * 1.0.4   | 2018-09-19 | https://github.com/Sv-Zanshin  | Issue #28. Overflow error when >31Amps specified in begin()
 * 1.0.3   | 2018-09-04 | https://github.com/delboy711   | Issue #26. Incorrect INA3221 negative current readings
 * 1.0.3   | 2018-08-18 | https://github.com/SV-Zanshin  | Issue #22. Reduce EEPROM Footprint
-* 1.0.3   | 2018-08-18 | https://github.com/SV-Zanshin  | Issue #21. Rename I2C Constants to avoid redefinition STM32F1
-* 1.0.2   | 2018-07-22 | https://github.com/SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName", 8B. Changed datatype in structure to bit-level length definitions, saving additional 3 bytes
+* 1.0.3   | 2018-08-18 | https://github.com/SV-Zanshin  | Issue #21. Rename I2C Constants to avoid redefine STM32F1
+* 1.0.2   | 2018-07-22 | https://github.com/SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName", 
+*                                                         8B. Changed datatype in structure to bit-level length 
+*                                                         definitions, saving additional 3 bytes
 * 1.0.2   | 2018-07-21 | https://github.com/avaldeve    | Issue #12. Incorrect const datatype for I2C Speeds
 * 1.0.2   | 2018-07-12 | https://github.com/coelner     | Issue #9. Esplora doesn't accept "Wire.begin()"
 * 1.0.2   | 2018-07-08 | https://github.com/SV-Zanshin  | Issue #2. Finished testing INA3221 across all functions
@@ -84,23 +86,21 @@
 #ifndef INA__Class_h
   /*! Guard code definition to prevent multiple includes */
   #define INA__Class_h
-  /*****************************************************************************************************************
-  ** Declare structures and enumerated types used in the class                                                    **
+  /*************************************************************************************************************//*!
+  * Structure type definition contains a packed bit-level definition of information stored per device
   *****************************************************************************************************************/
-  /*!
-  * inaEEPROM structure type definition contains a packed bit-level definition of information stored per device
-  */
-  typedef struct {
-    uint8_t  type          : 4; ///< Values 0-15, see enumerated "ina_Type" for details
-    uint8_t  operatingMode : 4; ///< Values 0-15, Default to continuous mode
-    uint32_t address       : 7; ///< Values 0-127, I2C Address of device
-    uint32_t maxBusAmps    : 7; ///< Values 0-127, Store initialization value
-    uint32_t microOhmR     :20; ///< Values 0-1.048.575, Store initialization value
+  typedef struct 
+  {
+    uint8_t  type          :  4; ///< Values 0-15, see enumerated "ina_Type" for details
+    uint8_t  operatingMode :  4; ///< Values 0-15, Default to continuous mode
+    uint32_t address       :  7; ///< Values 0-127, I2C Address of device
+    uint32_t maxBusAmps    :  7; ///< Values 0-127, Store initialization value
+    uint32_t microOhmR     : 20; ///< Values 0-1.048.575, Store initialization value
   } inaEEPROM; // of structure
 
-  /*!
-  * inaDet structure type definition contains a packed bit-level definition of information stored on a device
-  */
+  /*************************************************************************************************************//*!
+  * Structure type definition contains a packed bit-level definition of information stored on a device
+  *****************************************************************************************************************/
   typedef struct inaDet : inaEEPROM 
   {
     uint8_t  busVoltageRegister   : 3; ///< 0- 7, Bus Voltage Register
@@ -113,14 +113,16 @@
     inaDet();                          ///< struct constructor
     inaDet(inaEEPROM inaEE);           ///< for ina = inaEE; assignment
   } inaDet; // of structure
-  /*!
-  * ina_Type enumerated list detailing the names of all supported INA devices. The INA3221 is stored as 3 distinct
-  * devices each with their own enumerated type.
-  */
+
+  /*************************************************************************************************************//*!
+  * Enumerated list detailing the names of all supported INA devices. The INA3221 is stored as 3 distinct devices
+  * each with their own enumerated type.
+  *****************************************************************************************************************/
   enum ina_Type { INA219, INA226, INA230, INA231, INA260, INA3221_0, INA3221_1, INA3221_2, INA_UNKNOWN };
-  /*!
-  * ina_mode enumerated list detailing the operating modes of a given device
-  */
+
+  /*************************************************************************************************************//*!
+  * Enumerated list detailing the operating modes of a given device
+  *****************************************************************************************************************/
   enum ina_Mode 
   { 
     INA_MODE_SHUTDOWN,         ///< Device powered down
@@ -201,12 +203,13 @@
     public:
       INA_Class();
       ~INA_Class();
-      uint8_t     begin                   (const uint8_t  maxBusAmps, const uint32_t microOhmR, const uint8_t  deviceNumber = UINT8_MAX );
+      uint8_t     begin                   (const uint8_t maxBusAmps, const uint32_t microOhmR, 
+                                           const uint8_t deviceNumber = UINT8_MAX );
       void        setI2CSpeed             (const uint32_t i2cSpeed = INA_I2C_STANDARD_MODE);
-      void        setMode                 (const uint8_t  mode, const uint8_t deviceNumber = UINT8_MAX);
+      void        setMode                 (const uint8_t  mode,     const uint8_t deviceNumber = UINT8_MAX);
       void        setAveraging            (const uint16_t averages, const uint8_t deviceNumber = UINT8_MAX);
       void        setBusConversion        (const uint32_t convTime, const uint8_t deviceNumber = UINT8_MAX);
-      void        setShuntConversion      (const uint32_t convTime, const uint8_t  deviceNumber = UINT8_MAX);
+      void        setShuntConversion      (const uint32_t convTime, const uint8_t deviceNumber = UINT8_MAX);
       uint16_t    getBusMilliVolts        (const uint8_t deviceNumber = 0);
       uint16_t    getBusRaw               (const uint8_t deviceNumber = 0);
       int32_t     getShuntMicroVolts      (const uint8_t deviceNumber = 0);
@@ -221,15 +224,15 @@
       bool        AlertOnShuntOverVoltage (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
       bool        AlertOnShuntUnderVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
       bool        AlertOnBusOverVoltage   (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
-      bool        AlertOnBusUnderVoltage  (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber =UINT8_MAX);
-      bool        AlertOnPowerOverLimit   (const bool alertState, const int32_t milliAmps, const uint8_t deviceNumber =UINT8_MAX);
+      bool        AlertOnBusUnderVoltage  (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
+      bool        AlertOnPowerOverLimit   (const bool alertState, const int32_t milliAmps,  const uint8_t deviceNumber = UINT8_MAX);
     private:
       int16_t     readWord                (const uint8_t addr, const uint8_t deviceAddress);
       void        writeWord               (const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);
       void        readInafromEEPROM       (const uint8_t deviceNumber);
       void        writeInatoEEPROM        (const uint8_t deviceNumber);
       void        initDevice              (const uint8_t deviceNumber);
-      uint8_t     _DeviceCount = 0;         ///< Total number of devices detected
+      uint8_t     _DeviceCount =         0; ///< Total number of devices detected
       uint8_t     _currentINA  = UINT8_MAX; ///< Stores current INA device number
       inaEEPROM   inaEE;                    ///< INA device structure
       inaDet      ina;                      ///< INA device structure

@@ -11,7 +11,7 @@
 * background while allowing the main Arduino code to continue processing normally until it is ready to consume
 * the readings.\n\n
 *
-* The example program uses the Arduino AVR-based interrupt mechanism and will not function on other platforms\n\n
+* This example program is designed for the ESP32/ESP8266 and will not function on other platforms\n\n
 *
 * Detailed documentation can be found on the GitHub Wiki pages at https://github.com/SV-Zanshin/INA/wiki \n\n
 * Since the INA library allows multiple devices of different types and this program demonstrates interrupts and
@@ -37,8 +37,9 @@
 * but it can take bus voltages of up to 36V (which I needed in order to monitor a 24V battery system which goes
 * above 28V while charging and which is above the absolute limits of the INA219). It is also significantly more
 * accurate than the INA219, plus has an alert pin.\n
+*
 * The interrupt is set to pin 8. The tests were done on an Arduino Micro, and the Atmel 82U4 chip only allows
-* pin change interrupt on selected pins (SS,SCK,MISO,MOSI,8) so pin 8 was chosen.
+* pin change interrupt on selected pins (SS,SCK,MISO,MOSI,8) so pin 8 was chosen.\n
 *
 * @section BackgroundRead_license GNU General Public License v3.0
 *
@@ -58,15 +59,11 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
-* 1.0.4   | 2019-02-16 | https://github.com/SV-Zanshin  | ifdef so that sketch won't compile on incompatible platforms
-* 1.0.3   | 2019-01-09 | https://github.com/SV-Zanshin  | Cleaned up doxygen formatting
-* 1.0.2   | 2018-12-28 | https://github.com/SV-Zanshin  | Converted comments to doxygen format
-* 1.0.0   | 2018-06-23 | https://github.com/SV-Zanshin  | Cloned and adapted example from old deprecated INA226
-*                                                         library
+* 1.0.0   | 2019-02-17 | https://github.com/SV-Zanshin  | Cloned and adapted from "BackgroundRead.ino" program
 *
 *******************************************************************************************************************/
-#if !defined(__AVR__)
-#error Example program only functions on Atmel AVR-Based platforms
+#if !defined(ESP32)
+#error Example program only functions on the ESP32 / ESP8266 platforms
 #endif
 
 /*******************************************************************************************************************
@@ -75,40 +72,32 @@
 #include <INA.h>  // Include the INA library
 
 /*******************************************************************************************************************
-** Declare program Constants                                                                                      **
+** Declare program Constants, global variables and instantiate classes                                            **
 *******************************************************************************************************************/
-const uint8_t  INA_ALERT_PIN =      8; ///< Pin-Change pin used for the INA "ALERT" functionality
-const uint8_t  GREEN_LED_PIN =     13; ///< Arduino standard green LED
-const uint32_t SERIAL_SPEED  = 115200; ///< Use fast serial speed
-
-/*******************************************************************************************************************
-** Declare global variables and instantiate classes                                                               **
-*******************************************************************************************************************/
-INA_Class INA;                                 ///< INA class instantiation
-volatile uint8_t  deviceNumber    = UINT8_MAX; ///< Device Number to use in example, init used for detection loop
-volatile uint64_t sumBusMillVolts =         0; ///< Sum of bus voltage readings
-volatile int64_t  sumBusMicroAmps =         0; ///< Sum of bus amperage readings
-volatile uint8_t  readings        =         0; ///< Number of measurements taken
+         INA_Class INA;                         ///< INA class instantiation
+const    uint8_t   INA_ALERT_PIN   =        A0; ///< Pin-Change pin used for the INA "ALERT" functionality
+const    uint32_t  SERIAL_SPEED    =    115200; ///< Use fast serial speed
+volatile uint8_t   deviceNumber    = UINT8_MAX; ///< Device Number to use in example, init used for detection loop
+volatile uint64_t  sumBusMillVolts =         0; ///< Sum of bus voltage readings
+volatile int64_t   sumBusMicroAmps =         0; ///< Sum of bus amperage readings
+volatile uint8_t   readings        =         0; ///< Number of measurements taken
+portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED; ///< Synchronization variable
 
 /***************************************************************************************************************//*!
-*  @brief Interrupt service routine for the PCINT0_vect
+*  @brief Interrupt service routine for the INA pin
 *  @details Routine is called whenever the INA_ALERT_PIN changes value
 *******************************************************************************************************************/
-ISR(PCINT0_vect)
+void IRAM_ATTR InterruptHandler() 
 {
-  *digitalPinToPCMSK(INA_ALERT_PIN) &= ~bit(digitalPinToPCMSKbit(INA_ALERT_PIN)); // Disable PCMSK pin
-  PCICR &= ~bit(digitalPinToPCICRbit(INA_ALERT_PIN));       // disable interrupt for the group
+  portENTER_CRITICAL_ISR(&mux);
   sei();                                                    // Enable interrupts (for I2C calls)
-  digitalWrite(GREEN_LED_PIN, !digitalRead(GREEN_LED_PIN)); // Toggle LED
   sumBusMillVolts += INA.getBusMilliVolts(deviceNumber);    // Add current value to sum
   sumBusMicroAmps += INA.getBusMicroAmps(deviceNumber);     // Add current value to sum
   readings++;
   INA.waitForConversion(deviceNumber);                      // Wait for conversion and reset INA interrupt flag
   cli(); // Disable interrupts
-  *digitalPinToPCMSK(INA_ALERT_PIN) |= bit(digitalPinToPCMSKbit(INA_ALERT_PIN));// Enable PCMSK pin
-  PCIFR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));        // clear any outstanding interrupt
-  PCICR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));        // enable interrupt for the group
-} // of ISR handler for INT0 group of pins
+  portEXIT_CRITICAL_ISR(&mux);
+} // of ISR for handling interrupts
 
 /***************************************************************************************************************//*!
 * @brief    Arduino method called once at startup to initialize the system
@@ -118,25 +107,19 @@ ISR(PCINT0_vect)
 *******************************************************************************************************************/
 void setup()
 {
-  pinMode(GREEN_LED_PIN, OUTPUT);
-  digitalWrite(GREEN_LED_PIN, true);
-  pinMode(INA_ALERT_PIN, INPUT_PULLUP); // Declare pin with pull-up resistor
-  *digitalPinToPCMSK(INA_ALERT_PIN) |= bit(digitalPinToPCMSKbit(INA_ALERT_PIN));// Enable PCMSK pin
-  PCIFR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));                         // clear any outstanding interrupt
-  PCICR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));                         // enable interrupt for the group
+  pinMode(INA_ALERT_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(INA_ALERT_PIN), InterruptHandler, FALLING);
   Serial.begin(SERIAL_SPEED);
-#ifdef  __AVR_ATmega32U4__  // If this is a 32U4 processor, wait 2 seconds for initialization 
-  delay(2000);
-#endif
   Serial.print(F("\n\nBackground INA Read V1.0.1\n"));
   uint8_t devicesFound = 0;
   while (deviceNumber == UINT8_MAX) // Loop until we find the first device
   {
     devicesFound = INA.begin(1, 100000); // +/- 1 Amps maximum for 0.1 Ohm resistor
+    Serial.println(INA.getDeviceName(devicesFound-1));
     for (uint8_t i = 0; i < devicesFound; i++)
     {
       // Change the "INA226" in the following statement to whatever device you have attached and want to measure //
-      if (strcmp(INA.getDeviceName(i), "INA226") == 0)
+      if (strcmp(INA.getDeviceName(i), "INA219") == 0)
       {
         deviceNumber = i;
         INA.reset(deviceNumber); // Reset device to default settings
