@@ -1,7 +1,7 @@
 var searchData=
 [
   ['i2c_5fdelay',['I2C_DELAY',['../_i_n_a_8h.html#a8d9ae857556fa838283459b089bedef9',1,'INA.h']]],
-  ['ina',['INA',['../_background_read_8ino.html#a67d666137ef9b3c8b6d60b6f1dbf6970',1,'INA():&#160;BackgroundRead.ino'],['../_display_readings_8ino.html#a67d666137ef9b3c8b6d60b6f1dbf6970',1,'INA():&#160;DisplayReadings.ino']]],
+  ['ina',['INA',['../_background_read_8ino.html#a67d666137ef9b3c8b6d60b6f1dbf6970',1,'INA():&#160;BackgroundRead.ino'],['../_background_read___e_s_p32_8ino.html#a67d666137ef9b3c8b6d60b6f1dbf6970',1,'INA():&#160;BackgroundRead_ESP32.ino'],['../_display_readings_8ino.html#a67d666137ef9b3c8b6d60b6f1dbf6970',1,'INA():&#160;DisplayReadings.ino']]],
   ['ina219_5fbrng_5fbit',['INA219_BRNG_BIT',['../_i_n_a_8h.html#aa017545006066ec0868060daf994a1e5',1,'INA.h']]],
   ['ina219_5fbus_5fvoltage_5flsb',['INA219_BUS_VOLTAGE_LSB',['../_i_n_a_8h.html#a2e1234503450adb0afcb58d9ee43469c',1,'INA.h']]],
   ['ina219_5fconfig_5favg_5fmask',['INA219_CONFIG_AVG_MASK',['../_i_n_a_8h.html#a8cc227a4007cc7ef638bebb04ce81900',1,'INA.h']]],
@@ -35,7 +35,7 @@ var searchData=
   ['ina_5falert_5fconversion_5frdy_5fbit',['INA_ALERT_CONVERSION_RDY_BIT',['../_i_n_a_8h.html#af02fd4bd2cb30364b204050ec58841fe',1,'INA.h']]],
   ['ina_5falert_5flimit_5fregister',['INA_ALERT_LIMIT_REGISTER',['../_i_n_a_8h.html#a2118ceb7c8adc101b1399b795f305bfb',1,'INA.h']]],
   ['ina_5falert_5fmask',['INA_ALERT_MASK',['../_i_n_a_8h.html#a4c07319ad308f1b8e4b36a62ab1be46d',1,'INA.h']]],
-  ['ina_5falert_5fpin',['INA_ALERT_PIN',['../_background_read_8ino.html#af0b8bdc479bf42af4e35a7a31b857373',1,'BackgroundRead.ino']]],
+  ['ina_5falert_5fpin',['INA_ALERT_PIN',['../_background_read_8ino.html#af0b8bdc479bf42af4e35a7a31b857373',1,'INA_ALERT_PIN():&#160;BackgroundRead.ino'],['../_background_read___e_s_p32_8ino.html#af0b8bdc479bf42af4e35a7a31b857373',1,'INA_ALERT_PIN():&#160;BackgroundRead_ESP32.ino']]],
   ['ina_5falert_5fpower_5fover_5fwatt_5fbit',['INA_ALERT_POWER_OVER_WATT_BIT',['../_i_n_a_8h.html#a4f6397744737e4995d6929182f60a02b',1,'INA.h']]],
   ['ina_5falert_5fshunt_5fover_5fvolt_5fbit',['INA_ALERT_SHUNT_OVER_VOLT_BIT',['../_i_n_a_8h.html#a1a3a99eaaf376369e85237c0e5b3e35a',1,'INA.h']]],
   ['ina_5falert_5fshunt_5funder_5fvolt_5fbit',['INA_ALERT_SHUNT_UNDER_VOLT_BIT',['../_i_n_a_8h.html#a1146c2608502212f1b005581464f48d6',1,'INA.h']]],
