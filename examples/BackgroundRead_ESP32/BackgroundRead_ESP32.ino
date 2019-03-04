@@ -41,7 +41,7 @@
 * The interrupt is set to pin 8. The tests were done on an Arduino Micro, and the Atmel 82U4 chip only allows
 * pin change interrupt on selected pins (SS,SCK,MISO,MOSI,8) so pin 8 was chosen.\n
 *
-* @section BackgroundRead_license GNU General Public License v3.0
+* @section BackgroundRead_license_ESP32 GNU General Public License v3.0
 *
 * This program is free software : you can redistribute it and/or modify it under the terms of the GNU General
 * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
