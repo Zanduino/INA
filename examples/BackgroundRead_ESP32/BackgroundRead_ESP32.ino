@@ -1,10 +1,10 @@
 /***************************************************************************************************************//*!
 *
-* @file BackgroundRead.ino
+* @file BackgroundRead_ESP32.ino
 *
 * @brief Example program for the INA Library demonstrating background reads
 *
-* @section BackgroundRead_section Description
+* @section BackgroundRead_ESP32_section Description
 *
 * Program to demonstrate using the interrupt pin of any INA2xx which supports that functionality. It uses a
 * pin-change interrupt handler and programs any INA2xx found to to read voltage and current information in the
@@ -51,11 +51,11 @@
 * along with this program(see https://github.com/SV-Zanshin/INA/blob/master/LICENSE).  If not, see
 * <http://www.gnu.org/licenses/>.
 *
-* @section BackgroundRead_author Author
+* @section BackgroundRead_ESP32_author Author
 *
 * Written by Arnd\@SV-Zanshin
 *
-* @section BackgroundRead_versions Changelog
+* @section BackgroundRead_ESP32_versions Changelog
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
