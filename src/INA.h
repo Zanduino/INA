@@ -39,6 +39,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.8   | 2019-03-17 | https://github.com/Sv-Zanshin  | Issue #19. Corrected 4 value ranges in bus/shunt conversion
 * 1.0.8   | 2019-02-16 | https://github.com/Sv-Zanshin  | Corrected and tested ESP32 implementation
 * 1.0.8   | 2019-02-10 | https://github.com/Sv-Zanshin  | Issue #39. Allow non-AVR processors without EEPROM to run
 * 1.0.8   | 2019-02-09 | https://github.com/Sv-Zanshin  | Cleaned up doxygen comment formatting in .h and .cpp files

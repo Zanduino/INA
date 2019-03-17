@@ -413,13 +413,13 @@ void INA_Class::setBusConversion(const uint32_t convTime, const uint8_t deviceNu
         case INA3221_0:
         case INA3221_1:
         case INA3221_2:
-        case INA260 : if      (convTime>= 82440) convRate = 7;
-                      else if (convTime>= 41560) convRate = 6;
-                      else if (convTime>= 21160) convRate = 5;
-                      else if (convTime>= 11000) convRate = 4;
-                      else if (convTime>=   588) convRate = 3;
-                      else if (convTime>=   332) convRate = 2;
-                      else if (convTime>=   204) convRate = 1;
+        case INA260 : if      (convTime>= 8244) convRate = 7;
+                      else if (convTime>= 4156) convRate = 6;
+                      else if (convTime>= 2116) convRate = 5;
+                      else if (convTime>= 1100) convRate = 4;
+                      else if (convTime>=  588) convRate = 3;
+                      else if (convTime>=  332) convRate = 2;
+                      else if (convTime>=  204) convRate = 1;
                       else                       convRate = 0;
                       if (ina.type==INA226 || ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2)
                       {
@@ -474,13 +474,13 @@ void INA_Class::setShuntConversion(const uint32_t convTime, const uint8_t device
         case INA3221_0:
         case INA3221_1:
         case INA3221_2:
-        case INA260 : if      (convTime >= 82440) convRate = 7;
-                      else if (convTime >= 41560) convRate = 6;
-                      else if (convTime >= 21160) convRate = 5;
-                      else if (convTime >= 11000) convRate = 4;
-                      else if (convTime >=   588) convRate = 3;
-                      else if (convTime >=   332) convRate = 2;
-                      else if (convTime >=   204) convRate = 1;
+        case INA260 : if      (convTime >= 8244) convRate = 7;
+                      else if (convTime >= 4156) convRate = 6;
+                      else if (convTime >= 2116) convRate = 5;
+                      else if (convTime >= 1100) convRate = 4;
+                      else if (convTime >=  588) convRate = 3;
+                      else if (convTime >=  332) convRate = 2;
+                      else if (convTime >=  204) convRate = 1;
                       else                        convRate = 0;
                       if (ina.type==INA226 || ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2)
                       {                                             // Select mask depending on device
