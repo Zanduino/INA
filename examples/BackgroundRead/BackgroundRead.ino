@@ -188,3 +188,4 @@ void loop()
     sei(); // Enable interrupts again
   } // of if-then we've reached the required amount of readings
 } // of method loop()
+
