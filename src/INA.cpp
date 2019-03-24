@@ -384,8 +384,9 @@ void INA_Class::initDevice(const uint8_t deviceNumber)
 *******************************************************************************************************************/
 void INA_Class::setBusConversion(const uint32_t convTime, const uint8_t deviceNumber ) 
 {
-  int16_t configRegister, convRate;
-  for(uint8_t i=0;i<_DeviceCount;i++) // Loop for each device found
+	uint16_t configRegister;
+	int16_t  convRate;
+	for(uint8_t i=0;i<_DeviceCount;i++) // Loop for each device found
   {
     if( deviceNumber == UINT8_MAX || deviceNumber % _DeviceCount == i ) // If this device needs setting
     {

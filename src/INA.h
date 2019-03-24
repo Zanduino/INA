@@ -39,6 +39,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.8   | 2019-03-24 | https://github.com/mattlogic   | Issue #40. Corrected INA226_CONFIG_SADC_MASK value
 * 1.0.8   | 2019-03-17 | https://github.com/Sv-Zanshin  | Issue #19. Corrected 4 value ranges in bus/shunt conversion
 * 1.0.8   | 2019-02-16 | https://github.com/Sv-Zanshin  | Corrected and tested ESP32 implementation
 * 1.0.8   | 2019-02-10 | https://github.com/Sv-Zanshin  | Issue #39. Allow non-AVR processors without EEPROM to run
@@ -182,7 +183,7 @@
   const uint16_t INA226_CONFIG_AVG_MASK         =  0x0E00; ///< INA226 Bits 9-11
   const uint16_t INA226_DIE_ID_VALUE            =  0x2260; ///< INA226 Hard-coded Die ID for INA226
   const uint16_t INA226_CONFIG_BADC_MASK        =  0x01C0; ///< INA226 Bits 6-8 masked
-  const uint16_t INA226_CONFIG_SADC_MASK        =  0x0018; ///< INA226 Bits 3-4
+  const uint16_t INA226_CONFIG_SADC_MASK        =  0x0038; ///< INA226 Bits 3-4
   const uint8_t  INA260_SHUNT_VOLTAGE_REGISTER  =       0; ///< INA260 Register doesn't exist on device
   const uint8_t  INA260_CURRENT_REGISTER        =       1; ///< INA260 Current Register
   const uint16_t INA260_BUS_VOLTAGE_LSB         =     125; ///< INA260 LSB in uV *100 1.25mV
