@@ -238,7 +238,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
     {
       maxDevices = 255;
     } // of if-then more than 255 devices possible
-    for(uint8_t deviceAddress = 0x40;deviceAddress<0x80;deviceAddress++) // Loop for each possible I2C address
+    for(uint8_t deviceAddress = 0x40;deviceAddress<0x4F;deviceAddress++) // Loop for each possible I2C address
     {
       Wire.beginTransmission(deviceAddress);
       uint8_t good = Wire.endTransmission();

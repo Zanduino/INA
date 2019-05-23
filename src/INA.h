@@ -39,6 +39,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.8   | 2019-05-23 | https://github.com/avaldebe    | Issue #42. Restrict I2C scann to possible devices
 * 1.0.8   | 2019-03-24 | https://github.com/mattlogic   | Issue #40. Corrected INA226_CONFIG_SADC_MASK value
 * 1.0.8   | 2019-03-17 | https://github.com/Sv-Zanshin  | Issue #19. Corrected 4 value ranges in bus/shunt conversion
 * 1.0.8   | 2019-02-16 | https://github.com/Sv-Zanshin  | Corrected and tested ESP32 implementation
