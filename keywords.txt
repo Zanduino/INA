@@ -11,8 +11,8 @@ getBusMilliVolts	KEYWORD2
 getShuntMicroVolts	KEYWORD2
 getBusMicroAmps	KEYWORD2
 getBusMicroWatts	KEYWORD2
-getBusRaw KEYWORD2
-getShuntRaw KEYWORD2
+getBusRaw	KEYWORD2
+getShuntRaw	KEYWORD2
 reset	KEYWORD2
 setMode	KEYWORD2
 setAveraging	KEYWORD2
