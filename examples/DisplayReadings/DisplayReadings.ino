@@ -60,8 +60,9 @@
   #include "WProgram.h"
 #endif
 #include <INA.h> // Zanshin INA Library
-// The SAM3XA architecture needs to include this library, it is already included automatically on other platforms //
+
 #if defined(_SAM3XA_) || defined(ARDUINO_ARCH_SAMD)
+// The SAM3XA architecture needs to include this library, it is already included automatically on other platforms //
 #include <avr/dtostrf.h> // Needed for the SAM3XA (Arduino Zero)
 #endif
 
