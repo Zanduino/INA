@@ -715,6 +715,37 @@ void INA_Class::setMode(const uint8_t mode, const uint8_t deviceNumber)
 } // of method setMode()
 
 /***************************************************************************************************************//*!
+* @brief     Returns whether or not the conversion has completed
+* @details   The device's conversion ready bit is read and returned. "true" denotes finished conversion.
+* @param[in] deviceNumber to check
+*******************************************************************************************************************/
+bool INA_Class::conversionFinished(const uint8_t deviceNumber)
+{
+  readInafromEEPROM(deviceNumber%_DeviceCount); // Load EEPROM to ina structure
+  uint16_t cvBits = 0;
+  switch (ina.type)
+  {
+  case INA219:
+    cvBits = readWord(INA_BUS_VOLTAGE_REGISTER, ina.address) & 2; // Bit 2 set denotes ready
+    readWord(INA_POWER_REGISTER, ina.address);                    // Resets the "ready" bit
+    break;
+  case INA226:
+  case INA230:
+  case INA231:
+  case INA260:
+    cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address)&(uint16_t)8;
+    break;
+  case INA3221_0:
+  case INA3221_1:
+  case INA3221_2:
+    cvBits = readWord(INA3221_MASK_REGISTER, ina.address)&(uint16_t)1;
+    break;
+  default: cvBits = 1;
+  } // of switch type
+  if (cvBits!=0) return(true); else return(false);
+} // of method "conversionFinished()"
+
+/***************************************************************************************************************//*!
 * @brief     will not return until the conversion for the specified device is finished
 * @details   if no device number is specified it will wait until all devices have finished their current conversion. 
 *            If the conversion has completed already then the flag (and interrupt pin, if activated) is also reset.

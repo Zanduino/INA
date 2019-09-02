@@ -39,6 +39,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.8   | 2019-09-03 | https://github.com/miky2k      | Issue #43. Added new method "conversionFinished()"
 * 1.0.8   | 2019-05-23 | https://github.com/avaldebe    | Issue #42. Restrict I2C scan to possible devices
 * 1.0.8   | 2019-03-24 | https://github.com/mattlogic   | Issue #40. Corrected INA226_CONFIG_SADC_MASK value
 * 1.0.8   | 2019-03-17 | https://github.com/Sv-Zanshin  | Issue #19. Corrected 4 value ranges in bus/shunt conversion
@@ -222,6 +223,7 @@
       const char* getDeviceName           (const uint8_t deviceNumber = 0);
       uint8_t     getDeviceAddress        (const uint8_t deviceNumber = 0);
       void        reset                   (const uint8_t deviceNumber = 0);
+      bool        conversionFinished      (const uint8_t deviceNumber = 0);
       void        waitForConversion       (const uint8_t deviceNumber = UINT8_MAX);
       bool        AlertOnConversion       (const bool alertState, const uint8_t deviceNumber = UINT8_MAX);
       bool        AlertOnShuntOverVoltage (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
