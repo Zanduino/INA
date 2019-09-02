@@ -9,6 +9,7 @@ var class_i_n_a___class =
     [ "AlertOnShuntOverVoltage", "class_i_n_a___class.html#aa93cee80dc865cf26b7c1f7a2ffe4f62", null ],
     [ "AlertOnShuntUnderVoltage", "class_i_n_a___class.html#a1cccab2ac6d6f5b6ec845c5211635321", null ],
     [ "begin", "class_i_n_a___class.html#ac8ddb4e06be0ca4e7bcdd60e5c5b8fb7", null ],
+    [ "conversionFinished", "class_i_n_a___class.html#a123a8d1564e8d18c15bef0b39b920d0a", null ],
     [ "getBusMicroAmps", "class_i_n_a___class.html#a32fe0142f84f3c24df148ae8e4856452", null ],
     [ "getBusMicroWatts", "class_i_n_a___class.html#a373bb011a41aec8e836da0a95a682e0c", null ],
     [ "getBusMilliVolts", "class_i_n_a___class.html#a995bbc997800fc72583a9051fa6bea74", null ],

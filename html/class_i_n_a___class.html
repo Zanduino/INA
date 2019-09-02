@@ -149,6 +149,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a926651f68857ea52b4713d1911825ee7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i_n_a___class.html#a926651f68857ea52b4713d1911825ee7">reset</a> (const uint8_t <a class="el" href="_background_read___e_s_p32_8ino.html#aa288141c88c2063ca23516ce595d6a94">deviceNumber</a>=0)</td></tr>
 <tr class="memdesc:a926651f68857ea52b4713d1911825ee7"><td class="mdescLeft">&#160;</td><td class="mdescRight">performs a software reset for the specified device  <a href="#a926651f68857ea52b4713d1911825ee7">More...</a><br /></td></tr>
 <tr class="separator:a926651f68857ea52b4713d1911825ee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a123a8d1564e8d18c15bef0b39b920d0a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i_n_a___class.html#a123a8d1564e8d18c15bef0b39b920d0a">conversionFinished</a> (const uint8_t <a class="el" href="_background_read___e_s_p32_8ino.html#aa288141c88c2063ca23516ce595d6a94">deviceNumber</a>=0)</td></tr>
+<tr class="memdesc:a123a8d1564e8d18c15bef0b39b920d0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether or not the conversion has completed.  <a href="#a123a8d1564e8d18c15bef0b39b920d0a">More...</a><br /></td></tr>
+<tr class="separator:a123a8d1564e8d18c15bef0b39b920d0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a212e209f6ee3b4115fe10ac707baec87"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i_n_a___class.html#a212e209f6ee3b4115fe10ac707baec87">waitForConversion</a> (const uint8_t <a class="el" href="_background_read___e_s_p32_8ino.html#aa288141c88c2063ca23516ce595d6a94">deviceNumber</a>=UINT8_MAX)</td></tr>
 <tr class="memdesc:a212e209f6ee3b4115fe10ac707baec87"><td class="mdescLeft">&#160;</td><td class="mdescRight">will not return until the conversion for the specified device is finished  <a href="#a212e209f6ee3b4115fe10ac707baec87">More...</a><br /></td></tr>
 <tr class="separator:a212e209f6ee3b4115fe10ac707baec87"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -480,6 +483,32 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The integer number of INAxxxx devices found on the I2C bus </dd></dl>
+
+</div>
+</div>
+<a id="a123a8d1564e8d18c15bef0b39b920d0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a123a8d1564e8d18c15bef0b39b920d0a">&#9670;&nbsp;</a></span>conversionFinished()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool INA_Class::conversionFinished </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>deviceNumber</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether or not the conversion has completed. </p>
+<p>The device's conversion ready bit is read and returned. "true" denotes finished conversion. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">deviceNumber</td><td>to check </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
