@@ -1,5 +1,5 @@
 /***************************************************************************************************************//*!
-*  
+*
 * @file INA.h
 *
 * @brief INA Class library header file
@@ -39,6 +39,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.9   | 2019-10-17 | https://github.com/nathancheek | Issue #47. Added EEPROM support for teensy
 * 1.0.8   | 2019-09-03 | https://github.com/miky2k      | Issue #43. Added new method "conversionFinisheds()"
 * 1.0.8   | 2019-05-23 | https://github.com/avaldebe    | Issue #42. Restrict I2C scan to possible devices
 * 1.0.8   | 2019-03-24 | https://github.com/mattlogic   | Issue #40. Corrected INA226_CONFIG_SADC_MASK value
@@ -61,8 +62,8 @@
 * 1.0.3   | 2018-09-04 | https://github.com/delboy711   | Issue #26. Incorrect INA3221 negative current readings
 * 1.0.3   | 2018-08-18 | https://github.com/SV-Zanshin  | Issue #22. Reduce EEPROM Footprint
 * 1.0.3   | 2018-08-18 | https://github.com/SV-Zanshin  | Issue #21. Rename I2C Constants to avoid redefine STM32F1
-* 1.0.2   | 2018-07-22 | https://github.com/SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName", 
-*                                                         8B. Changed datatype in structure to bit-level length 
+* 1.0.2   | 2018-07-22 | https://github.com/SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName",
+*                                                         8B. Changed datatype in structure to bit-level length
 *                                                         definitions, saving additional 3 bytes
 * 1.0.2   | 2018-07-21 | https://github.com/avaldeve    | Issue #12. Incorrect const datatype for I2C Speeds
 * 1.0.2   | 2018-07-12 | https://github.com/coelner     | Issue #9. Esplora doesn't accept "Wire.begin()"
@@ -93,7 +94,7 @@
   /*************************************************************************************************************//*!
   * Structure type definition contains a packed bit-level definition of information stored per device
   *****************************************************************************************************************/
-  typedef struct 
+  typedef struct
   {
     uint8_t  type          :  4; ///< Values 0-15, see enumerated "ina_Type" for details
     uint8_t  operatingMode :  4; ///< Values 0-15, Default to continuous mode
@@ -105,7 +106,7 @@
   /*************************************************************************************************************//*!
   * Structure type definition contains a packed bit-level definition of information stored on a device
   *****************************************************************************************************************/
-  typedef struct inaDet : inaEEPROM 
+  typedef struct inaDet : inaEEPROM
   {
     uint8_t  busVoltageRegister   : 3; ///< 0- 7, Bus Voltage Register
     uint8_t  shuntVoltageRegister : 3; ///< 0- 7, Shunt Voltage Register
@@ -127,8 +128,8 @@
   /*************************************************************************************************************//*!
   * Enumerated list detailing the operating modes of a given device
   *****************************************************************************************************************/
-  enum ina_Mode 
-  { 
+  enum ina_Mode
+  {
     INA_MODE_SHUTDOWN,         ///< Device powered down
     INA_MODE_TRIGGERED_SHUNT,  ///< Triggered shunt, no bus
     INA_MODE_TRIGGERED_BUS,    ///< Triggered bus, no shunt
@@ -202,12 +203,12 @@
   * @class   INA_Class
   * @brief   Forward definitions for the INA_Class
   *****************************************************************************************************************/
-  class INA_Class 
+  class INA_Class
   {
     public:
       INA_Class();
       ~INA_Class();
-      uint8_t     begin                   (const uint8_t maxBusAmps, const uint32_t microOhmR, 
+      uint8_t     begin                   (const uint8_t maxBusAmps, const uint32_t microOhmR,
                                            const uint8_t deviceNumber = UINT8_MAX );
       void        setI2CSpeed             (const uint32_t i2cSpeed = INA_I2C_STANDARD_MODE);
       void        setMode                 (const uint8_t  mode,     const uint8_t deviceNumber = UINT8_MAX);
