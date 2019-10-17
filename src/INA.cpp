@@ -8,7 +8,7 @@
 *******************************************************************************************************************/
 #include <INA.h>                ///< Include the header definition
 #include <Wire.h>               ///< I2C Library definition
-#if defined(__AVR__) || defined(ESP32) || defined(ESP8266)
+#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266)
 #include <EEPROM.h>             ///< Include the EEPROM library for AVR-Boards
 #endif
 inaDet::inaDet(){}              ///< Empty constructor for INA Detail structure
