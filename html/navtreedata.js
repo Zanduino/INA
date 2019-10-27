@@ -3,6 +3,13 @@ var NAVTREE =
   [ "INA2xx", "index.html", [
     [ "Arduino library to support the INAxxx family of current sensors", "index.html", [
       [ "Description", "index.html#Library_intro_section", null ],
+      [ "Programming", "index.html#Style", [
+        [ "Coding and comments", "index.html#Coding", null ],
+        [ "Style Guide", "index.html#StyleGuide", null ],
+        [ "Documentation", "index.html#Documentation", null ],
+        [ "Comment Format", "index.html#comments", null ],
+        [ "IDE", "index.html#ide", null ]
+      ] ],
       [ "GNU General Public License v3.0", "index.html#license", null ],
       [ "Author", "index.html#author", null ],
       [ "Changelog", "index.html#versions", null ]
