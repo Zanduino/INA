@@ -21,6 +21,38 @@
 * the amperage and wattage to be computed by the INA device and these values can be read from the decives using
 * the industry standard I2C protocol.
 *
+* @section Style Programming
+* @subsection Coding Coding and comments
+* OK, I admit that I'm "old school" when it comes to programming style. I am used to using a full monitor and
+* keyboard for development and testing, plus I like to heavily document code as it helps me remember what I did
+* when I revisit code after several months (or years).  I make use of the full width (which I've limited to 112
+* characters here) and put my comments at the end of lines.  I prefer to use descriptive variable names, which 
+* means that they tend to be long.
+*
+* @subsection StyleGuide Style Guide
+* Different languages have different coding styles. For the Arduino c++ language I've opted to go with one of 
+* the big players in the industry and have adopted the coding and style rules that Google recommends and which
+* are documented at [Google c++ Style Guide](https://google.github.io/styleguide/cppguide.html). I have chosen
+* to put braces on their own lines and include braces for even 1-liners. End braces are always commented so 
+* that convoluted code is more easily untangled.
+*
+* @subsection Documentation
+* The comments have been formatted for use with [Doxygen](doxygen.nl), one of the leading documentation systems
+* which is not only free but covers just about anything worth documenting. The Doxygen system parses the source
+* files of a package and creates documentation. The default output is a set of HTML pages although it can 
+* produce single documents.
+*
+* @subsection comments Comment Format
+* This package uses [Markdown](https://en.wikipedia.org/wiki/Markdown) syntax for formatting comments, which 
+* makes for easy reading directly in the source code and well-formatted pretty-print in postprocessing.
+*
+* @subsection ide IDE
+* I've opted for using Microsoft Visual Studio (version 16.2.5) for development, the community version can be
+* downloaded for free at [Microsoft Downloads](https://visualstudio.microsoft.com/downloads/) and I use the 
+* fantastic [Visual Micro](https://www.visualmicro.com/) package which give the Arduino IDE inside Visual 
+* Studio. The base version is free or becomes only slightly annoying nagware after 90 days, but the software
+* is inexpensive and the price is well worth it for supporting continued development.
+*
 * @section license GNU General Public License v3.0
 *
 * This program is free software : you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,6 +71,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.9   | 2019-10-27 | https://github.com/SV-Zanshin  | Cleaned up Doxygen formatting
 * 1.0.9   | 2019-10-17 | https://github.com/nathancheek | Issue #47. Added EEPROM support for teensy
 * 1.0.8   | 2019-09-03 | https://github.com/miky2k      | Issue #43. Added new method "conversionFinisheds()"
 * 1.0.8   | 2019-05-23 | https://github.com/avaldebe    | Issue #42. Restrict I2C scan to possible devices
@@ -62,9 +95,7 @@
 * 1.0.3   | 2018-09-04 | https://github.com/delboy711   | Issue #26. Incorrect INA3221 negative current readings
 * 1.0.3   | 2018-08-18 | https://github.com/SV-Zanshin  | Issue #22. Reduce EEPROM Footprint
 * 1.0.3   | 2018-08-18 | https://github.com/SV-Zanshin  | Issue #21. Rename I2C Constants to avoid redefine STM32F1
-* 1.0.2   | 2018-07-22 | https://github.com/SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName",
-*                                                         8B. Changed datatype in structure to bit-level length
-*                                                         definitions, saving additional 3 bytes
+* 1.0.2   | 2018-07-22 | https://github.com/SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName", 8B. Changed datatype in structure to bit-level length definitions, saving additional 3 bytes
 * 1.0.2   | 2018-07-21 | https://github.com/avaldeve    | Issue #12. Incorrect const datatype for I2C Speeds
 * 1.0.2   | 2018-07-12 | https://github.com/coelner     | Issue #9. Esplora doesn't accept "Wire.begin()"
 * 1.0.2   | 2018-07-08 | https://github.com/SV-Zanshin  | Issue #2. Finished testing INA3221 across all functions
