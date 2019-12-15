@@ -71,9 +71,10 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.9   | 2019-12-15 | https://github.com/Steamerzone | Issue #49. Added ifdef for STM32F1 device support
 * 1.0.9   | 2019-10-27 | https://github.com/SV-Zanshin  | Cleaned up Doxygen formatting
 * 1.0.9   | 2019-10-17 | https://github.com/nathancheek | Issue #47. Added EEPROM support for teensy
-* 1.0.8   | 2019-09-03 | https://github.com/miky2k      | Issue #43. Added new method "conversionFinisheds()"
+* 1.0.8   | 2019-09-03 | https://github.com/miky2k      | Issue #43. Added new method "conversionFinished()"
 * 1.0.8   | 2019-05-23 | https://github.com/avaldebe    | Issue #42. Restrict I2C scan to possible devices
 * 1.0.8   | 2019-03-24 | https://github.com/mattlogic   | Issue #40. Corrected INA226_CONFIG_SADC_MASK value
 * 1.0.8   | 2019-03-17 | https://github.com/Sv-Zanshin  | Issue #19. Corrected 4 value ranges in bus/shunt conversion
