@@ -279,14 +279,6 @@ OPTIMIZE_FOR_FORTRAN   = NO
 
 OPTIMIZE_OUTPUT_VHDL   = NO
 
-# Set the OPTIMIZE_OUTPUT_SLICE tag to YES if your project consists of Slice
-# sources only. Doxygen will then generate output that is more tailored for that
-# language. For instance, namespaces will be presented as modules, types will be
-# separated into more groups, etc.
-# The default value is: NO.
-
-OPTIMIZE_OUTPUT_SLICE  = NO
-
 # Doxygen selects the parser to use depending on the extension of the files it
 # parses. With this tag you can assign which parser to use for a given
 # extension. Doxygen has a built-in mapping, but you can override or extend it
@@ -456,12 +448,6 @@ EXTRACT_ALL            = NO
 # The default value is: NO.
 
 EXTRACT_PRIVATE        = NO
-
-# If the EXTRACT_PRIV_VIRTUAL tag is set to YES, documented private virtual
-# methods of a class will be included in the documentation.
-# The default value is: NO.
-
-EXTRACT_PRIV_VIRTUAL   = NO
 
 # If the EXTRACT_PACKAGE tag is set to YES, all members with package or internal
 # scope will be included in the documentation.
@@ -1070,16 +1056,6 @@ CLANG_ASSISTED_PARSING = NO
 
 CLANG_OPTIONS          =
 
-# If clang assisted parsing is enabled you can provide the clang parser with the
-# path to the compilation database (see:
-# http://clang.llvm.org/docs/HowToSetupToolingForLLVM.html) used when the files
-# were built. This is equivalent to specifying the "-p" option to a clang tool,
-# such as clang-check. These options will then be passed to the parser.
-# Note: The availability of this option depends on whether or not doxygen was
-# generated with the -Duse_libclang=ON option for CMake.
-
-CLANG_DATABASE_PATH    =
-
 #---------------------------------------------------------------------------
 # Configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
@@ -1233,17 +1209,6 @@ HTML_COLORSTYLE_GAMMA  = 80
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 HTML_TIMESTAMP         = NO
-
-# If the HTML_DYNAMIC_MENUS tag is set to YES then the generated HTML
-# documentation will contain a main index with vertical navigation menus that
-# are dynamically created via Javascript. If disabled, the navigation index will
-# consists of multiple levels of tabs that are statically embedded in every HTML
-# page. Disable this option to support browsers that do not have Javascript,
-# like the Qt help browser.
-# The default value is: YES.
-# This tag requires that the tag GENERATE_HTML is set to YES.
-
-HTML_DYNAMIC_MENUS     = YES
 
 # If the HTML_DYNAMIC_SECTIONS tag is set to YES then the generated HTML
 # documentation will contain sections that can be hidden and shown after the
@@ -1690,16 +1655,6 @@ LATEX_OUTPUT           = latex
 
 LATEX_CMD_NAME         = latex
 
-# The MAKEINDEX_CMD_NAME tag can be used to specify the command name to generate
-# index for LaTeX.
-# Note: This tag is used in the Makefile / make.bat.
-# See also: LATEX_MAKEINDEX_CMD for the part in the generated output file
-# (.tex).
-# The default file is: makeindex.
-# This tag requires that the tag GENERATE_LATEX is set to YES.
-
-MAKEINDEX_CMD_NAME     = makeindex
-
 # The LATEX_MAKEINDEX_CMD tag can be used to specify the command name to
 # generate index for LaTeX. In case there is no backslash (\) as first character
 # it will be automatically added in the LaTeX code.
@@ -1844,14 +1799,6 @@ LATEX_BIB_STYLE        = plain
 
 LATEX_TIMESTAMP        = NO
 
-# The LATEX_EMOJI_DIRECTORY tag is used to specify the (relative or absolute)
-# path from which the emoji images will be read. If a relative path is entered,
-# it will be relative to the LATEX_OUTPUT directory. If left blank the
-# LATEX_OUTPUT directory will be used.
-# This tag requires that the tag GENERATE_LATEX is set to YES.
-
-LATEX_EMOJI_DIRECTORY  =
-
 #---------------------------------------------------------------------------
 # Configuration options related to the RTF output
 #---------------------------------------------------------------------------
@@ -1989,12 +1936,6 @@ XML_OUTPUT             = xml
 
 XML_PROGRAMLISTING     = YES
 
-# If the XML_NS_MEMB_FILE_SCOPE tag is set to YES, doxygen will include
-# namespace members in file scope as well, matching the HTML output.
-# The default value is: NO.
-# This tag requires that the tag GENERATE_XML is set to YES.
-
-XML_NS_MEMB_FILE_SCOPE = NO
 
 #---------------------------------------------------------------------------
 # Configuration options related to the DOCBOOK output
