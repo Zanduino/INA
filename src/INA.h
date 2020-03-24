@@ -71,6 +71,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.11  | 2020-03-24 | https://github.com/nathancheek | Issue #52. Search for all 16 possible devices
 * 1.0.10  | 2020-03-22 | https://github.com/alphaarea   | Issue #50. Wiki fix for "begin()" - MaxBusAmps overflow
 * 1.0.9   | 2019-12-15 | https://github.com/Steamerzone | Issue #49. Added ifdef for STM32F1 device support
 * 1.0.9   | 2019-10-27 | https://github.com/SV-Zanshin  | Cleaned up Doxygen formatting
