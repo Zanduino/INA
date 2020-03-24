@@ -157,7 +157,7 @@ The INA226 is set up to measure using the maximum conversion length (and maximum
  The datasheet for the INA226 can be found at <a href="http://www.ti.com/lit/ds/symlink/INA226.pdf">http://www.ti.com/lit/ds/symlink/INA226.pdf</a> and it contains the information required in order to hook up the device. Unfortunately it comes as a VSSOP package but it can be soldered onto a breakout board for breadboard use. The INA226 is quite similar to the INA219 mentioned above, but it can take bus voltages of up to 36V (which I needed in order to monitor a 24V battery system which goes above 28V while charging and which is above the absolute limits of the INA219). It is also significantly more accurate than the INA219, plus has an alert pin.<br />
  The interrupt is set to pin 8. The tests were done on an Arduino Micro, and the Atmel 82U4 chip only allows pin change interrupt on selected pins (SS,SCK,MISO,MOSI,8) so pin 8 was chosen.<br />
  </p>
-<h1><a class="anchor" id="BackgroundRead_license_ESP32"></a>
+<h1><a class="anchor" id="BackgroundRead_ESP32_license"></a>
 GNU General Public License v3.0</h1>
 <p>This program is free software : you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.You should have received a copy of the GNU General Public License along with this program(see <a href="https://github.com/SV-Zanshin/INA/blob/master/LICENSE">https://github.com/SV-Zanshin/INA/blob/master/LICENSE</a>). If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
 <h1><a class="anchor" id="BackgroundRead_ESP32_author"></a>
@@ -168,6 +168,8 @@ Changelog</h1>
 <table class="doxtable">
 <tr>
 <th>Version </th><th>Date </th><th>Developer </th><th>Comments  </th></tr>
+<tr>
+<td>1.0.1 </td><td>2020-03-24 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Issue #53 - Doxygen documentation </td></tr>
 <tr>
 <td>1.0.0 </td><td>2019-02-17 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Cloned and adapted from "BackgroundRead.ino" program </td></tr>
 </table>
