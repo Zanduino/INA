@@ -41,7 +41,7 @@
 * The interrupt is set to pin 8. The tests were done on an Arduino Micro, and the Atmel 82U4 chip only allows
 * pin change interrupt on selected pins (SS,SCK,MISO,MOSI,8) so pin 8 was chosen.\n
 *
-* @section BackgroundRead_license_ESP32 GNU General Public License v3.0
+* @section BackgroundRead_ESP32_license GNU General Public License v3.0
 *
 * This program is free software : you can redistribute it and/or modify it under the terms of the GNU General
 * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -59,6 +59,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.1   | 2020-03-24 | https://github.com/SV-Zanshin  | Issue #53 - Doxygen documentation
 * 1.0.0   | 2019-02-17 | https://github.com/SV-Zanshin  | Cloned and adapted from "BackgroundRead.ino" program
 *
 *******************************************************************************************************************/
