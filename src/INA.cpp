@@ -545,11 +545,6 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber)
   {
     shuntVoltage = shuntVoltage * ina.shuntVoltage_LSB / 10; // Convert to microvolts
   } // of if-then-else an INA260
-  if (!bitRead(ina.operatingMode,2) && bitRead(ina.operatingMode,0)) // If triggered and shunt active
-  {
-    int16_t configRegister = readWord(INA_CONFIGURATION_REGISTER,ina.address); // Get  current register from device
-    writeWord(INA_CONFIGURATION_REGISTER,configRegister,ina.address); // Write back to trigger next conversion
-  } // of if-then triggered mode enabled
   return(shuntVoltage);
 } // of method getShuntMicroVolts()
 int16_t INA_Class::getShuntRaw(const uint8_t deviceNumber)
