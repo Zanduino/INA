@@ -71,6 +71,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.10  | 2020-05-03 | https://github.com/we9v        | Issue #54. Limit of 127A maximum current changed to 511A.
 * 1.0.10  | 2020-05-01 | https://github.com/nathancheek | Issue #53. Extraneous conversion on getShuntMicrovolts
 * 1.0.10  | 2020-03-24 | https://github.com/nathancheek | Issue #52. Search for all 16 possible devices
 * 1.0.10  | 2020-03-22 | https://github.com/alphaarea   | Issue #50. Wiki fix for "begin()" - MaxBusAmps overflow
@@ -134,7 +135,7 @@
     uint8_t  type          :  4; ///< Values 0-15, see enumerated "ina_Type" for details
     uint8_t  operatingMode :  4; ///< Values 0-15, Default to continuous mode
     uint32_t address       :  7; ///< Values 0-127, I2C Address of device
-    uint32_t maxBusAmps    :  7; ///< Values 0-127, Store initialization value
+    uint32_t maxBusAmps    : 10; ///< Values 0-1023, Store initialization value
     uint32_t microOhmR     : 20; ///< Values 0-1.048.575, Store initialization value
   } inaEEPROM; // of structure
 
@@ -243,7 +244,7 @@
     public:
       INA_Class();
       ~INA_Class();
-      uint8_t     begin                   (const uint8_t maxBusAmps, const uint32_t microOhmR,
+      uint8_t     begin                   (const uint16_t maxBusAmps, const uint32_t microOhmR,
                                            const uint8_t deviceNumber = UINT8_MAX );
       void        setI2CSpeed             (const uint32_t i2cSpeed = INA_I2C_STANDARD_MODE);
       void        setMode                 (const uint8_t  mode,     const uint8_t deviceNumber = UINT8_MAX);

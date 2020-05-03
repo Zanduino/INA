@@ -43,6 +43,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.5   | 2020-05-03 | https://github.com/SV-Zanshin  | Moved setting of maxAmps and shunt to constants
 * 1.0.4   | 2019-02-16 | https://github.com/SV-Zanshin  | Reformatted and refactored for legibility and clarity
 * 1.0.3   | 2019-02-10 | https://github.com/SV-Zanshin  | Issue #38. Made pretty-print columns line up
 * 1.0.3   | 2019-02-09 | https://github.com/SV-Zanshin  | Issue #38. Added device number to display
@@ -69,9 +70,11 @@
 /*******************************************************************************************************************
 ** Declare program constants, global variables and instantiate INA class                                          **
 *******************************************************************************************************************/
-const uint32_t SERIAL_SPEED = 115200; ///< Use fast serial speed 
-uint8_t        devicesFound =      0; ///< Number of INAs found
-INA_Class      INA;                   ///< INA class instantiation
+const uint32_t SERIAL_SPEED    = 115200; ///< Use fast serial speed 
+const uint32_t SHUNT_MICRO_OHM = 100000; ///< Shunt resistance in Micro-Ohm, e.g. 100000 is 0.1 Ohm
+const uint16_t  MAXIMUM_AMPS   =      1; ///< Maximum expected amps
+uint8_t        devicesFound    =      0; ///< Number of INAs found
+INA_Class      INA;                      ///< INA class instantiation
 
 /***************************************************************************************************************//*!
 * @brief    Arduino method called once at startup to initialize the system
@@ -94,11 +97,11 @@ void setup()
   ** resistor, and since no specific device is given as the 3rd parameter all devices are initially set to these  **
   ** values.                                                                                                      **
   *****************************************************************************************************************/
-  devicesFound = INA.begin(1,100000); // Set to an expected 1 Amp maximum and a 100000 microOhm resistor
-  while (INA.begin(1, 100000) == 0)
+  devicesFound = INA.begin(MAXIMUM_AMPS,SHUNT_MICRO_OHM); // Set to the expected Amp maximum and shunt resistance
+  while (INA.begin(MAXIMUM_AMPS, SHUNT_MICRO_OHM) == 0)
   {
     Serial.println("No INA device found, retrying in 10 seconds...");
-     delay(10000); // Wait 10 seconds before retrying 
+    delay(10000); // Wait 10 seconds before retrying 
   } // while no devices detected
   Serial.print(" - Detected ");
   Serial.print(devicesFound);
@@ -137,7 +140,7 @@ void loop()
     Serial.print(sprintfBuffer);
   } // for-next each INA device loop
   Serial.println();
-  delay(5000); // Wait 5 seconds before next reading
+  delay(10000); // Wait 10 seconds before next reading
   Serial.print("Loop iteration ");
   Serial.print(++loopCounter);
   Serial.print("\n\n");

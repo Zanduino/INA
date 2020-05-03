@@ -22,6 +22,8 @@ inaDet::inaDet(inaEEPROM inaEE)
   address       = inaEE.address;
   maxBusAmps    = inaEE.maxBusAmps;
   microOhmR     = inaEE.microOhmR;
+  current_LSB   = (uint64_t)maxBusAmps * 1000000000 / 32767; // Get the best possible LSB in nA
+  power_LSB     = (uint32_t)20*current_LSB;                  // Fixed multiplier per device
   switch (type)
   {
   case INA219:
@@ -30,8 +32,6 @@ inaDet::inaDet(inaEEPROM inaEE)
     currentRegister      = INA219_CURRENT_REGISTER;
     busVoltage_LSB       = INA219_BUS_VOLTAGE_LSB;
     shuntVoltage_LSB     = INA219_SHUNT_VOLTAGE_LSB;
-    current_LSB          = (uint64_t)maxBusAmps * 1000000000 / 32767; // Get the best possible LSB in nA
-    power_LSB            = (uint32_t)20*current_LSB;                  // Fixed multiplier per device
     break;
   case INA226:
   case INA230:
@@ -41,8 +41,6 @@ inaDet::inaDet(inaEEPROM inaEE)
     currentRegister      = INA226_CURRENT_REGISTER;
     busVoltage_LSB       = INA226_BUS_VOLTAGE_LSB;
     shuntVoltage_LSB     = INA226_SHUNT_VOLTAGE_LSB;
-    current_LSB          = (uint64_t)maxBusAmps * 1000000000 / 32767;
-    power_LSB            = (uint32_t)25*current_LSB;
     break;
   case INA260:
     busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;
@@ -171,7 +169,7 @@ void INA_Class::setI2CSpeed(const uint32_t i2cSpeed )
       @param[in] i2cSpeed [optional] changes the I2C speed to the rate specified in Herz */
   Wire.setClock(i2cSpeed);
 } // of method setI2CSpeed
-uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, const uint8_t deviceNumber )
+uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR, const uint8_t deviceNumber )
 {
   /*! @brief     Initializes the contents of the class
       @details   searches for possible devices and sets the INA Configuration details, without which meaningful readings
@@ -276,7 +274,7 @@ uint8_t INA_Class::begin(const uint8_t maxBusAmps, const uint32_t microOhmR, con
           if (inaEE.type != INA_UNKNOWN ) // Increment device if valid INA2xx
           {
             inaEE.address    = deviceAddress;
-            inaEE.maxBusAmps = maxBusAmps;
+            inaEE.maxBusAmps = maxBusAmps > 1022 ? 1022 : maxBusAmps; // Clamp to a maximum of 1022A
             inaEE.microOhmR  = microOhmR;
             ina              = inaEE; // see inaDet constructor
             if (inaEE.type == INA3221_0 )
