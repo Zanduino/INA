@@ -71,7 +71,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
-* 1.0.10  | 2020-05-03 | https://github.com/we9v        | Issue #54. Limit of 127A maximum current changed to 511A.
+* 1.0.10  | 2020-05-03 | https://github.com/we9v        | Issue #54. Limit of 127A maximum current changed to 1022A.
 * 1.0.10  | 2020-05-01 | https://github.com/nathancheek | Issue #53. Extraneous conversion on getShuntMicrovolts
 * 1.0.10  | 2020-03-24 | https://github.com/nathancheek | Issue #52. Search for all 16 possible devices
 * 1.0.10  | 2020-03-22 | https://github.com/alphaarea   | Issue #50. Wiki fix for "begin()" - MaxBusAmps overflow
