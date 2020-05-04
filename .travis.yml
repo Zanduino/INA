@@ -3,6 +3,7 @@
 ##                                                                                                  ##
 ## Date       Developer           Comments                                                          ##
 ## ========== =================== ================================================================= ##
+## 2020-05-03 Arnd@SV-Zanshin     Commented out Adafruit libraries which now caused Travis to fail  ##
 ## 2019-01-20 Arnd@SV-Zanshin     Linked to Adafruit script rather than manually defining all tests ##
 ## 2019-01-19 Arnd@SV-Zanshin     Initial coding                                                    ##
 ##                                                                                                  ##
