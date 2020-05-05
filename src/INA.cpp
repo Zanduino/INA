@@ -591,13 +591,13 @@ int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber)
   } // of if-then-else an INA3221
   return(microAmps);
 } // of method getBusMicroAmps()
-int32_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) 
+int64_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) 
 {
   /*! @brief     returns the computed microwatts measured on the bus for the specified device
-      @details   The computed reading is returned and if the device is in triggered mode the next conversion is started
-      @param[in] deviceNumber to return the value for
-      @return    int32_t signed integer for computed microwatts on the bus */
-  int32_t microWatts = 0;
+  @details   The computed reading is returned and if the device is in triggered mode the next conversion is started
+  @param[in] deviceNumber to return the value for
+  @return    int64_t signed integer for computed microwatts on the bus */
+  int64_t microWatts = 0;
   readInafromEEPROM(deviceNumber); // Load EEPROM to ina structure
   if (ina.type==INA3221_0 || ina.type==INA3221_1 || ina.type==INA3221_2) // INA3221 doesn't compute Amps
   {

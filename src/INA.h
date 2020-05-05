@@ -256,7 +256,7 @@
       int32_t     getShuntMicroVolts      (const uint8_t deviceNumber = 0);
       int16_t     getShuntRaw             (const uint8_t deviceNumber = 0);
       int32_t     getBusMicroAmps         (const uint8_t deviceNumber = 0);
-      int32_t     getBusMicroWatts        (const uint8_t deviceNumber = 0);
+      int64_t     getBusMicroWatts        (const uint8_t deviceNumber = 0);
       const char* getDeviceName           (const uint8_t deviceNumber = 0);
       uint8_t     getDeviceAddress        (const uint8_t deviceNumber = 0);
       void        reset                   (const uint8_t deviceNumber = 0);
