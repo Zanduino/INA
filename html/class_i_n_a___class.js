@@ -11,7 +11,7 @@ var class_i_n_a___class =
     [ "begin", "class_i_n_a___class.html#a460e6b0dacc8489e977b584a41f0c216", null ],
     [ "conversionFinished", "class_i_n_a___class.html#a123a8d1564e8d18c15bef0b39b920d0a", null ],
     [ "getBusMicroAmps", "class_i_n_a___class.html#a32fe0142f84f3c24df148ae8e4856452", null ],
-    [ "getBusMicroWatts", "class_i_n_a___class.html#a373bb011a41aec8e836da0a95a682e0c", null ],
+    [ "getBusMicroWatts", "class_i_n_a___class.html#a648d4d350bbadf181e7961204fed3d1a", null ],
     [ "getBusMilliVolts", "class_i_n_a___class.html#a995bbc997800fc72583a9051fa6bea74", null ],
     [ "getBusRaw", "class_i_n_a___class.html#a3c2215f1e78c743d152f0347bd8c971d", null ],
     [ "getDeviceAddress", "class_i_n_a___class.html#ac699c05cbdbf3c248b483f762b886096", null ],
