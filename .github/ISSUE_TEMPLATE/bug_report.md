@@ -1,22 +1,31 @@
+---
+name: Bug report
+about: Submit a bug report
+title: {Add Short one-line Bug title}
+labels: bug
+assignees: SV-Zanshin
+
+---
+
 ## Expected Behavior
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+_Detail what the expected program behavior should be, or what is expected to happen._
 
 ## Actual Behavior
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+_Detail what actually happens._
 
 ## Steps to Reproduce the Problem
 
+_Explain what needs to be done in order to reproduce the problem._
   1.
-  1.
-  1.
+  2.
+  3.
 
 ## Specifications
 
-  - Version:
+  - Library Version:
+  - IDE Version:
   - Platform:
   - Subsystem:
-
-
-![Zanshin Logo](https://www.sv-zanshin.com/r/images/site/gif/zanshinkanjitiny.gif) <img src="https://www.sv-zanshin.com/r/images/site/gif/zanshintext.gif" width="75"/>
+  - _any other details needed to reproduce the problem_
