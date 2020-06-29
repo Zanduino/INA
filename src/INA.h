@@ -71,6 +71,8 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.12  | 2020-06-29 | https://github.com/Sv-Zanshin  | Issue #57. "Alert..." functions should be "alert..."
+* 1.0.11  | 2020-05-05 | https://github.com/oliverb68   | Issue #56. Limit of +/- 2kW on getBusMicroWatts
 * 1.0.10  | 2020-05-03 | https://github.com/we9v        | Issue #54. Limit of 127A maximum current changed to 1022A.
 * 1.0.10  | 2020-05-01 | https://github.com/nathancheek | Issue #53. Extraneous conversion on getShuntMicrovolts
 * 1.0.10  | 2020-03-24 | https://github.com/nathancheek | Issue #52. Search for all 16 possible devices
@@ -127,23 +129,22 @@
 #ifndef INA__Class_h
   /*! Guard code definition to prevent multiple includes */
   #define INA__Class_h
-  /*************************************************************************************************************//*!
-  * Structure type definition contains a packed bit-level definition of information stored per device
-  *****************************************************************************************************************/
   typedef struct
   {
+    /***********************************************************************************************************//*!
+    * Structure type definition contains a packed bit-level definition of information stored per device
+    ***************************************************************************************************************/
     uint8_t  type          :  4; ///< Values 0-15, see enumerated "ina_Type" for details
     uint8_t  operatingMode :  4; ///< Values 0-15, Default to continuous mode
     uint32_t address       :  7; ///< Values 0-127, I2C Address of device
     uint32_t maxBusAmps    : 10; ///< Values 0-1023, Store initialization value
     uint32_t microOhmR     : 20; ///< Values 0-1.048.575, Store initialization value
   } inaEEPROM; // of structure
-
-  /*************************************************************************************************************//*!
-  * Structure type definition contains a packed bit-level definition of information stored on a device
-  *****************************************************************************************************************/
   typedef struct inaDet : inaEEPROM
   {
+    /***********************************************************************************************************//*!
+    * Structure type definition contains a packed bit-level definition of information stored on a device
+    ***************************************************************************************************************/
     uint8_t  busVoltageRegister   : 3; ///< 0- 7, Bus Voltage Register
     uint8_t  shuntVoltageRegister : 3; ///< 0- 7, Shunt Voltage Register
     uint8_t  currentRegister      : 3; ///< 0- 7, Current Register
@@ -154,18 +155,19 @@
     inaDet();                          ///< struct constructor
     inaDet(inaEEPROM inaEE);           ///< for ina = inaEE; assignment
   } inaDet; // of structure
-
-  /*************************************************************************************************************//*!
-  * Enumerated list detailing the names of all supported INA devices. The INA3221 is stored as 3 distinct devices
-  * each with their own enumerated type.
-  *****************************************************************************************************************/
-  enum ina_Type { INA219, INA226, INA230, INA231, INA260, INA3221_0, INA3221_1, INA3221_2, INA_UNKNOWN };
-
-  /*************************************************************************************************************//*!
-  * Enumerated list detailing the operating modes of a given device
-  *****************************************************************************************************************/
+  enum ina_Type
+  { 
+    /***********************************************************************************************************//*!
+    * Enumerated list detailing the names of all supported INA devices. The INA3221 is stored as 3 distinct devices
+    * each with their own enumerated type.
+    ***************************************************************************************************************/
+    INA219, INA226, INA230, INA231, INA260, INA3221_0, INA3221_1, INA3221_2, INA_UNKNOWN 
+  };
   enum ina_Mode
   {
+    /***********************************************************************************************************//*!
+    * Enumerated list detailing the operating modes of a given device
+    ***************************************************************************************************************/
     INA_MODE_SHUTDOWN,         ///< Device powered down
     INA_MODE_TRIGGERED_SHUNT,  ///< Triggered shunt, no bus
     INA_MODE_TRIGGERED_BUS,    ///< Triggered bus, no shunt
@@ -268,7 +270,13 @@
       bool        AlertOnBusOverVoltage   (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
       bool        AlertOnBusUnderVoltage  (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
       bool        AlertOnPowerOverLimit   (const bool alertState, const int32_t milliAmps,  const uint8_t deviceNumber = UINT8_MAX);
-    private:
+      bool        alertOnConversion       (const bool alertState, const uint8_t deviceNumber = UINT8_MAX);
+      bool        alertOnShuntOverVoltage (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
+      bool        alertOnShuntUnderVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
+      bool        alertOnBusOverVoltage   (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
+      bool        alertOnBusUnderVoltage  (const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber = UINT8_MAX);
+      bool        alertOnPowerOverLimit   (const bool alertState, const int32_t milliAmps,  const uint8_t deviceNumber = UINT8_MAX);
+  private:
       int16_t     readWord                (const uint8_t addr, const uint8_t deviceAddress);
       void        writeWord               (const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);
       void        readInafromEEPROM       (const uint8_t deviceNumber);

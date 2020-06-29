@@ -711,7 +711,6 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber)
     } // of if this device needs to be set
   } // for-next each device loop
 } // of method waitForConversion()
-[[deprecated("Use alertOnConversion() instead")]]
 bool INA_Class::AlertOnConversion(const bool alertState, const uint8_t deviceNumber)
 {
   /*! @brief     configures the INA devices which support this functionality to pull the ALERT pin low when a conversion
@@ -723,7 +722,6 @@ bool INA_Class::AlertOnConversion(const bool alertState, const uint8_t deviceNum
       @return    Returns "true" on success, otherwise false */
   return alertOnConversion(alertState, deviceNumber);
 } // of method AlertOnConversion
-[[deprecated("Use alertOnShuntOverVoltage() instead")]]
 bool INA_Class::AlertOnShuntOverVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber)
 {
   /*! @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the shunt
@@ -735,7 +733,6 @@ bool INA_Class::AlertOnShuntOverVoltage(const bool alertState, const int32_t mil
       @return    Returns "true" on success, otherwise false */
   return alertOnShuntOverVoltage(alertState, milliVolts,deviceNumber);
 } // of method AlertOnShuntOverVoltage
-[[deprecated("Use alertOnShuntUnderVoltage() instead")]]
 bool INA_Class::AlertOnShuntUnderVoltage(const bool alertState,const int32_t milliVolts, const uint8_t deviceNumber)
 {
   /*! @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the shunt
@@ -747,7 +744,6 @@ bool INA_Class::AlertOnShuntUnderVoltage(const bool alertState,const int32_t mil
       @return    Returns "true" on success, otherwise false */
   return alertOnShuntUnderVoltage(alertState, milliVolts, deviceNumber);
 } // of method AlertOnShuntUnderVoltage
-[[deprecated("Use alertOnShuntUnderVoltage() instead")]] 
 bool INA_Class::AlertOnBusOverVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber) {
   /*! @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the bus
                  current goes aboe the value given in the parameter in millivolts
@@ -758,7 +754,6 @@ bool INA_Class::AlertOnBusOverVoltage(const bool alertState, const int32_t milli
       @return    Returns "true" on success, otherwise false */
   return alertOnBusOverVoltage(alertState, milliVolts, deviceNumber);
 } // of method AlertOnBusOverVoltageConversion
-[[deprecated("Use alertOnBusUnderVoltage() instead")]] 
 bool INA_Class::AlertOnBusUnderVoltage(const bool alertState, const int32_t milliVolts, const uint8_t deviceNumber)
 {
   /*! @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the bus
@@ -770,7 +765,6 @@ bool INA_Class::AlertOnBusUnderVoltage(const bool alertState, const int32_t mill
       @return    Returns "true" on success, otherwise false */
   return alertOnBusUnderVoltage(alertState, milliVolts, deviceNumber);
 } // of method AlertOnBusUnderVoltage
-[[deprecated("Use alertOnPowerOverLimit() instead")]] 
 bool INA_Class::AlertOnPowerOverLimit(const bool alertState, const int32_t milliAmps, const uint8_t deviceNumber) 
 {
   /*! @brief     configures the INA devices which support this functionality to pull the ALERT pin low when the power
@@ -782,8 +776,6 @@ bool INA_Class::AlertOnPowerOverLimit(const bool alertState, const int32_t milli
       @return    Returns "true" on success, otherwise false */
   return alertOnPowerOverLimit(alertState, milliAmps, deviceNumber);
 } // of method AlertOnPowerOverLimit
-
-
 bool INA_Class::alertOnConversion(const bool alertState, const uint8_t deviceNumber)
 {
   /*! @brief     configures the INA devices which support this functionality to pull the ALERT pin low when a conversion
