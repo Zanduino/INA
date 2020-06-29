@@ -43,6 +43,7 @@
 *
 * Version | Date       | Developer                      | Comments
 * ------- | ---------- | ------------------------------ | --------
+* 1.0.6   | 2020-06-29 | https://github.com/SV-Zanshin  | Issue #57, changed case of functions "Alert..."
 * 1.0.5   | 2020-05-03 | https://github.com/SV-Zanshin  | Moved setting of maxAmps and shunt to constants
 * 1.0.4   | 2019-02-16 | https://github.com/SV-Zanshin  | Reformatted and refactored for legibility and clarity
 * 1.0.3   | 2019-02-10 | https://github.com/SV-Zanshin  | Issue #38. Made pretty-print columns line up
@@ -90,7 +91,7 @@ void setup()
   #ifdef  __AVR_ATmega32U4__ // If a 32U4 processor, then wait 2 seconds for the serial interface to initialize
     delay(2000);
   #endif
-  Serial.print("\n\nDisplay INA Readings V1.0.5\n");
+  Serial.print("\n\nDisplay INA Readings V1.0.6\n");
   Serial.print(" - Searching & Initializing INA devices\n");
   /*****************************************************************************************************************
   ** The INA.begin call initializes the device(s) found with an expected ±1 Amps maximum current and for a 0.1Ohm **
@@ -110,7 +111,7 @@ void setup()
   INA.setShuntConversion(8500);          // Maximum conversion time 8.244ms
   INA.setAveraging(128);                 // Average each reading n-times
   INA.setMode(INA_MODE_CONTINUOUS_BOTH); // Bus/shunt measured continuously
-  INA.AlertOnBusOverVoltage(true,5000);  // Trigger alert if over 5V on bus
+  INA.alertOnBusOverVoltage(true,5000);  // Trigger alert if over 5V on bus
 } // method setup()
 
 /***************************************************************************************************************//*!
