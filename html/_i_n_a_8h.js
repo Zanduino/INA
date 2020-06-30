@@ -3,7 +3,7 @@ var _i_n_a_8h =
     [ "inaEEPROM", "structina_e_e_p_r_o_m.html", "structina_e_e_p_r_o_m" ],
     [ "inaDet", "structina_det.html", "structina_det" ],
     [ "INA_Class", "class_i_n_a___class.html", "class_i_n_a___class" ],
-    [ "I2C_MODES", "_i_n_a_8h.html#ab1ba09cc86d54a24a664eacdd9d30030", null ],
+    [ "INA_I2C_MODES", "_i_n_a_8h.html#a7858cf7f9918f9a951b5cfa5e612c9bf", null ],
     [ "inaDet", "_i_n_a_8h.html#ab2deadb66c4e51402becbdc62b752d28", null ],
     [ "ina_Mode", "_i_n_a_8h.html#a6b2eecb6eba1aba2b0c51e47ee11f9cb", [
       [ "INA_MODE_SHUTDOWN", "_i_n_a_8h.html#a6b2eecb6eba1aba2b0c51e47ee11f9cba630d1ce31c64bafb65a1dc0587b3e928", null ],

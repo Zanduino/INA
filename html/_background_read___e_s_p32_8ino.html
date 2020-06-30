@@ -97,13 +97,10 @@ $(document).ready(function(){initNavTree('_background_read___e_s_p32_8ino.html',
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:afa574fc31bdaf4fb92d355dbe0a2dbc1"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_background_read___e_s_p32_8ino.html#afa574fc31bdaf4fb92d355dbe0a2dbc1">InterruptHandler</a> ()</td></tr>
-<tr class="memdesc:afa574fc31bdaf4fb92d355dbe0a2dbc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interrupt service routine for the INA pin.  <a href="#afa574fc31bdaf4fb92d355dbe0a2dbc1">More...</a><br /></td></tr>
 <tr class="separator:afa574fc31bdaf4fb92d355dbe0a2dbc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fc01d736fe50cf5b977f755b675f11d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_background_read___e_s_p32_8ino.html#a4fc01d736fe50cf5b977f755b675f11d">setup</a> ()</td></tr>
-<tr class="memdesc:a4fc01d736fe50cf5b977f755b675f11d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arduino method called once at startup to initialize the system.  <a href="#a4fc01d736fe50cf5b977f755b675f11d">More...</a><br /></td></tr>
 <tr class="separator:a4fc01d736fe50cf5b977f755b675f11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe461d27b9c48d5921c00d521181f12f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_background_read___e_s_p32_8ino.html#afe461d27b9c48d5921c00d521181f12f">loop</a> ()</td></tr>
-<tr class="memdesc:afe461d27b9c48d5921c00d521181f12f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arduino method for the main program loop.  <a href="#afe461d27b9c48d5921c00d521181f12f">More...</a><br /></td></tr>
 <tr class="separator:afe461d27b9c48d5921c00d521181f12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -114,7 +111,7 @@ Variables</h2></td></tr>
 <tr class="separator:a67d666137ef9b3c8b6d60b6f1dbf6970"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0b8bdc479bf42af4e35a7a31b857373"><td class="memItemLeft" align="right" valign="top"><a id="af0b8bdc479bf42af4e35a7a31b857373"></a>
 const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_background_read___e_s_p32_8ino.html#af0b8bdc479bf42af4e35a7a31b857373">INA_ALERT_PIN</a> = A0</td></tr>
-<tr class="memdesc:af0b8bdc479bf42af4e35a7a31b857373"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pin-Change pin used for the INA "ALERT" functionality. <br /></td></tr>
+<tr class="memdesc:af0b8bdc479bf42af4e35a7a31b857373"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pin-Change used for INA "ALERT" functionality. <br /></td></tr>
 <tr class="separator:af0b8bdc479bf42af4e35a7a31b857373"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc8430dea1bce949f10d9708742cca34"><td class="memItemLeft" align="right" valign="top"><a id="adc8430dea1bce949f10d9708742cca34"></a>
 const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_background_read___e_s_p32_8ino.html#adc8430dea1bce949f10d9708742cca34">SERIAL_SPEED</a> = 115200</td></tr>
@@ -122,7 +119,7 @@ const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 <tr class="separator:adc8430dea1bce949f10d9708742cca34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa288141c88c2063ca23516ce595d6a94"><td class="memItemLeft" align="right" valign="top"><a id="aa288141c88c2063ca23516ce595d6a94"></a>
 volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_background_read___e_s_p32_8ino.html#aa288141c88c2063ca23516ce595d6a94">deviceNumber</a> = UINT8_MAX</td></tr>
-<tr class="memdesc:aa288141c88c2063ca23516ce595d6a94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device Number to use in example, init used for detection loop. <br /></td></tr>
+<tr class="memdesc:aa288141c88c2063ca23516ce595d6a94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device Number to use in example. <br /></td></tr>
 <tr class="separator:aa288141c88c2063ca23516ce595d6a94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6505ef3b8859931529079f24ba25054e"><td class="memItemLeft" align="right" valign="top"><a id="a6505ef3b8859931529079f24ba25054e"></a>
 volatile uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_background_read___e_s_p32_8ino.html#a6505ef3b8859931529079f24ba25054e">sumBusMillVolts</a> = 0</td></tr>
@@ -151,9 +148,9 @@ Description</h1>
 <br />
  Detailed documentation can be found on the GitHub Wiki pages at <a href="https://github.com/SV-Zanshin/INA/wiki">https://github.com/SV-Zanshin/INA/wiki</a> <br />
 <br />
-Since the INA library allows multiple devices of different types and this program demonstrates interrupts and background processing, it will limit itself to using the first INA226 detected. This is easily changed in the if another device type or device number to test is required.<br />
+ Since the INA library allows multiple devices of different types and this program demonstrates interrupts and background processing, it will limit itself to using the first INA226 detected. This is easily changed in the if another device type or device number to test is required.<br />
  This example is for a INA226 set up to measure a 5-Volt load with a 0.1Ohm resistor in place, this is the same setup that can be found in the Adafruit INA226 breakout board. The complex calibration options are done at runtime using the 2 parameters specified in the "begin()" call and the library has gone to great lengths to avoid the use of floating point to conserve space and minimize runtime. This demo program uses floating point only to convert and display the data conveniently. The INA226 uses 15 bits of precision, and even though the current and watt information is returned using 32-bit integers the precision remains the same.<br />
-The INA226 is set up to measure using the maximum conversion length (and maximum accuracy) and then average those readings 64 times. This results in readings taking 8.244ms x 64 = 527.616ms or just less than 2 times a second. The pin-change interrupt handler is called when a reading is finished and the INA226 pulls the pin down to ground, it resets the pin status and adds the readings to the global variables. The main program will do whatever processing it has to and every 5 seconds it will display the current averaged readings and reset them.<br />
+ The INA226 is set up to measure using the maximum conversion length (and maximum accuracy) and then average those readings 64 times. This results in readings taking 8.244ms x 64 = 527.616ms or just less than 2 times a second. The pin-change interrupt handler is called when a reading is finished and the INA226 pulls the pin down to ground, it resets the pin status and adds the readings to the global variables. The main program will do whatever processing it has to and every 5 seconds it will display the current averaged readings and reset them.<br />
  The datasheet for the INA226 can be found at <a href="http://www.ti.com/lit/ds/symlink/INA226.pdf">http://www.ti.com/lit/ds/symlink/INA226.pdf</a> and it contains the information required in order to hook up the device. Unfortunately it comes as a VSSOP package but it can be soldered onto a breakout board for breadboard use. The INA226 is quite similar to the INA219 mentioned above, but it can take bus voltages of up to 36V (which I needed in order to monitor a 24V battery system which goes above 28V while charging and which is above the absolute limits of the INA219). It is also significantly more accurate than the INA219, plus has an alert pin.<br />
  The interrupt is set to pin 8. The tests were done on an Arduino Micro, and the Atmel 82U4 chip only allows pin change interrupt on selected pins (SS,SCK,MISO,MOSI,8) so pin 8 was chosen.<br />
  </p>
@@ -169,9 +166,11 @@ Changelog</h1>
 <tr>
 <th>Version </th><th>Date </th><th>Developer </th><th>Comments  </th></tr>
 <tr>
-<td>1.0.1 </td><td>2020-03-24 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Issue #53 - Doxygen documentation </td></tr>
+<td>1.0.2 </td><td>2020-06-30 </td><td>SV-Zanshin </td><td>Issue #58 - clang-formatted document </td></tr>
 <tr>
-<td>1.0.0 </td><td>2019-02-17 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Cloned and adapted from "BackgroundRead.ino" program </td></tr>
+<td>1.0.1 </td><td>2020-03-24 </td><td>SV-Zanshin </td><td>Issue #53 - Doxygen documentation </td></tr>
+<tr>
+<td>1.0.0 </td><td>2019-02-17 </td><td>SV-Zanshin </td><td>Cloned and adapted from "BackgroundRead.ino" program </td></tr>
 </table>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="afa574fc31bdaf4fb92d355dbe0a2dbc1"></a>
@@ -188,9 +187,8 @@ Changelog</h1>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Interrupt service routine for the INA pin. </p>
-<p>Routine is called whenever the INA_ALERT_PIN changes value </p>
+<p>Interrupt service routine for the INA pin</p>
+<p>Routine is called whenever the INA_ALERT_PIN changes value</p>
 
 </div>
 </div>
@@ -208,9 +206,8 @@ Changelog</h1>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Arduino method for the main program loop. </p>
-<p>This is the main program for the Arduino IDE, it is called in an infinite loop. The INA226 measurements are triggered by the interrupt handler each time a conversion is ready and stored in variables.The main infinite doesn't call any INA library functions, that is done in the interrupt handler. Each time 10 readings have been collected the program will output the averaged values and measurements resume from that point onwards </p><dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+<p>Arduino method for the main program loop</p>
+<p>This is the main program for the Arduino IDE, it is called in an infinite loop. The INA226 measurements are triggered by the interrupt handler each time a conversion is ready and stored in variables. The main program doesn't call any INA library functions, that is done in the interrupt handler. Each time 10 readings have been collected the program will output the averaged values and measurements resume from that point onwards </p><dl class="section return"><dt>Returns</dt><dd>void</dd></dl>
 
 </div>
 </div>
@@ -228,9 +225,8 @@ Changelog</h1>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Arduino method called once at startup to initialize the system. </p>
-<p>This is an Arduino IDE method which is called first upon boot or restart. It is only called one time and then control goes to the main "loop()" method, from which control never returns </p><dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+<p>Arduino method called once at startup to initialize the system</p>
+<p>This is an Arduino IDE method which is called first upon boot or restart. It is only called one time and then control goes to the main "loop()" method, from which control never returns </p><dl class="section return"><dt>Returns</dt><dd>void</dd></dl>
 
 </div>
 </div>
