@@ -98,10 +98,8 @@ $(document).ready(function(){initNavTree('_display_readings_8ino.html','');});
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a4fc01d736fe50cf5b977f755b675f11d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#a4fc01d736fe50cf5b977f755b675f11d">setup</a> ()</td></tr>
-<tr class="memdesc:a4fc01d736fe50cf5b977f755b675f11d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arduino method called once at startup to initialize the system.  <a href="#a4fc01d736fe50cf5b977f755b675f11d">More...</a><br /></td></tr>
 <tr class="separator:a4fc01d736fe50cf5b977f755b675f11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe461d27b9c48d5921c00d521181f12f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#afe461d27b9c48d5921c00d521181f12f">loop</a> ()</td></tr>
-<tr class="memdesc:afe461d27b9c48d5921c00d521181f12f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arduino method for the main program loop.  <a href="#afe461d27b9c48d5921c00d521181f12f">More...</a><br /></td></tr>
 <tr class="separator:afe461d27b9c48d5921c00d521181f12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -116,7 +114,7 @@ const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 <tr class="separator:a28f4918a8f25aa5f87a94cf58f17b54d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dd76387ed94d51895605354514bb8d2"><td class="memItemLeft" align="right" valign="top"><a id="a7dd76387ed94d51895605354514bb8d2"></a>
 const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#a7dd76387ed94d51895605354514bb8d2">MAXIMUM_AMPS</a> = 1</td></tr>
-<tr class="memdesc:a7dd76387ed94d51895605354514bb8d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum expected amps, valid values are 1 and clamped to max 1022. <br /></td></tr>
+<tr class="memdesc:a7dd76387ed94d51895605354514bb8d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max expected amps, values are 1 - clamped to max 1022. <br /></td></tr>
 <tr class="separator:a7dd76387ed94d51895605354514bb8d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0f000280e2a18aef708e94ef8b7521f"><td class="memItemLeft" align="right" valign="top"><a id="ad0f000280e2a18aef708e94ef8b7521f"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#ad0f000280e2a18aef708e94ef8b7521f">devicesFound</a> = 0</td></tr>
@@ -135,7 +133,7 @@ Description</h1>
 <br />
  Detailed documentation can be found on the GitHub Wiki pages at <a href="https://github.com/SV-Zanshin/INA/wiki">https://github.com/SV-Zanshin/INA/wiki</a> <br />
 <br />
-This example is for a INA set up to measure a 5-Volt load with a 0.1 Ohm resistor in place, this is the same setup that can be found in the Adafruit INA219 breakout board. The complex calibration options are done at runtime using the 2 parameters specified in the "begin()" call and the library has gone to great lengths to avoid the use of floating point to conserve space and minimize runtime. This demo program uses floating point only to convert and display the data conveniently. The INA devices have 15 bits of precision, and even though the current and watt information is returned using 32-bit integers the precision remains the same.<br />
+ This example is for a INA set up to measure a 5-Volt load with a 0.1 Ohm resistor in place, this is the same setup that can be found in the Adafruit INA219 breakout board. The complex calibration options are done at runtime using the 2 parameters specified in the "begin()" call and the library has gone to great lengths to avoid the use of floating point to conserve space and minimize runtime. This demo program uses floating point only to convert and display the data conveniently. The INA devices have 15 bits of precision, and even though the current and watt information is returned using 32-bit integers the precision remains the same.<br />
 <br />
  The library supports multiple INA devices and multiple INA device types. The Atmel's EEPROM is used to store the 96 bytes of static information per device using <a href="https://www.arduino.cc/en/Reference/EEPROM">https://www.arduino.cc/en/Reference/EEPROM</a> function calls. Although up to 16 devices could theoretically be present on the I2C bus the actual limit is determined by the available EEPROM - ATmega328 UNO has 1024k so can support up to 10 devices but the ATmega168 only has 512 bytes which limits it to supporting at most 5 INAs. Support has been added for the ESP32 based Arduinos, these use the EEPROM calls differently and need specific code.</p>
 <h1><a class="anchor" id="DisplayReadings_license"></a>
@@ -150,23 +148,27 @@ Changelog</h1>
 <tr>
 <th>Version </th><th>Date </th><th>Developer </th><th>Comments  </th></tr>
 <tr>
-<td>1.0.5 </td><td>2020-05-03 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Moved setting of maxAmps and shunt to constants </td></tr>
+<td>1.0.7 </td><td>2020-06-30 </td><td>SV-Zanshin </td><td>Issue #58, changed formatting to use clang-format </td></tr>
 <tr>
-<td>1.0.4 </td><td>2019-02-16 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Reformatted and refactored for legibility and clarity </td></tr>
+<td>1.0.6 </td><td>2020-06-29 </td><td>SV-Zanshin </td><td>Issue #57, changed case of functions "Alert..." </td></tr>
 <tr>
-<td>1.0.3 </td><td>2019-02-10 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Issue #38. Made pretty-print columns line up </td></tr>
+<td>1.0.5 </td><td>2020-05-03 </td><td>SV-Zanshin </td><td>Moved setting of maxAmps and shunt to constants </td></tr>
 <tr>
-<td>1.0.3 </td><td>2019-02-09 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Issue #38. Added device number to display </td></tr>
+<td>1.0.4 </td><td>2019-02-16 </td><td>SV-Zanshin </td><td>Reformatted and refactored for legibility and clarity </td></tr>
 <tr>
-<td>1.0.2 </td><td>2018-12-29 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Converted comments to doxygen format </td></tr>
+<td>1.0.3 </td><td>2019-02-10 </td><td>SV-Zanshin </td><td>Issue #38. Made pretty-print columns line up </td></tr>
 <tr>
-<td>1.0.1 </td><td>2018-09-22 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Cleaned up comments, added INA wait loop, removed F("") calls </td></tr>
+<td>1.0.3 </td><td>2019-02-09 </td><td>SV-Zanshin </td><td>Issue #38. Added device number to display </td></tr>
 <tr>
-<td>1.0.0 </td><td>2018-06-22 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Initial release </td></tr>
+<td>1.0.2 </td><td>2018-12-29 </td><td>SV-Zanshin </td><td>Converted comments to doxygen format </td></tr>
 <tr>
-<td>1.0.0b </td><td>2018-06-17 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>INA219 and INA226 completed, including testing </td></tr>
+<td>1.0.1 </td><td>2018-09-22 </td><td>SV-Zanshin </td><td>Comments corrected, added INA wait loop, removed F("") calls </td></tr>
 <tr>
-<td>1.0.0a </td><td>2018-06-10 </td><td><a href="https://github.com/SV-Zanshin">https://github.com/SV-Zanshin</a> </td><td>Initial coding </td></tr>
+<td>1.0.0 </td><td>2018-06-22 </td><td>SV-Zanshin </td><td>Initial release </td></tr>
+<tr>
+<td>1.0.0b </td><td>2018-06-17 </td><td>SV-Zanshin </td><td>INA219 and INA226 completed, including testing </td></tr>
+<tr>
+<td>1.0.0a </td><td>2018-06-10 </td><td>SV-Zanshin </td><td>Initial coding </td></tr>
 </table>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="afe461d27b9c48d5921c00d521181f12f"></a>
@@ -183,9 +185,8 @@ Changelog</h1>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Arduino method for the main program loop. </p>
-<p>This is the main program for the Arduino IDE, it is an infinite loop and keeps on repeating. In order to format the output use is made of the "sprintf()" function, but in the Arduino implementation it has no support for floating point output, so the "dtostrf()" function is used to convert the floating point numbers into formatted strings. </p><dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+<p>Arduino method for the main program loop</p>
+<p>This is the main program for the Arduino IDE, it is an infinite loop and keeps on repeating. In order to format the output use is made of the "sprintf()" function, but in the Arduino implementation it has no support for floating point output, so the "dtostrf()" function is used to convert the floating point numbers into formatted strings. </p><dl class="section return"><dt>Returns</dt><dd>void</dd></dl>
 
 </div>
 </div>
@@ -203,9 +204,8 @@ Changelog</h1>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Arduino method called once at startup to initialize the system. </p>
-<p>This is an Arduino IDE method which is called first upon boot or restart. It is only called one time and then control goes to the main "loop()" method, from which control never returns. The serial port is initialized and the INA.begin() method called to find all INA devices on the I2C bus and then the devices are initialized to given conversion and averaging rates. </p><dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+<p>Arduino method called once at startup to initialize the system</p>
+<p>This is an Arduino IDE method which is called first upon boot or restart. It is only called one time and then control goes to the "loop()" method, from which control never returns. The serial port is initialized and the INA.begin() method called to find all INA devices on the I2C bus and then the devices are initialized to given conversion and averaging rates. </p><dl class="section return"><dt>Returns</dt><dd>void</dd></dl>
 
 </div>
 </div>
