@@ -3,13 +3,13 @@
 ##                                                                                                  ##
 ## Date       Developer           Comments                                                          ##
 ## ========== =================== ================================================================= ##
+## 2020-06-06 Arnd@SV-Zanshin     Updated to version v1.0.11                                        ##
 ## 2020-05-10 Arnd@SV-Zanshin     Removed all comments in order to compact this file                ##
 ##                                                                                                  ##
 ######################################################################################################
-
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = INA2xx
-PROJECT_NUMBER         = "Version 1.0.10"
+PROJECT_NUMBER         = "Version 1.0.11"
 PROJECT_BRIEF          = "Arduino Library for INA2xx power measurement devices"
 PROJECT_LOGO           = images/horizontal_narrow_small.png
 OUTPUT_DIRECTORY       =

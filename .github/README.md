@@ -1,7 +1,8 @@
 <img src="../images/horizontal_narrow.png" alt="INA" align="right" height="40px">
 
 # INA2*xx* Devices<br>[![Build Status](https://travis-ci.org/SV-Zanshin/INA.svg?branch=master)](https://travis-ci.org/SV-Zanshin/INA) [![DOI](https://zenodo.org/badge/136879464.svg)](https://zenodo.org/badge/latestdoi/136879464) [![arduino-library-badge](https://www.ardu-badge.com/badge/INA2xx.svg?)](https://www.ardu-badge.com/INA2xx) [![Doxygen](https://github.com/SV-Zanshin/BME680/blob/master/Images/Doxygen-complete.svg)](https://sv-zanshin.github.io/INA/html/index.html) [![Wiki](https://github.com/SV-Zanshin/BME680/blob/master/Images/Documentation-wiki.svg)](https://github.com/SV-Zanshin/INA/wiki)
-_Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors at the same time.  Details of the library methods and example programs are to be found [at the INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
+_Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors at the same time.  Details of the library methods and example programs are to be found [at the INA wiki pages]
+
 
 Texas Instruments produces this family of power monitors and the library supports the following devices:
 
@@ -30,4 +31,4 @@ Since the functionality differs between the supported devices there are some fun
 The documentation has been done using Doxygen and can be found at [doxygen documentation](https://sv-zanshin.github.io/INA/html/index.html)
 
 <img src="https://github.com/SV-Zanshin/INA/blob/master/images/horizontal_narrow.png" alt="INA" align="left" height="75px">
-<img src="https://www.sv-zanshin.com/r/images/site/gif/zanshintext.gif" align="right" width="75"/><img src="https://www.sv-zanshin.com/r/images/site/gif/zanshinkanjitiny.gif" align="right">
+[![Zanshin Logo](https://zanduino.github.io/Images/zanshinkanjitiny.gif) <img src="https://zanduino.github.io/Images/zanshintext.gif" width="75"/>](https://www.sv-zanshin.com)
