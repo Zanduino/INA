@@ -157,9 +157,9 @@ typedef struct inaDet : inaEEPROM {
   inaDet();                           ///< struct constructor
   inaDet(inaEEPROM inaEE);            ///< for ina = inaEE; assignment
 } inaDet;                             // of structure
+/*! Enumerated list detailing the names of all supported INA devices. The INA3221 is stored
+    as 3 distinct devices each with their own enumerated type. */
 enum ina_Type {
-  /*! Enumerated list detailing the names of all supported INA devices. The INA3221 is stored
-      as 3 distinct devices each with their own enumerated type. */
   INA219,
   INA226,
   INA230,
@@ -170,8 +170,8 @@ enum ina_Type {
   INA3221_2,
   INA_UNKNOWN
 };
+/*! Enumerated list detailing the operating modes of a given device */
 enum ina_Mode {
-  /*! Enumerated list detailing the operating modes of a given device */
   INA_MODE_SHUTDOWN,          ///< Device powered down
   INA_MODE_TRIGGERED_SHUNT,   ///< Triggered shunt, no bus
   INA_MODE_TRIGGERED_BUS,     ///< Triggered bus, no shunt
