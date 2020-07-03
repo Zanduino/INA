@@ -604,9 +604,11 @@ int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {
   if (ina.type == INA3221_0 || ina.type == INA3221_1 ||
       ina.type == INA3221_2)  // Doesn't compute Amps
   {
-    microAmps = getShuntMicroVolts(deviceNumber) * ((int32_t)1000000 / (int32_t)ina.microOhmR);
+    microAmps =
+        (int64_t)getShuntMicroVolts(deviceNumber) * ((int64_t)1000000 / (int64_t)ina.microOhmR);
   } else {
-    microAmps = (int64_t)readWord(ina.currentRegister, ina.address) * ina.current_LSB / 1000;
+    microAmps = (int64_t)readWord(ina.currentRegister, ina.address) * (int64_t)ina.current_LSB /
+                (int64_t)1000;
   }  // of if-then-else an INA3221
   return (microAmps);
 }  // of method getBusMicroAmps()
@@ -623,10 +625,12 @@ int64_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {
   if (ina.type == INA3221_0 || ina.type == INA3221_1 ||
       ina.type == INA3221_2)  // Doesn't compute Amps
   {
-    microWatts = (getShuntMicroVolts(deviceNumber) * 1000000 / ina.microOhmR) *
-                 getBusMilliVolts(deviceNumber) / 1000;
+    microWatts =
+        ((int64_t)getShuntMicroVolts(deviceNumber) * (int64_t)1000000 / (int64_t)ina.microOhmR) *
+        (int64_t)getBusMilliVolts(deviceNumber) / (int64_t)1000;
   } else {
-    microWatts = (int64_t)readWord(INA_POWER_REGISTER, ina.address) * ina.power_LSB / 1000;
+    microWatts =
+        (int64_t)readWord(INA_POWER_REGISTER, ina.address) * (int64_t)ina.power_LSB / (int64_t)1000;
   }  // of if-then-else an INA3221
   return (microWatts);
 }  // of method getBusMicroWatts()
