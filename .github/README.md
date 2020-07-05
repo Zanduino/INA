@@ -30,5 +30,5 @@ Since the functionality differs between the supported devices there are some fun
 ## Documentation
 The documentation has been done using Doxygen and can be found at [doxygen documentation](https://sv-zanshin.github.io/INA/html/index.html)
 
-<img src="https://github.com/SV-Zanshin/INA/blob/master/images/horizontal_narrow.png" alt="INA" align="left" height="75px">
 [![Zanshin Logo](https://zanduino.github.io/Images/zanshinkanjitiny.gif) <img src="https://zanduino.github.io/Images/zanshintext.gif" width="75"/>](https://www.sv-zanshin.com)
+
