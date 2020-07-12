@@ -26,7 +26,7 @@ _Please describe the tests that you ran to verify your changes. Provide instruct
 * Arduino version:
 * Arduino Hardware:
 * SDK: (Arduino IDE, Atmel Studio, Visual Studio, Visual Micro, etc.)
-* Development sytem: (Windows, Web, Linux, etc.)
+* Development system: (Windows, Web, Linux, etc.)
 
 # Checklist:
 
