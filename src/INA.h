@@ -77,13 +77,14 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | --------
- * 1.0.12  | 2020-07-13 | fg89o       | Issue #62. Incorrect "_EEPROM_offset" computation
+ * 1.0.13  | 2020-07-13 | fg89o       | Issue #62. Added "_EEPROM_size" for ESP32 and ESP8266
+ * 1.0.13  | 2020-07-13 | fg89o       | Issue #62. Incorrect "_EEPROM_offset" computation
  * 1.0.12  | 2020-07-13 | SV-Zanshin  | Issue #41. Added "_EEPROM_offset" variable
  * 1.0.12  | 2020-07-03 | sages       | Issue #60. Possible Overflow getBus(MicroAmps,MicroWatts)
  * 1.0.11  | 2020-06-30 | SV-Zanshin  | Issue #58, changed formatting to use clang-format
  * 1.0.11  | 2020-06-29 | SV-Zanshin  | Issue #57. "Alert..." functions should be "alert..."
  * 1.0.11  | 2020-05-05 | oliverb68   | Issue #56. Limit of +/- 2kW on getBusMicroWatts
- * 1.0.10  | 2020-05-03 | we9v        | Issue #54. Limit of 127A maximum current changed to 1022A.
+ * 1.0.10  | 2020-05-03 | we9v        | Issue #54. Limit of 127A maximum current changed to 1022A
  * 1.0.10  | 2020-05-01 | nathancheek | Issue #53. Extraneous conversion on getShuntMicrovolts
  * 1.0.10  | 2020-03-24 | nathancheek | Issue #52. Search for all 16 possible devices
  * 1.0.10  | 2020-03-22 | alphaarea   | Issue #50. Wiki fix for "begin()" - MaxBusAmps overflow
@@ -292,6 +293,9 @@ class INA_Class {
   bool        alertOnPowerOverLimit(const bool alertState, const int32_t milliAmps,
                                     const uint8_t deviceNumber = UINT8_MAX);
   uint16_t    _EEPROM_offset = 0;  ///< Offset to all EEPROM addresses, GitHub issue #41
+#if defined(ESP32) || defined(ESP8266)
+  uint16_t _EEPROM_size = 512;  ///< Default EEPROM reserved space for ESP32 and ESP8266
+#endif
  private:
   int16_t   readWord(const uint8_t addr, const uint8_t deviceAddress);
   void      writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);
