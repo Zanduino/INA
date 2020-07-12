@@ -290,7 +290,7 @@ class INA_Class {
                                      const uint8_t deviceNumber = UINT8_MAX);
   bool        alertOnPowerOverLimit(const bool alertState, const int32_t milliAmps,
                                     const uint8_t deviceNumber = UINT8_MAX);
-  uint16_t    _EEPROM_offset = 0; ///< Offset to all EEPROM addresses, GitHub issue #41
+  uint16_t    _EEPROM_offset = 0;  ///< Offset to all EEPROM addresses, GitHub issue #41
  private:
   int16_t   readWord(const uint8_t addr, const uint8_t deviceAddress);
   void      writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);

@@ -112,9 +112,9 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
       @param[in] deviceNumber Index to device array */
   if (deviceNumber == _currentINA || deviceNumber > _DeviceCount) return;  // Skip if correct device
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__                               // STM32F1 has no built-in EEPROM
-  uint16_t  e   = deviceNumber * sizeof(inaEE);  // it uses flash memory to emulate
-  uint16_t *ptr = (uint16_t *)&inaEE;            // "EEPROM" calls are uint16_t type
+#ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
+  uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
+  uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
   for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.get template
   {
     EEPROM.read(e++, ptr++);  // for ina (inaDet type)
@@ -135,17 +135,17 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
       @param[in] deviceNumber Index to device array */
   inaEE = ina;  // only save relevant part of ina to EEPROM
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__                                         // STM32F1 has no built-in EEPROM
-  uint16_t        e   = deviceNumber * sizeof(inaEE);      // it uses flash memory to emulate
-  const uint16_t *ptr = (const uint16_t *)&inaEE;          // "EEPROM" calls are uint16_t type
-  for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n) // Implement EEPROM.put template
+#ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
+  uint16_t        e   = deviceNumber * sizeof(inaEE);       // it uses flash memory to emulate
+  const uint16_t *ptr = (const uint16_t *)&inaEE;           // "EEPROM" calls are uint16_t type
+  for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.put template
   {
     EEPROM.update(e++, *ptr++);  // for ina (inaDet type)
   }                              // for-next
 #else
-  EEPROM.put(_EEPROM_offset+(deviceNumber * sizeof(inaEE)), inaEE);   // Write the structure
+  EEPROM.put(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Write the structure
 #ifdef ESP32
-  EEPROM.commit();                                  // Force write to EEPROM when ESP32
+  EEPROM.commit();                                                     // Force write to EEPROM when ESP32
 #endif
 #endif
 #else
@@ -189,14 +189,14 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
 ** RAM available at runtime to allocate sufficient space for 32 devices.                     **
 **********************************************************************************************/
 #if defined(ESP32) || defined(ESP8266)
-    EEPROM.begin(512);                 // If ESP32 then allocate 512 Bytes
-    maxDevices = 512 / sizeof(inaEE);  // and compute number of devices
-#elif defined(__STM32F1__)             // Emulated EEPROM for STM32F1
-    maxDevices = EEPROM.maxcount() / sizeof(inaEE);  // Compute number devices possible
-#elif defined(CORE_TEENSY)             // TEENSY doesn't have EEPROM.length
-    maxDevices = 2048 / sizeof(inaEE);  // defined, so use 2Kb as value
+    EEPROM.begin(512);                                    // If ESP32 then allocate 512 Bytes
+    maxDevices = (_EEPROM_offset + 512) / sizeof(inaEE);  // and compute number of devices
+#elif defined(__STM32F1__)                                // Emulated EEPROM for STM32F1
+    maxDevices = (_EEPROM_offset + EEPROM.maxcount()) / sizeof(inaEE);  // Compute max possible
+#elif defined(CORE_TEENSY)                                // TEENSY doesn't have EEPROM.length
+    maxDevices = (_EEPROM_offset + 2048) / sizeof(inaEE);  // defined, so use 2Kb as value
 #elif defined(__AVR__)
-    maxDevices = EEPROM.length() / sizeof(inaEE);  // Compute number devices possible
+    maxDevices = (_EEPROM_offset + EEPROM.length()) / sizeof(inaEE);  // Compute max possible
 #else
     maxDevices = 32;
 #endif
