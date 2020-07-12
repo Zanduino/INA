@@ -77,7 +77,7 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | --------
- * 1.0.12  | 2020-07-03 | SV-Zanshin  | Issue #41. Added "EEPROM_offset" variable
+ * 1.0.12  | 2020-07-03 | SV-Zanshin  | Issue #41. Added "_EEPROM_offset" variable
  * 1.0.12  | 2020-07-03 | sages       | Issue #60. Possible Overflow getBus(MicroAmps,MicroWatts)
  * 1.0.11  | 2020-06-30 | SV-Zanshin  | Issue #58, changed formatting to use clang-format
  * 1.0.11  | 2020-06-29 | SV-Zanshin  | Issue #57. "Alert..." functions should be "alert..."
