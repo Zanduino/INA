@@ -3,6 +3,7 @@
 ##                                                                                                  ##
 ## Date       Developer  Comments                                                                   ##
 ## ========== ========== ========================================================================== ##
+## 2020-07-12 SV-Zanshin Commented out the "cache:" section, as that was causing the build to fail  ##
 ## 2020-07-03 SV-Zanshin Added elements to call "clang-format" to make sure formatting is correct   ##
 ## 2020-05-11 SV-Zanshin Removed Adafruit libraries which now caused Travis to fail                 ##
 ## 2020-05-03 SV-Zanshin Commented out Adafruit libraries which now caused Travis to fail           ##
@@ -20,10 +21,10 @@ branches:
   except:
     - gh-pages
 
-cache:
-  directories:
-    - ~/arduino_ide
-    - ~/.arduino15/packages/
+#cache:
+#  directories:
+#    - ~/arduino_ide
+#    - ~/.arduino15/packages/
    
 git:
   depth: false
