@@ -189,11 +189,11 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
 ** RAM available at runtime to allocate sufficient space for 32 devices.                     **
 **********************************************************************************************/
 #if defined(ESP32) || defined(ESP8266)
-    EEPROM.begin(512 + _EEPROM_offset);                   // If ESP32 then allocate 512 Bytes
+    EEPROM.begin(512 + _EEPROM_offset);  // If ESP32 then allocate 512 Bytes
     maxDevices = (512) / sizeof(inaEE);  // and compute number of devices
-#elif defined(__STM32F1__)                                // Emulated EEPROM for STM32F1
+#elif defined(__STM32F1__)               // Emulated EEPROM for STM32F1
     maxDevices = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
-#elif defined(CORE_TEENSY)                                // TEENSY doesn't have EEPROM.length
+#elif defined(CORE_TEENSY)               // TEENSY doesn't have EEPROM.length
     maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
 #elif defined(__AVR__)
     maxDevices = (EEPROM.length() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
