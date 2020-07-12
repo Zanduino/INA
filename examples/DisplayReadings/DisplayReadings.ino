@@ -98,7 +98,7 @@ void setup() {
 #ifdef __AVR_ATmega32U4__  // If a 32U4 processor, then wait 2 seconds to initialize
   delay(2000);
 #endif
-  Serial.print("\n\nDisplay INA Readings V1.0.6\n");
+  Serial.print("\n\nDisplay INA Readings V1.0.7\n");
   Serial.print(" - Searching & Initializing INA devices\n");
   /************************************************************************************************
   ** The INA.begin call initializes the device(s) found with an expected ±1 Amps maximum current **

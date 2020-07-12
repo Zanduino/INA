@@ -1,25 +1,45 @@
 ######################################################################################################
 ## Travis-CI control file                                                                           ##
 ##                                                                                                  ##
-## Date       Developer           Comments                                                          ##
-## ========== =================== ================================================================= ##
-## 2020-05-11 Arnd@SV-Zanshin     Removed Adafruit libraries which now caused Travis to fail        ##
-## 2020-05-03 Arnd@SV-Zanshin     Commented out Adafruit libraries which now caused Travis to fail  ##
-## 2019-01-20 Arnd@SV-Zanshin     Linked to Adafruit script rather than manually defining all tests ##
-## 2019-01-19 Arnd@SV-Zanshin     Initial coding                                                    ##
+## Date       Developer  Comments                                                                   ##
+## ========== ========== ========================================================================== ##
+## 2020-07-12 SV-Zanshin Commented out the "cache:" section, as that was causing the build to fail  ##
+## 2020-07-03 SV-Zanshin Added elements to call "clang-format" to make sure formatting is correct   ##
+## 2020-05-11 SV-Zanshin Removed Adafruit libraries which now caused Travis to fail                 ##
+## 2020-05-03 SV-Zanshin Commented out Adafruit libraries which now caused Travis to fail           ##
+## 2019-01-20 SV-Zanshin Linked to Adafruit script rather than manually defining all tests          ##
+## 2019-01-19 SV-Zanshin Initial coding                                                             ##
 ##                                                                                                  ##
 ######################################################################################################
 language: c
 sudo: false
 
-# Blacklist
+#########################################################
+# Keep the gh-pages from being included in the CI runs ##
+#########################################################
 branches:
   except:
     - gh-pages
-    
+
+#cache:
+#  directories:
+#    - ~/arduino_ide
+#    - ~/.arduino15/packages/
+   
 git:
   depth: false
   quiet: true
+
+addons:
+  apt:
+    sources:
+      - llvm-toolchain-trusty-5.0
+      - key_url: 'http://apt.llvm.org/llvm-snapshot.gpg.key'
+    packages:
+      - python3-pip
+      - python3-wheel
+      - clang-format-5.0
+
 env:
   global:
     - PRETTYNAME="SV-Zanshin INA2xx Arduino Library"
@@ -27,10 +47,13 @@ env:
 
 before_install:
   - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
+  - curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/run-clang-format.py > run-clang-format.py
+
 
 install:
 
 script:
+  - python run-clang-format.py -r .
   - build_main_platforms
 
 notifications:
@@ -38,5 +61,8 @@ notifications:
     on_success: change
     on_failure: change
 
+###########################################################
+# Generate the Doxygen documentation upon successful run ##
+###########################################################
 after_success:
   - source <(curl -SLs  https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/doxy_gen_and_deploy.sh)

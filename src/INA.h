@@ -77,6 +77,8 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | --------
+ * 1.0.12  | 2020-07-03 | SV-Zanshin  | Issue #41. Added "_EEPROM_offset" variable
+ * 1.0.12  | 2020-07-03 | sages       | Issue #60. Possible Overflow getBus(MicroAmps,MicroWatts)
  * 1.0.11  | 2020-06-30 | SV-Zanshin  | Issue #58, changed formatting to use clang-format
  * 1.0.11  | 2020-06-29 | SV-Zanshin  | Issue #57. "Alert..." functions should be "alert..."
  * 1.0.11  | 2020-05-05 | oliverb68   | Issue #56. Limit of +/- 2kW on getBusMicroWatts
@@ -288,7 +290,7 @@ class INA_Class {
                                      const uint8_t deviceNumber = UINT8_MAX);
   bool        alertOnPowerOverLimit(const bool alertState, const int32_t milliAmps,
                                     const uint8_t deviceNumber = UINT8_MAX);
-
+  uint16_t    _EEPROM_offset = 0;  ///< Offset to all EEPROM addresses, GitHub issue #41
  private:
   int16_t   readWord(const uint8_t addr, const uint8_t deviceAddress);
   void      writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);
