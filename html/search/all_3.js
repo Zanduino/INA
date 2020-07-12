@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['devicenumber',['deviceNumber',['../_background_read_8ino.html#aa288141c88c2063ca23516ce595d6a94',1,'deviceNumber():&#160;BackgroundRead.ino'],['../_background_read___e_s_p32_8ino.html#aa288141c88c2063ca23516ce595d6a94',1,'deviceNumber():&#160;BackgroundRead_ESP32.ino']]],
-  ['devicesfound',['devicesFound',['../_display_readings_8ino.html#ad0f000280e2a18aef708e94ef8b7521f',1,'DisplayReadings.ino']]],
-  ['displayreadings_2eino',['DisplayReadings.ino',['../_display_readings_8ino.html',1,'']]]
+  ['conversionfinished',['conversionFinished',['../class_i_n_a___class.html#a123a8d1564e8d18c15bef0b39b920d0a',1,'INA_Class']]],
+  ['current_5flsb',['current_LSB',['../structina_det.html#a969bebe93f23c1edbc7bdd419b80f89d',1,'inaDet']]],
+  ['currentregister',['currentRegister',['../structina_det.html#a0d41291f35297c4b1c392a2893a7dbfb',1,'inaDet']]]
 ];

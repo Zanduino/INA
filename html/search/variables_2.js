@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['current_5flsb',['current_LSB',['../structina_det.html#a969bebe93f23c1edbc7bdd419b80f89d',1,'inaDet']]],
-  ['currentregister',['currentRegister',['../structina_det.html#a0d41291f35297c4b1c392a2893a7dbfb',1,'inaDet']]]
+  ['busvoltage_5flsb',['busVoltage_LSB',['../structina_det.html#a63a0fcc75f488b0dce4c361c65d13763',1,'inaDet']]],
+  ['busvoltageregister',['busVoltageRegister',['../structina_det.html#ad7824818ea3b803217d42b34df88a38c',1,'inaDet']]]
 ];

@@ -30,5 +30,6 @@ var class_i_n_a___class =
     [ "setI2CSpeed", "class_i_n_a___class.html#a927c09e2c25700411413a8beb3ff855a", null ],
     [ "setMode", "class_i_n_a___class.html#a9b29502921330b36fc8edcb8c424d7af", null ],
     [ "setShuntConversion", "class_i_n_a___class.html#ad6dda7b302348a2bd6d1efedbbf1d5bf", null ],
-    [ "waitForConversion", "class_i_n_a___class.html#a212e209f6ee3b4115fe10ac707baec87", null ]
+    [ "waitForConversion", "class_i_n_a___class.html#a212e209f6ee3b4115fe10ac707baec87", null ],
+    [ "_EEPROM_offset", "class_i_n_a___class.html#a0856357445d6a2f6c8d84901149731e4", null ]
 ];

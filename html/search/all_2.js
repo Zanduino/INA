@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['conversionfinished',['conversionFinished',['../class_i_n_a___class.html#a123a8d1564e8d18c15bef0b39b920d0a',1,'INA_Class']]],
-  ['current_5flsb',['current_LSB',['../structina_det.html#a969bebe93f23c1edbc7bdd419b80f89d',1,'inaDet']]],
-  ['currentregister',['currentRegister',['../structina_det.html#a0d41291f35297c4b1c392a2893a7dbfb',1,'inaDet']]]
+  ['backgroundread_2eino',['BackgroundRead.ino',['../_background_read_8ino.html',1,'']]],
+  ['backgroundread_5fesp32_2eino',['BackgroundRead_ESP32.ino',['../_background_read___e_s_p32_8ino.html',1,'']]],
+  ['begin',['begin',['../class_i_n_a___class.html#a460e6b0dacc8489e977b584a41f0c216',1,'INA_Class']]],
+  ['busvoltage_5flsb',['busVoltage_LSB',['../structina_det.html#a63a0fcc75f488b0dce4c361c65d13763',1,'inaDet']]],
+  ['busvoltageregister',['busVoltageRegister',['../structina_det.html#ad7824818ea3b803217d42b34df88a38c',1,'inaDet']]]
 ];

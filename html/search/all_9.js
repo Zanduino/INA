@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['power_5flsb',['power_LSB',['../structina_det.html#a89925d2b9b7f423d99b279d48bebaa9d',1,'inaDet']]]
+  ['operatingmode',['operatingMode',['../structina_e_e_p_r_o_m.html#a6d4cfec5849d160bb8baf896d7de3a01',1,'inaEEPROM']]]
 ];
