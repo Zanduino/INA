@@ -679,6 +679,7 @@ bool INA_Class::conversionFinished(const uint8_t deviceNumber) {
              conversion.
   @param[in] deviceNumber to check
   */
+  if (_DeviceCount == 0) return false;             // Return finished if invalid device. Issue #65
   readInafromEEPROM(deviceNumber % _DeviceCount);  // Load EEPROM to ina structure
   uint16_t cvBits = 0;
   switch (ina.type) {
