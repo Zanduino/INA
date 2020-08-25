@@ -679,27 +679,32 @@ bool INA_Class::conversionFinished(const uint8_t deviceNumber) {
              conversion.
   @param[in] deviceNumber to check
   */
-  readInafromEEPROM(deviceNumber % _DeviceCount);  // Load EEPROM to ina structure
   uint16_t cvBits = 0;
-  switch (ina.type) {
-    case INA219:
-      cvBits = readWord(INA_BUS_VOLTAGE_REGISTER, ina.address) & 2;  // Bit 2 set denotes ready
-      readWord(INA_POWER_REGISTER, ina.address);                     // Resets the "ready" bit
-      break;
-    case INA226:
-    case INA230:
-    case INA231:
-    case INA260:
-      cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8;
-      break;
-    case INA3221_0:
-    case INA3221_1:
-    case INA3221_2:
-      cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1;
-      break;
-    default:
-      cvBits = 1;
-  }  // of switch type
+  if (_DeviceCount > 0)
+  {
+    readInafromEEPROM(deviceNumber % _DeviceCount);  // Load EEPROM to ina structure
+
+    switch (ina.type) {
+      case INA219:
+        cvBits = readWord(INA_BUS_VOLTAGE_REGISTER, ina.address) & 2;  // Bit 2 set denotes ready
+        readWord(INA_POWER_REGISTER, ina.address);                     // Resets the "ready" bit
+        break;
+      case INA226:
+      case INA230:
+      case INA231:
+      case INA260:
+        cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8;
+        break;
+      case INA3221_0:
+      case INA3221_1:
+      case INA3221_2:
+        cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1;
+        break;
+      default:
+        cvBits = 1;
+    }  // of switch type
+  }
+  
   if (cvBits != 0)
     return (true);
   else
