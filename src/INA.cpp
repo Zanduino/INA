@@ -206,7 +206,7 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
     {
       maxDevices = 255;
     }  // of if-then more than 255 devices possible
-    for (uint8_t deviceAddress = 0x40; deviceAddress <= 0x4F;
+    for (uint8_t deviceAddress = 0x40; deviceAddress <= 0x7F; // 0x7F = last I2C address
          deviceAddress++)  // Loop for each I2C addr
     {
       Wire.beginTransmission(deviceAddress);
