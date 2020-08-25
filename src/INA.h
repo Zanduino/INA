@@ -242,6 +242,7 @@ const uint16_t INA3221_SHUNT_VOLTAGE_LSB      = 400;     ///< INA3221 LSB in uV 
 const uint16_t INA3221_CONFIG_BADC_MASK       = 0x01C0;  ///< INA3221 Bits 7-10  masked
 const uint8_t  INA3221_MASK_REGISTER          = 0xF;     ///< INA32219 Mask register
 const uint8_t  I2C_DELAY                      = 10;      ///< Microsecond delay on I2C writes
+const uint8_t  INA_MAX_DEVICES                = 32;      ///< Max number of INA devices
 
 class INA_Class {
   /*!
@@ -291,20 +292,17 @@ class INA_Class {
                                      const uint8_t deviceNumber = UINT8_MAX);
   bool        alertOnPowerOverLimit(const bool alertState, const int32_t milliAmps,
                                     const uint8_t deviceNumber = UINT8_MAX);
-  uint16_t    _EEPROM_offset = 0;  ///< Offset to all EEPROM addresses, GitHub issue #41
+
  private:
   int16_t   readWord(const uint8_t addr, const uint8_t deviceAddress);
   void      writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);
   void      readInafromEEPROM(const uint8_t deviceNumber);
   void      writeInatoEEPROM(const uint8_t deviceNumber);
   void      initDevice(const uint8_t deviceNumber);
-  uint8_t   _DeviceCount = 0;          ///< Total number of devices detected
-  uint8_t   _currentINA  = UINT8_MAX;  ///< Stores current INA device number
-  inaEEPROM inaEE;                     ///< INA device structure
-  inaDet    ina;                       ///< INA device structure
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#else
-  inaEEPROM _EEPROMEmulation[32];  ///< Actual array of up to 32 devices
-#endif
+  int16_t   _DeviceCount = INT16_MIN;               ///< Total number of devices detected
+  uint8_t   _currentINA  = UINT8_MAX;               ///< Stores current INA device number
+  inaEEPROM inaEE;                                  ///< INA device structure
+  inaDet    ina;                                    ///< INA device structure
+  inaEEPROM _EEPROMEmulation[INA_MAX_DEVICES];      ///< Actual array of devices
 };  // of INA_Class definition
 #endif

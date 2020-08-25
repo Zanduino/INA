@@ -9,10 +9,7 @@
  */
 #include <INA.h>   ///< Include the header definition
 #include <Wire.h>  ///< I2C Library definition
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
-    defined(STM32F1)
-#include <EEPROM.h>  ///< Include the EEPROM library for AVR-Boards
-#endif
+
 inaDet::inaDet() {}  ///< Empty constructor for INA Detail structure
 inaDet::inaDet(inaEEPROM inaEE) {
   /*! @brief     INA Detail Class Constructor (Overloaded)
@@ -110,21 +107,8 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
       @details   Retrieve the stored information for a device from EEPROM. Since this method is
                  private and access is controlled, no range error checking is performed
       @param[in] deviceNumber Index to device array */
-  if (deviceNumber == _currentINA || deviceNumber > _DeviceCount) return;  // Skip if correct device
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
-  uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
-  uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
-  for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.get template
-  {
-    EEPROM.read(e++, ptr++);  // for ina (inaDet type)
-  }                           // of for-next each byte
-#else
-  EEPROM.get(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Read EEPROM values
-#endif
-#else
+  if (deviceNumber == _currentINA || deviceNumber >= _DeviceCount) return;  // Skip if correct device
   inaEE                          = _EEPROMEmulation[deviceNumber];
-#endif
   _currentINA = deviceNumber;
   ina         = inaEE;  // see inaDet constructor
 }  // of method readInafromEEPROM()
@@ -134,23 +118,7 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
                  private and access is controlled, no range error checking is performed
       @param[in] deviceNumber Index to device array */
   inaEE = ina;  // only save relevant part of ina to EEPROM
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
-  uint16_t        e   = deviceNumber * sizeof(inaEE);       // it uses flash memory to emulate
-  const uint16_t *ptr = (const uint16_t *)&inaEE;           // "EEPROM" calls are uint16_t type
-  for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.put template
-  {
-    EEPROM.update(e++, *ptr++);  // for ina (inaDet type)
-  }                              // for-next
-#else
-  EEPROM.put(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Write the structure
-#ifdef ESP32
-  EEPROM.commit();                                                     // Force write to EEPROM when ESP32
-#endif
-#endif
-#else
   _EEPROMEmulation[deviceNumber] = inaEE;
-#endif
 }  // of method writeInatoEEPROM()
 void INA_Class::setI2CSpeed(const uint32_t i2cSpeed) {
   /*! @brief     Set a new I2C speed
@@ -180,26 +148,7 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
   uint16_t originalRegister, tempRegister;
   if (_DeviceCount == 0)  // Enumerate all devices on first call
   {
-    uint16_t maxDevices = 32;
-/**********************************************************************************************
-** The AVR devices need to use EEPROM to save memory, some other devices have emulation for  **
-** EEPROM functionality while some devices have no such function calls. This library caters  **
-** for these differences, with specialized calls for those platforms which have EEPROM calls **
-** and it makes the assumption that if the platform has no EEPROM call then it has sufficient**
-** RAM available at runtime to allocate sufficient space for 32 devices.                     **
-**********************************************************************************************/
-#if defined(ESP32) || defined(ESP8266)
-    EEPROM.begin(512 + _EEPROM_offset);  // If ESP32 then allocate 512 Bytes
-    maxDevices = (512) / sizeof(inaEE);  // and compute number of devices
-#elif defined(__STM32F1__)               // Emulated EEPROM for STM32F1
-    maxDevices = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
-#elif defined(CORE_TEENSY)               // TEENSY doesn't have EEPROM.length
-    maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
-#elif defined(__AVR__)
-    maxDevices = (EEPROM.length() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
-#else
-    maxDevices = 32;
-#endif
+    uint16_t maxDevices = INA_MAX_DEVICES;
     Wire.begin();
 
     if (maxDevices > 255)  // Limit number of devices to an 8-bit number
@@ -488,7 +437,7 @@ const char *INA_Class::getDeviceName(const uint8_t deviceNumber) {
       @details   See function definition for list of possible return values
       @param[in] deviceNumber to return the device name of
       @return    device name */
-  if (deviceNumber > _DeviceCount) return ("");
+  if (deviceNumber >= _DeviceCount) return ("");
   readInafromEEPROM(deviceNumber);  // Load EEPROM to ina structure
   switch (ina.type) {
     case INA219:
@@ -515,7 +464,7 @@ uint8_t INA_Class::getDeviceAddress(const uint8_t deviceNumber) {
       @param[in] deviceNumber to return the device name of
       @return    I2C address of the device. Returns 0 if value is out-of-range
       */
-  if (deviceNumber > _DeviceCount) return 0;
+  if (deviceNumber >= _DeviceCount) return 0;
   readInafromEEPROM(deviceNumber);  // Load EEPROM to ina structure
   return (ina.address);
 }  // of method getDeviceAddress()
