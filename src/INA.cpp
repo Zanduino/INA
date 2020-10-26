@@ -24,7 +24,8 @@ inaDet::inaDet(inaEEPROM inaEE) {
   maxBusAmps    = inaEE.maxBusAmps;
   microOhmR     = inaEE.microOhmR;
   current_LSB   = (uint64_t)maxBusAmps * 1000000000 / 32767;  // Get the best possible LSB in nA
-  power_LSB     = (uint32_t)20 * current_LSB;                 // Fixed multiplier per device
+  power_LSB     = (uint32_t)20 * current_LSB;                 // Default multiplier per device
+  Serial.println(power_LSB);
   switch (type) {
     case INA219:
       busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;
@@ -36,6 +37,7 @@ inaDet::inaDet(inaEEPROM inaEE) {
     case INA226:
     case INA230:
     case INA231:
+      power_LSB            = (uint32_t)25 * current_LSB;  // issue #66 corrected multiplier
       busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;
       shuntVoltageRegister = INA226_SHUNT_VOLTAGE_REGISTER;
       currentRegister      = INA226_CURRENT_REGISTER;

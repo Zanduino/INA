@@ -77,7 +77,7 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | --------
- * 1.0.13  | 2020-08-25 | fg89o       | Issue #65. /0 error with wrong param in "conversionFinished"
+ * 1.0.13  | 2020-10-25 | gallium70   | Issue #66. Error in INA226/230/231 value for "power_LSB"
  * 1.0.13  | 2020-07-13 | fg89o       | Issue #62. Added "_EEPROM_size" for ESP32 and ESP8266
  * 1.0.13  | 2020-07-13 | fg89o       | Issue #62. Incorrect "_EEPROM_offset" computation
  * 1.0.12  | 2020-07-13 | SV-Zanshin  | Issue #41. Added "_EEPROM_offset" variable
