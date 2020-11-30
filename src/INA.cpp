@@ -13,8 +13,8 @@
     defined(STM32F1)
 #include <EEPROM.h>  ///< Include the EEPROM library for AVR-Boards
 #endif
-inaDet::inaDet() {}  ///< Empty constructor for INA Detail structure
-inaDet::inaDet(inaEEPROM inaEE) {
+inaDet::inaDet() {}  ///< constructor for INA Detail class
+inaDet::inaDet(inaEEPROM &inaEE) {
   /*! @brief     INA Detail Class Constructor (Overloaded)
       @details   Construct the class using the saved EEPROM data structure
       @param[in] inaEE Saved EEPROM Values */
@@ -25,7 +25,6 @@ inaDet::inaDet(inaEEPROM inaEE) {
   microOhmR     = inaEE.microOhmR;
   current_LSB   = (uint64_t)maxBusAmps * 1000000000 / 32767;  // Get the best possible LSB in nA
   power_LSB     = (uint32_t)20 * current_LSB;                 // Default multiplier per device
-  Serial.println(power_LSB);
   switch (type) {
     case INA219:
       busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;
@@ -76,7 +75,7 @@ inaDet::inaDet(inaEEPROM inaEE) {
 }  // of constructor
 INA_Class::INA_Class() {}   ///< Unused Class constructor
 INA_Class::~INA_Class() {}  ///< Unused Class destructor
-int16_t INA_Class::readWord(const uint8_t addr, const uint8_t deviceAddress) {
+int16_t INA_Class::readWord(const uint8_t addr, const uint8_t deviceAddress) const {
   /*! @brief     Read one word (2 bytes) from the specified I2C address
       @details   Standard I2C protocol is used, but a delay of I2C_DELAY microseconds has been
                  added to let the INAxxx devices have sufficient time to get the return data ready
@@ -88,12 +87,10 @@ int16_t INA_Class::readWord(const uint8_t addr, const uint8_t deviceAddress) {
   Wire.endTransmission();                       // Close transmission
   delayMicroseconds(I2C_DELAY);                 // delay required for sync
   Wire.requestFrom(deviceAddress, (uint8_t)2);  // Request 2 consecutive bytes
-  int16_t returnData = Wire.read();             // Read the msb
-  returnData         = returnData << 8;         // shift the data over 8 bits
-  returnData |= Wire.read();                    // Read the lsb
-  return returnData;
+  return ((uint16_t)Wire.read() << 8) | Wire.read();
 }  // of method readWord()
-void INA_Class::writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress) {
+void INA_Class::writeWord(const uint8_t addr, const uint16_t data,
+                          const uint8_t deviceAddress) const {
   /*! @brief     Write 2 bytes to the specified I2C address
       @details   Standard I2C protocol is used, but a delay of I2C_DELAY microseconds has been
                  added to let the INAxxx devices have sufficient time to process the data
@@ -103,7 +100,7 @@ void INA_Class::writeWord(const uint8_t addr, const uint16_t data, const uint8_t
   Wire.beginTransmission(deviceAddress);  // Address the I2C device
   Wire.write(addr);                       // Send register address to write
   Wire.write((uint8_t)(data >> 8));       // Write the first (MSB) byte
-  Wire.write((uint8_t)data);              // and then the second
+  Wire.write((uint8_t)data);              // and then the second byte
   Wire.endTransmission();                 // Close transmission and actually send data
   delayMicroseconds(I2C_DELAY);           // delay required for sync
 }  // of method writeWord()
@@ -114,7 +111,7 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
       @param[in] deviceNumber Index to device array */
   if (deviceNumber == _currentINA || deviceNumber > _DeviceCount) return;  // Skip if correct device
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
+#ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
   uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
   uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
   for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.get template
@@ -125,7 +122,7 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
   EEPROM.get(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Read EEPROM values
 #endif
 #else
-  inaEE                          = _EEPROMEmulation[deviceNumber];
+  inaEE = _EEPROMEmulation[deviceNumber];
 #endif
   _currentINA = deviceNumber;
   ina         = inaEE;  // see inaDet constructor
@@ -137,7 +134,7 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
       @param[in] deviceNumber Index to device array */
   inaEE = ina;  // only save relevant part of ina to EEPROM
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
+#ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
   uint16_t        e   = deviceNumber * sizeof(inaEE);       // it uses flash memory to emulate
   const uint16_t *ptr = (const uint16_t *)&inaEE;           // "EEPROM" calls are uint16_t type
   for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.put template
@@ -147,14 +144,14 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
 #else
   EEPROM.put(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Write the structure
 #ifdef ESP32
-  EEPROM.commit();                                                     // Force write to EEPROM when ESP32
+  EEPROM.commit();  // Force write to EEPROM when ESP32
 #endif
 #endif
 #else
   _EEPROMEmulation[deviceNumber] = inaEE;
 #endif
 }  // of method writeInatoEEPROM()
-void INA_Class::setI2CSpeed(const uint32_t i2cSpeed) {
+void INA_Class::setI2CSpeed(const uint32_t i2cSpeed) const {
   /*! @brief     Set a new I2C speed
       @details   I2C allows various bus speeds, see the enumerated type I2C_MODES for the standard
                  speeds. The valid speeds are  100KHz, 400KHz, 1MHz and 3.4MHz. Default to 100KHz
@@ -193,9 +190,9 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
 #if defined(ESP32) || defined(ESP8266)
     EEPROM.begin(_EEPROM_size + _EEPROM_offset);  // If ESP32 then allocate 512 Bytes
     maxDevices = (_EEPROM_size) / sizeof(inaEE);  // and compute number of devices
-#elif defined(__STM32F1__)                        // Emulated EEPROM for STM32F1
+#elif defined(__STM32F1__)  // Emulated EEPROM for STM32F1
     maxDevices = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
-#elif defined(CORE_TEENSY)                        // TEENSY doesn't have EEPROM.length
+#elif defined(CORE_TEENSY)  // TEENSY doesn't have EEPROM.length
     maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
 #elif defined(__AVR__)
     maxDevices = (EEPROM.length() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
@@ -274,7 +271,9 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
       }    // of if-then we have a device
     }      // for-next each possible I2C address
   } else {
-    readInafromEEPROM(deviceNumber);  // Load EEPROM to ina structure
+    readInafromEEPROM(deviceNumber);                         // Load EEPROM to ina structure
+    ina.maxBusAmps = maxBusAmps > 1022 ? 1022 : maxBusAmps;  // Clamp to maximum of 1022A
+    ina.microOhmR  = microOhmR;
     initDevice(deviceNumber);
   }                         // of if-then-else first call
   _currentINA = UINT8_MAX;  // Force read on next call
@@ -750,81 +749,6 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber) {
     }      // of if this device needs to be set
   }        // for-next each device loop
 }  // of method waitForConversion()
-bool INA_Class::AlertOnConversion(const bool alertState, const uint8_t deviceNumber) {
-  /*! @brief     configures the INA devices which support this functionality to pull the ALERT pin
-                 low when a conversion is complete
-      @details   This call is ignored and returns false when called for an invalid device as the
-                 INA219 doesn't have this pin it won't work for that device.
-      @param[in] alertState Boolean true or false to denote the requested setting
-      @param[in] deviceNumber to reset (Optional, when not set all devices have their mode changed)
-      @return    Returns "true" on success, otherwise false */
-  return alertOnConversion(alertState, deviceNumber);
-}  // of method AlertOnConversion
-bool INA_Class::AlertOnShuntOverVoltage(const bool alertState, const int32_t milliVolts,
-                                        const uint8_t deviceNumber) {
-  /*!
-  @brief     configures the INA devices which support this functionality to pull the ALERT pin
-             low when the shunt current exceeds the value given in the parameter in millivolts
-  @details   This call is ignored and returns false when called for an invalid device
-  @param[in] alertState Boolean true or false to denote the requested setting
-  @param[in] milliVolts alert level at which to trigger the alarm
-  @param[in] deviceNumber to reset (Optional, when not set all devices have their mode changed)
-  @return    Returns "true" on success, otherwise false
-  */
-  return alertOnShuntOverVoltage(alertState, milliVolts, deviceNumber);
-}  // of method AlertOnShuntOverVoltage
-bool INA_Class::AlertOnShuntUnderVoltage(const bool alertState, const int32_t milliVolts,
-                                         const uint8_t deviceNumber) {
-  /*!
-  @brief     configures the INA devices which support this functionality to pull the ALERT pin
-             low when the shunt current goes below the value given in the parameter in mV
-  @details   This call is ignored and returns false when called for an invalid device
-  @param[in] alertState Boolean true or false to denote the requested setting
-  @param[in] milliVolts alert level at which to trigger the alarm
-  @param[in] deviceNumber to reset (Optional, when not set all devices have their alert changed)
-  @return    Returns "true" on success, otherwise false
-  */
-  return alertOnShuntUnderVoltage(alertState, milliVolts, deviceNumber);
-}  // of method AlertOnShuntUnderVoltage
-bool INA_Class::AlertOnBusOverVoltage(const bool alertState, const int32_t milliVolts,
-                                      const uint8_t deviceNumber) {
-  /*!
-  @brief     configures the INA devices which support this functionality to pull the ALERT pin low
-             when the bus current goes aboe the value given in the parameter in millivolts
-  @details   This call is ignored and returns false when called for an invalid device
-  @param[in] alertState Boolean true or false to denote the requested setting
-  @param[in] milliVolts alert level at which to trigger the alarm
-  @param[in] deviceNumber to reset (Optional, when not set all devices have their alert changed)
-  @return    Returns "true" on success, otherwise false */
-  return alertOnBusOverVoltage(alertState, milliVolts, deviceNumber);
-}  // of method AlertOnBusOverVoltageConversion
-bool INA_Class::AlertOnBusUnderVoltage(const bool alertState, const int32_t milliVolts,
-                                       const uint8_t deviceNumber) {
-  /*!
-  @brief     configures the INA devices which support this functionality to pull the ALERT pin low
-             when the bus current goes above the value given in the parameter in millivolts.
-  @details   This call is ignored and returns false when called for an invalid device
-  @param[in] alertState Boolean true or false to denote the requested setting
-  @param[in] milliVolts alert level at which to trigger the alarm
-  @param[in] deviceNumber to reset (Optional, when not set all devices have their alert changed)
-  @return    Returns "true" on success, otherwise false
-  */
-  return alertOnBusUnderVoltage(alertState, milliVolts, deviceNumber);
-}  // of method AlertOnBusUnderVoltage
-bool INA_Class::AlertOnPowerOverLimit(const bool alertState, const int32_t milliAmps,
-                                      const uint8_t deviceNumber) {
-  /*!
-  @brief     configures the INA devices which support this functionality to pull the ALERT pin low
-             when the power exceeds the value set in the parameter in milliamps
-  @details   This call is ignored and returns false when called for an invalid device
-  @param[in] alertState Boolean true or false to denote the requested setting
-  @param[in] milliAmps alert level at which to trigger the alarm
-  @param[in] deviceNumber to reset (Optional, when not set then all devices have their alert
-  changed)
-  @return    Returns "true" on success, otherwise false
-  */
-  return alertOnPowerOverLimit(alertState, milliAmps, deviceNumber);
-}  // of method AlertOnPowerOverLimit
 bool INA_Class::alertOnConversion(const bool alertState, const uint8_t deviceNumber) {
   /*!
   @brief     configures the INA devices which support this functionality to pull the ALERT pin low

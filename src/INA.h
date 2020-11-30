@@ -1,3 +1,4 @@
+// clang-format off
 /*!
  *
  * @file INA.h
@@ -77,6 +78,8 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | --------
+ * 1.0.13  | 2020-11-30 | johntaves   | Issue #64. begin() does not set values on subsequent calls
+ * 1.0.13  | 2020-11-29 | SV-Zanshin  | Issue #71. Optimize library, cleanup source code
  * 1.0.13  | 2020-10-25 | gallium70   | Issue #66. Error in INA226/230/231 value for "power_LSB"
  * 1.0.13  | 2020-07-13 | fg89o       | Issue #62. Added "_EEPROM_size" for ESP32 and ESP8266
  * 1.0.13  | 2020-07-13 | fg89o       | Issue #62. Incorrect "_EEPROM_offset" computation
@@ -114,9 +117,7 @@
  * 1.0.3   | 2018-09-04 | delboy711   | Issue #26. Incorrect INA3221 negative current readings
  * 1.0.3   | 2018-08-18 | SV-Zanshin  | Issue #22. Reduce EEPROM Footprint
  * 1.0.3   | 2018-08-18 | SV-Zanshin  | Issue #21. Rename I2C Constants to avoid redefine STM32F1
- * 1.0.2   | 2018-07-22 | SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName",
-                                        8B. Changed datatype in structure to bit-level length defs,
-                                        saving additional 3 bytes
+ * 1.0.2   | 2018-07-22 | SV-Zanshin  | Issue #11. Reduce EEPROM footprint. Removed "deviceName", 8B. Changed datatype in structure to bit-level length defs, saving additional 3 bytes
  * 1.0.2   | 2018-07-21 | avaldeve    | Issue #12. Incorrect const datatype for I2C Speeds
  * 1.0.2   | 2018-07-12 | coelner     | Issue #9. Esplora doesn't accept "Wire.begin()"
  * 1.0.2   | 2018-07-08 | SV-Zanshin  | Issue #2. Finished testing INA3221 across all functions
@@ -132,7 +133,7 @@
  * 1.0.0a  | 2018-06-10 | SV-Zanshin  | Initial coding began
  *
  */
-
+// clang-format on
 #if ARDUINO >= 100 /* Use old library if IDE is prior to V1.0 */
 #include "Arduino.h"
 #else
@@ -144,11 +145,11 @@
 #define INA__Class_h
 /*! typedef contains a packed bit-level defs of information stored per device */
 typedef struct {
-  uint8_t  type : 4;           ///< Values 0-15, see enumerated "ina_Type" for details
-  uint8_t  operatingMode : 4;  ///< Values 0-15, Default to continuous mode
-  uint32_t address : 7;        ///< Values 0-127, I2C Address of device
-  uint32_t maxBusAmps : 10;    ///< Values 0-1023, Store initialization value
-  uint32_t microOhmR : 20;     ///< Values 0-1.048.575, Store initialization value
+  uint8_t  type : 4;           ///< 0-15        see enumerated "ina_Type" for details
+  uint8_t  operatingMode : 4;  ///< 0-15        Default to continuous mode
+  uint32_t address : 7;        ///< 0-127       I2C Address of device
+  uint32_t maxBusAmps : 10;    ///< 0-1023      Store initialization value
+  uint32_t microOhmR : 20;     ///< 0-1,048,575 Store initialization value
 } inaEEPROM;                   // of structure
 /*! typedef contains a packed bit-level definition of information stored on a device */
 typedef struct inaDet : inaEEPROM {
@@ -160,7 +161,7 @@ typedef struct inaDet : inaEEPROM {
   uint32_t current_LSB;               ///< Amperage LSB
   uint32_t power_LSB;                 ///< Wattage LSB
   inaDet();                           ///< struct constructor
-  inaDet(inaEEPROM inaEE);            ///< for ina = inaEE; assignment
+  inaDet(inaEEPROM& inaEE);           ///< for ina = inaEE; assignment
 } inaDet;                             // of structure
 /*! Enumerated list detailing the names of all supported INA devices. The INA3221 is stored
     as 3 distinct devices each with their own enumerated type. */
@@ -189,61 +190,61 @@ enum ina_Mode {
 /************************************************************************************************
 ** Declare constants used in the class                                                         **
 ************************************************************************************************/
-#ifndef INA_I2C_MODES                                    // I2C related constants
-#define INA_I2C_MODES                                    // Guard code to prevent multiple defs
-const uint32_t INA_I2C_STANDARD_MODE   = 100000;         ///< Default normal I2C 100KHz speed
-const uint32_t INA_I2C_FAST_MODE       = 400000;         ///< Fast mode
-const uint32_t INA_I2C_FAST_MODE_PLUS  = 1000000;        ///< Really fast mode
-const uint32_t INA_I2C_HIGH_SPEED_MODE = 3400000;        ///< Turbo mode
-#endif                                                   //
-const uint8_t  INA_CONFIGURATION_REGISTER     = 0;       ///< Configuration Register address
-const uint8_t  INA_BUS_VOLTAGE_REGISTER       = 2;       ///< Bus Voltage Register address
-const uint8_t  INA_POWER_REGISTER             = 3;       ///< Power Register address
-const uint8_t  INA_CALIBRATION_REGISTER       = 5;       ///< Calibration Register address
-const uint8_t  INA_MASK_ENABLE_REGISTER       = 6;       ///< Mask enable Register (some devices)
-const uint8_t  INA_ALERT_LIMIT_REGISTER       = 7;       ///< Alert Limit Register (some devices)
-const uint8_t  INA_MANUFACTURER_ID_REGISTER   = 0xFE;    ///< Mfgr ID Register (some devices)
-const uint8_t  INA_DIE_ID_REGISTER            = 0xFF;    ///< Die ID Register (some devices)
-const uint16_t INA_RESET_DEVICE               = 0x8000;  ///< Write to config to reset device
-const uint16_t INA_CONVERSION_READY_MASK      = 0x0080;  ///< Bit 4
-const uint16_t INA_CONFIG_MODE_MASK           = 0x0007;  ///< Bits 0-3
-const uint16_t INA_ALERT_MASK                 = 0x03FF;  ///< Mask off bits 0-9
-const uint8_t  INA_ALERT_SHUNT_OVER_VOLT_BIT  = 15;      ///< Register bit
-const uint8_t  INA_ALERT_SHUNT_UNDER_VOLT_BIT = 14;      ///< Register bit
-const uint8_t  INA_ALERT_BUS_OVER_VOLT_BIT    = 13;      ///< Register bit
-const uint8_t  INA_ALERT_BUS_UNDER_VOLT_BIT   = 12;      ///< Register bit
-const uint8_t  INA_ALERT_POWER_OVER_WATT_BIT  = 11;      ///< Register bit
-const uint8_t  INA_ALERT_CONVERSION_RDY_BIT   = 10;      ///< Register bit
-const uint8_t  INA_DEFAULT_OPERATING_MODE     = B111;    ///< Default continuous mode
-const uint8_t  INA219_SHUNT_VOLTAGE_REGISTER  = 1;       ///< INA219 Shunt Voltage Register
-const uint8_t  INA219_CURRENT_REGISTER        = 4;       ///< INA219 Current Register
-const uint16_t INA219_BUS_VOLTAGE_LSB         = 400;     ///< INA219 LSB in uV *100 4.00mV
-const uint16_t INA219_SHUNT_VOLTAGE_LSB       = 100;     ///< INA219 LSB in uV *10  10.0uV
-const uint16_t INA219_CONFIG_AVG_MASK         = 0x07F8;  ///< INA219 Bits 3-6, 7-10
-const uint16_t INA219_CONFIG_PG_MASK          = 0xE7FF;  ///< INA219 Bits 11-12 masked
-const uint16_t INA219_CONFIG_BADC_MASK        = 0x0780;  ///< INA219 Bits 7-10  masked
-const uint16_t INA219_CONFIG_SADC_MASK        = 0x0038;  ///< INA219 Bits 3-5
-const uint8_t  INA219_BRNG_BIT                = 13;      ///< INA219 Bit for BRNG in config reg
-const uint8_t  INA219_PG_FIRST_BIT            = 11;      ///< INA219 1st bit of Programmable Gain
-const uint8_t  INA226_SHUNT_VOLTAGE_REGISTER  = 1;       ///< INA226 Shunt Voltage Register
-const uint8_t  INA226_CURRENT_REGISTER        = 4;       ///< INA226 Current Register
-const uint16_t INA226_BUS_VOLTAGE_LSB         = 125;     ///< INA226 LSB in uV *100 1.25mV
-const uint16_t INA226_SHUNT_VOLTAGE_LSB       = 25;      ///< INA226 LSB in uV *10  2.5uV
-const uint16_t INA226_CONFIG_AVG_MASK         = 0x0E00;  ///< INA226 Bits 9-11
-const uint16_t INA226_DIE_ID_VALUE            = 0x2260;  ///< INA226 Hard-coded Die ID for INA226
-const uint16_t INA226_CONFIG_BADC_MASK        = 0x01C0;  ///< INA226 Bits 6-8 masked
-const uint16_t INA226_CONFIG_SADC_MASK        = 0x0038;  ///< INA226 Bits 3-4
-const uint8_t  INA260_SHUNT_VOLTAGE_REGISTER  = 0;       ///< INA260 Register doesn't exist
-const uint8_t  INA260_CURRENT_REGISTER        = 1;       ///< INA260 Current Register
-const uint16_t INA260_BUS_VOLTAGE_LSB         = 125;     ///< INA260 LSB in uV *100 1.25mV
-const uint16_t INA260_CONFIG_BADC_MASK        = 0x01C0;  ///< INA260 Bits 6-8  masked
-const uint16_t INA260_CONFIG_SADC_MASK        = 0x0038;  ///< INA260 Bits 3-5  masked
-const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER = 1;       ///< INA3221 Register number 1
-const uint16_t INA3221_BUS_VOLTAGE_LSB        = 800;     ///< INA3221 LSB in uV *100 8mV
-const uint16_t INA3221_SHUNT_VOLTAGE_LSB      = 400;     ///< INA3221 LSB in uV *10  40uV
-const uint16_t INA3221_CONFIG_BADC_MASK       = 0x01C0;  ///< INA3221 Bits 7-10  masked
-const uint8_t  INA3221_MASK_REGISTER          = 0xF;     ///< INA32219 Mask register
-const uint8_t  I2C_DELAY                      = 10;      ///< Microsecond delay on I2C writes
+#ifndef INA_I2C_MODES  // I2C related constants
+#define INA_I2C_MODES  // Guard code to prevent multiple defs
+const uint32_t INA_I2C_STANDARD_MODE{100000};     ///< Default normal I2C 100KHz speed
+const uint32_t INA_I2C_FAST_MODE{400000};         ///< Fast mode
+const uint32_t INA_I2C_FAST_MODE_PLUS{1000000};   ///< Really fast mode
+const uint32_t INA_I2C_HIGH_SPEED_MODE{3400000};  ///< Turbo mode
+#endif  //
+const uint8_t  INA_CONFIGURATION_REGISTER{0};       ///< Configuration Register address
+const uint8_t  INA_BUS_VOLTAGE_REGISTER{2};         ///< Bus Voltage Register address
+const uint8_t  INA_POWER_REGISTER{3};               ///< Power Register address
+const uint8_t  INA_CALIBRATION_REGISTER{5};         ///< Calibration Register address
+const uint8_t  INA_MASK_ENABLE_REGISTER{6};         ///< Mask enable Register (some devices)
+const uint8_t  INA_ALERT_LIMIT_REGISTER{7};         ///< Alert Limit Register (some devices)
+const uint8_t  INA_MANUFACTURER_ID_REGISTER{0xFE};  ///< Mfgr ID Register (some devices)
+const uint8_t  INA_DIE_ID_REGISTER{0xFF};           ///< Die ID Register (some devices)
+const uint16_t INA_RESET_DEVICE{0x8000};            ///< Write to config to reset device
+const uint16_t INA_CONVERSION_READY_MASK{0x0080};   ///< Bit 4
+const uint16_t INA_CONFIG_MODE_MASK{0x0007};        ///< Bits 0-3
+const uint16_t INA_ALERT_MASK{0x03FF};              ///< Mask off bits 0-9
+const uint8_t  INA_ALERT_SHUNT_OVER_VOLT_BIT{15};   ///< Register bit
+const uint8_t  INA_ALERT_SHUNT_UNDER_VOLT_BIT{14};  ///< Register bit
+const uint8_t  INA_ALERT_BUS_OVER_VOLT_BIT{13};     ///< Register bit
+const uint8_t  INA_ALERT_BUS_UNDER_VOLT_BIT{12};    ///< Register bit
+const uint8_t  INA_ALERT_POWER_OVER_WATT_BIT{11};   ///< Register bit
+const uint8_t  INA_ALERT_CONVERSION_RDY_BIT{10};    ///< Register bit
+const uint8_t  INA_DEFAULT_OPERATING_MODE{B111};    ///< Default continuous mode
+const uint8_t  INA219_SHUNT_VOLTAGE_REGISTER{1};    ///< INA219 Shunt Voltage Register
+const uint8_t  INA219_CURRENT_REGISTER{4};          ///< INA219 Current Register
+const uint16_t INA219_BUS_VOLTAGE_LSB{400};         ///< INA219 LSB in uV *100 4.00mV
+const uint16_t INA219_SHUNT_VOLTAGE_LSB{100};       ///< INA219 LSB in uV *10  10.0uV
+const uint16_t INA219_CONFIG_AVG_MASK{0x07F8};      ///< INA219 Bits 3-6, 7-10
+const uint16_t INA219_CONFIG_PG_MASK{0xE7FF};       ///< INA219 Bits 11-12 masked
+const uint16_t INA219_CONFIG_BADC_MASK{0x0780};     ///< INA219 Bits 7-10  masked
+const uint16_t INA219_CONFIG_SADC_MASK{0x0038};     ///< INA219 Bits 3-5
+const uint8_t  INA219_BRNG_BIT{13};                 ///< INA219 Bit for BRNG in config reg
+const uint8_t  INA219_PG_FIRST_BIT{11};             ///< INA219 1st bit of Programmable Gain
+const uint8_t  INA226_SHUNT_VOLTAGE_REGISTER{1};    ///< INA226 Shunt Voltage Register
+const uint8_t  INA226_CURRENT_REGISTER{4};          ///< INA226 Current Register
+const uint16_t INA226_BUS_VOLTAGE_LSB{125};         ///< INA226 LSB in uV *100 1.25mV
+const uint16_t INA226_SHUNT_VOLTAGE_LSB{25};        ///< INA226 LSB in uV *10  2.5uV
+const uint16_t INA226_CONFIG_AVG_MASK{0x0E00};      ///< INA226 Bits 9-11
+const uint16_t INA226_DIE_ID_VALUE{0x2260};         ///< INA226 Hard-coded Die ID for INA226
+const uint16_t INA226_CONFIG_BADC_MASK{0x01C0};     ///< INA226 Bits 6-8 masked
+const uint16_t INA226_CONFIG_SADC_MASK{0x0038};     ///< INA226 Bits 3-4
+const uint8_t  INA260_SHUNT_VOLTAGE_REGISTER{0};    ///< INA260 Register doesn't exist
+const uint8_t  INA260_CURRENT_REGISTER{1};          ///< INA260 Current Register
+const uint16_t INA260_BUS_VOLTAGE_LSB{125};         ///< INA260 LSB in uV *100 1.25mV
+const uint16_t INA260_CONFIG_BADC_MASK{0x01C0};     ///< INA260 Bits 6-8  masked
+const uint16_t INA260_CONFIG_SADC_MASK{0x0038};     ///< INA260 Bits 3-5  masked
+const uint8_t  INA3221_SHUNT_VOLTAGE_REGISTER{1};   ///< INA3221 Register number 1
+const uint16_t INA3221_BUS_VOLTAGE_LSB{800};        ///< INA3221 LSB in uV *100 8mV
+const uint16_t INA3221_SHUNT_VOLTAGE_LSB{400};      ///< INA3221 LSB in uV *10  40uV
+const uint16_t INA3221_CONFIG_BADC_MASK{0x01C0};    ///< INA3221 Bits 7-10  masked
+const uint8_t  INA3221_MASK_REGISTER{0xF};          ///< INA32219 Mask register
+const uint8_t  I2C_DELAY{10};                       ///< Microsecond delay on I2C writes
 
 class INA_Class {
   /*!
@@ -255,7 +256,7 @@ class INA_Class {
   ~INA_Class();
   uint8_t     begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
                     const uint8_t deviceNumber = UINT8_MAX);
-  void        setI2CSpeed(const uint32_t i2cSpeed = INA_I2C_STANDARD_MODE);
+  void        setI2CSpeed(const uint32_t i2cSpeed = INA_I2C_STANDARD_MODE) const;
   void        setMode(const uint8_t mode, const uint8_t deviceNumber = UINT8_MAX);
   void        setAveraging(const uint16_t averages, const uint8_t deviceNumber = UINT8_MAX);
   void        setBusConversion(const uint32_t convTime, const uint8_t deviceNumber = UINT8_MAX);
@@ -271,17 +272,6 @@ class INA_Class {
   void        reset(const uint8_t deviceNumber = 0);
   bool        conversionFinished(const uint8_t deviceNumber = 0);
   void        waitForConversion(const uint8_t deviceNumber = UINT8_MAX);
-  bool        AlertOnConversion(const bool alertState, const uint8_t deviceNumber = UINT8_MAX);
-  bool        AlertOnShuntOverVoltage(const bool alertState, const int32_t milliVolts,
-                                      const uint8_t deviceNumber = UINT8_MAX);
-  bool        AlertOnShuntUnderVoltage(const bool alertState, const int32_t milliVolts,
-                                       const uint8_t deviceNumber = UINT8_MAX);
-  bool        AlertOnBusOverVoltage(const bool alertState, const int32_t milliVolts,
-                                    const uint8_t deviceNumber = UINT8_MAX);
-  bool        AlertOnBusUnderVoltage(const bool alertState, const int32_t milliVolts,
-                                     const uint8_t deviceNumber = UINT8_MAX);
-  bool        AlertOnPowerOverLimit(const bool alertState, const int32_t milliAmps,
-                                    const uint8_t deviceNumber = UINT8_MAX);
   bool        alertOnConversion(const bool alertState, const uint8_t deviceNumber = UINT8_MAX);
   bool        alertOnShuntOverVoltage(const bool alertState, const int32_t milliVolts,
                                       const uint8_t deviceNumber = UINT8_MAX);
@@ -298,8 +288,8 @@ class INA_Class {
   uint16_t _EEPROM_size = 512;  ///< Default EEPROM reserved space for ESP32 and ESP8266
 #endif
  private:
-  int16_t   readWord(const uint8_t addr, const uint8_t deviceAddress);
-  void      writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress);
+  int16_t   readWord(const uint8_t addr, const uint8_t deviceAddress) const;
+  void      writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress) const;
   void      readInafromEEPROM(const uint8_t deviceNumber);
   void      writeInatoEEPROM(const uint8_t deviceNumber);
   void      initDevice(const uint8_t deviceNumber);
