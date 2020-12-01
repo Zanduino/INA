@@ -253,7 +253,7 @@ class INA_Class {
    * @brief   Forward definitions for the INA_Class
    */
  public:
-  INA_Class(uint8_t expectedDevices=0);
+  INA_Class(uint8_t expectedDevices = 0);
   ~INA_Class();
   uint8_t     begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
                     const uint8_t deviceNumber = UINT8_MAX);

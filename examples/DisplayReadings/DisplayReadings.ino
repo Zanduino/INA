@@ -48,6 +48,7 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | --------
+ * 1.0.8   | 2020-12-01 | SV-Zanshin  | Issue #72, allow dynamic memory allocation instead of EEPROM
  * 1.0.7   | 2020-06-30 | SV-Zanshin  | Issue #58, changed formatting to use clang-format
  * 1.0.6   | 2020-06-29 | SV-Zanshin  | Issue #57, changed case of functions "Alert..."
  * 1.0.5   | 2020-05-03 | SV-Zanshin  | Moved setting of maxAmps and shunt to constants
@@ -82,7 +83,10 @@ const uint32_t SERIAL_SPEED{115200};     ///< Use fast serial speed
 const uint32_t SHUNT_MICRO_OHM{100000};  ///< Shunt resistance in Micro-Ohm, e.g. 100000 is 0.1 Ohm
 const uint16_t MAXIMUM_AMPS{1};          ///< Max expected amps, clamped from 1A to a max of 1022A
 uint8_t        devicesFound{0};          ///< Number of INAs found
-INA_Class      INA(2);                      ///< INA class instantiation
+INA_Class      INA;                    ///< INA class instantiation to use EEPROM
+//INA_Class      INA(0);                 ///< INA class instantiation to use EEPROM
+//INA_Class      INA(5);                 ///< INA class instantiation to use dynamic memory rather
+                                         //   than EEPROM. Allocate storage for up to (n) devices
 
 void setup() {
   /*!
@@ -98,7 +102,7 @@ void setup() {
 #ifdef __AVR_ATmega32U4__  // If a 32U4 processor, then wait 2 seconds to initialize
   delay(2000);
 #endif
-  Serial.print("\n\nDisplay INA Readings V1.0.7\n");
+  Serial.print("\n\nDisplay INA Readings V1.0.8\n");
   Serial.print(" - Searching & Initializing INA devices\n");
   /************************************************************************************************
   ** The INA.begin call initializes the device(s) found with an expected ±1 Amps maximum current **

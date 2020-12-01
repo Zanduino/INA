@@ -74,7 +74,7 @@ inaDet::inaDet(inaEEPROM &inaEE) {
   }  // of switch type
 }  // of constructor
 INA_Class::INA_Class(uint8_t expectedDevices = 0) : _expectedDevices(expectedDevices) {
-  /*!
+    /*!
   @brief   Class constructor
   @details If called without a parameter or with a 0 value, then the constructor does nothing,
            but if a value is passed then using EEPROM is disabled and each INA-Device found
@@ -86,7 +86,7 @@ INA_Class::INA_Class(uint8_t expectedDevices = 0) : _expectedDevices(expectedDev
   if (_expectedDevices) {
     _DeviceArray = new inaEEPROM[_expectedDevices];
   }  // if-then use memory rather than EEPROM
-}  // of class initializer
+}  // of class constructor
 
 INA_Class::~INA_Class() {
   /*!
