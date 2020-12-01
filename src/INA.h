@@ -78,6 +78,7 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | --------
+ * 1.0.13  | 2020-12-01 | SV-Zanshin  | Issue #72. Allow INA structures to be in memory rather than EEPROM
  * 1.0.13  | 2020-11-30 | johntaves   | Issue #64. begin() does not set values on subsequent calls
  * 1.0.13  | 2020-11-29 | SV-Zanshin  | Issue #71. Optimize library, cleanup source code
  * 1.0.13  | 2020-10-25 | gallium70   | Issue #66. Error in INA226/230/231 value for "power_LSB"
@@ -252,7 +253,7 @@ class INA_Class {
    * @brief   Forward definitions for the INA_Class
    */
  public:
-  INA_Class();
+  INA_Class(uint8_t expectedDevices=0);
   ~INA_Class();
   uint8_t     begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
                     const uint8_t deviceNumber = UINT8_MAX);
@@ -288,15 +289,17 @@ class INA_Class {
   uint16_t _EEPROM_size = 512;  ///< Default EEPROM reserved space for ESP32 and ESP8266
 #endif
  private:
-  int16_t   readWord(const uint8_t addr, const uint8_t deviceAddress) const;
-  void      writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress) const;
-  void      readInafromEEPROM(const uint8_t deviceNumber);
-  void      writeInatoEEPROM(const uint8_t deviceNumber);
-  void      initDevice(const uint8_t deviceNumber);
-  uint8_t   _DeviceCount = 0;          ///< Total number of devices detected
-  uint8_t   _currentINA  = UINT8_MAX;  ///< Stores current INA device number
-  inaEEPROM inaEE;                     ///< INA device structure
-  inaDet    ina;                       ///< INA device structure
+  int16_t    readWord(const uint8_t addr, const uint8_t deviceAddress) const;
+  void       writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress) const;
+  void       readInafromEEPROM(const uint8_t deviceNumber);
+  void       writeInatoEEPROM(const uint8_t deviceNumber);
+  void       initDevice(const uint8_t deviceNumber);
+  uint8_t    _DeviceCount{0};          ///< Total number of devices detected
+  uint8_t    _currentINA{UINT8_MAX};   ///< Stores current INA device number
+  uint8_t    _expectedDevices{0};      ///< If 0 use EEPROM, otherwise use RAM for INA structures
+  inaEEPROM* _DeviceArray;             ///< Pointer to dynamic array of devices if not using EEPROM
+  inaEEPROM  inaEE;                    ///< INA device structure
+  inaDet     ina;                      ///< INA device structure
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
 #else
   inaEEPROM _EEPROMEmulation[32];  ///< Actual array of up to 32 devices

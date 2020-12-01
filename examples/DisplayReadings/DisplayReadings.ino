@@ -82,7 +82,7 @@ const uint32_t SERIAL_SPEED{115200};     ///< Use fast serial speed
 const uint32_t SHUNT_MICRO_OHM{100000};  ///< Shunt resistance in Micro-Ohm, e.g. 100000 is 0.1 Ohm
 const uint16_t MAXIMUM_AMPS{1};          ///< Max expected amps, clamped from 1A to a max of 1022A
 uint8_t        devicesFound{0};          ///< Number of INAs found
-INA_Class      INA;                      ///< INA class instantiation
+INA_Class      INA(2);                      ///< INA class instantiation
 
 void setup() {
   /*!
@@ -106,13 +106,14 @@ void setup() {
   ** devices are initially set to these values.                                                  **
   ************************************************************************************************/
   devicesFound = INA.begin(MAXIMUM_AMPS, SHUNT_MICRO_OHM);  // Expected max Amp & shunt resistance
-  while (INA.begin(MAXIMUM_AMPS, SHUNT_MICRO_OHM) == 0) {
-    Serial.println("No INA device found, retrying in 10 seconds...");
-    delay(10000);  // Wait 10 seconds before retrying
-  }                // while no devices detected
-  Serial.print(" - Detected ");
+  while (devicesFound == 0) {
+    Serial.println(F("No INA device found, retrying in 10 seconds..."));
+    delay(10000);                                             // Wait 10 seconds before retrying
+    devicesFound = INA.begin(MAXIMUM_AMPS, SHUNT_MICRO_OHM);  // Expected max Amp & shunt resistance
+  }                                                           // while no devices detected
+  Serial.print(F(" - Detected "));
   Serial.print(devicesFound);
-  Serial.println(" INA devices on the I2C bus");
+  Serial.println(F(" INA devices on the I2C bus"));
   INA.setBusConversion(8500);             // Maximum conversion time 8.244ms
   INA.setShuntConversion(8500);           // Maximum conversion time 8.244ms
   INA.setAveraging(128);                  // Average each reading n-times
@@ -133,8 +134,8 @@ void loop() {
   static char     sprintfBuffer[100];  // Buffer to format output
   static char     busChar[8], shuntChar[10], busMAChar[10], busMWChar[10];  // Output buffers
 
-  Serial.print("Nr Adr Type   Bus      Shunt       Bus         Bus\n");
-  Serial.print("== === ====== ======== =========== =========== ===========\n");
+  Serial.print(F("Nr Adr Type   Bus      Shunt       Bus         Bus\n"));
+  Serial.print(F("== === ====== ======== =========== =========== ===========\n"));
   for (uint8_t i = 0; i < devicesFound; i++)  // Loop through all devices
   {
     dtostrf(INA.getBusMilliVolts(i) / 1000.0, 7, 4, busChar);      // Convert floating point to char
@@ -147,8 +148,7 @@ void loop() {
   }  // for-next each INA device loop
   Serial.println();
   delay(10000);  // Wait 10 seconds before next reading
-  INA.begin(MAXIMUM_AMPS, SHUNT_MICRO_OHM * 2, 0);
-  Serial.print("Loop iteration ");
+  Serial.print(F("Loop iteration "));
   Serial.print(++loopCounter);
-  Serial.print("\n\n");
+  Serial.print(F("\n\n"));
 }  // method loop()
