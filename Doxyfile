@@ -3,6 +3,7 @@
 ##                                                                                                  ##
 ## Date       Developer      Comments                                                               ##
 ## ========== ============== ====================================================================== ##
+## 2020-07-12 SV-Zanshin     Updated to version v1.0.14                                             ##
 ## 2020-07-12 SV-Zanshin     Updated to version v1.0.13                                             ##
 ## 2020-06-30 SV-Zanshin     Updated to version v1.0.12                                             ##
 ## 2020-06-06 SV-Zanshin     Updated to version v1.0.11                                             ##
@@ -11,7 +12,7 @@
 ######################################################################################################
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = INA2xx
-PROJECT_NUMBER         = "Version 1.0.13"
+PROJECT_NUMBER         = "Version 1.0.14"
 PROJECT_BRIEF          = "Arduino Library for INA2xx power measurement devices"
 PROJECT_LOGO           = images/horizontal_narrow_small.png
 OUTPUT_DIRECTORY       =

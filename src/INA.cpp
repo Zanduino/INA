@@ -74,15 +74,15 @@ inaDet::inaDet(inaEEPROM &inaEE) {
   }  // of switch type
 }  // of constructor
 INA_Class::INA_Class(uint8_t expectedDevices = 0) : _expectedDevices(expectedDevices) {
-    /*!
-  @brief   Class constructor
-  @details If called without a parameter or with a 0 value, then the constructor does nothing,
-           but if a value is passed then using EEPROM is disabled and each INA-Device found
-           has its data (inaEEPROM structure size) stored in a array dynamically allocated during
-           library instatiation here. If there is not enough space then the pointer isn't init-
-           ialized and the program will abort later on. No error checking can be done here
-  @param[in] expectedDevices Number of elements to initialize array to if non-zero
-  */
+  /*!
+@brief   Class constructor
+@details If called without a parameter or with a 0 value, then the constructor does nothing,
+         but if a value is passed then using EEPROM is disabled and each INA-Device found
+         has its data (inaEEPROM structure size) stored in a array dynamically allocated during
+         library instatiation here. If there is not enough space then the pointer isn't init-
+         ialized and the program will abort later on. No error checking can be done here
+@param[in] expectedDevices Number of elements to initialize array to if non-zero
+*/
   if (_expectedDevices) {
     _DeviceArray = new inaEEPROM[_expectedDevices];
   }  // if-then use memory rather than EEPROM
@@ -136,21 +136,21 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
   if (_expectedDevices == 0) {
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
 #ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
-  uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
-  uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
-  for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.get template
-  {
-    EEPROM.read(e++, ptr++);  // for ina (inaDet type)
-  }                           // of for-next each byte
+    uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
+    uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
+    for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.get template
+    {
+      EEPROM.read(e++, ptr++);  // for ina (inaDet type)
+    }                           // of for-next each byte
 #else
-  EEPROM.get(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Read EEPROM values
+    EEPROM.get(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Read EEPROM values
 #endif
 #else
-  inaEE = _EEPROMEmulation[deviceNumber];
+    inaEE = _EEPROMEmulation[deviceNumber];
 #endif
   } else {
     inaEE = _DeviceArray[deviceNumber];
-  } // if-then-else use EEPROM
+  }  // if-then-else use EEPROM
   _currentINA = deviceNumber;
   ina         = inaEE;  // see inaDet constructor
 }  // of method readInafromEEPROM()
@@ -160,9 +160,9 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
                  private and access is controlled, no range error checking is performed
       @param[in] deviceNumber Index to device array */
   inaEE = ina;  // only save relevant part of ina to EEPROM
-  if (_expectedDevices==0) {
+  if (_expectedDevices == 0) {
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__                                            // STM32F1 has no built-in EEPROM
+#ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
     uint16_t        e   = deviceNumber * sizeof(inaEE);       // it uses flash memory to emulate
     const uint16_t *ptr = (const uint16_t *)&inaEE;           // "EEPROM" calls are uint16_t type
     for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.put template
@@ -172,7 +172,7 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
 #else
     EEPROM.put(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Write the structure
 #ifdef ESP32
-    EEPROM.commit();                                                     // Force write to EEPROM when ESP32
+    EEPROM.commit();  // Force write to EEPROM when ESP32
 #endif
 #endif
 #else
@@ -180,7 +180,7 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
 #endif
   } else {
     _DeviceArray[deviceNumber] = inaEE;
-  } // if-then-else use EEPROM to store data
+  }  // if-then-else use EEPROM to store data
 }  // of method writeInatoEEPROM()
 void INA_Class::setI2CSpeed(const uint32_t i2cSpeed) const {
   /*! @brief     Set a new I2C speed
@@ -206,7 +206,7 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
                  device's internal power register
       @param[in] deviceNumber Device number to explicitly set the maxBusAmps and microOhmR values,
                  by default all devices found get set to the same initial values for these 2 params
-      @return    The integer number of INAxxxx devices found on the I2C bus 
+      @return    The integer number of INAxxxx devices found on the I2C bus
   */
   uint16_t originalRegister, tempRegister;
   if (_DeviceCount == 0)  // Enumerate all devices on first call
