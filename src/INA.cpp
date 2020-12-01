@@ -73,7 +73,7 @@ inaDet::inaDet(inaEEPROM &inaEE) {
       break;
   }  // of switch type
 }  // of constructor
-INA_Class::INA_Class(uint8_t expectedDevices = 0) : _expectedDevices(expectedDevices) {
+INA_Class::INA_Class(uint8_t expectedDevices) : _expectedDevices(expectedDevices) {
   /*!
 @brief   Class constructor
 @details If called without a parameter or with a 0 value, then the constructor does nothing,
