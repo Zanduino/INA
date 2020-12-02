@@ -1,7 +1,7 @@
 var structina_det =
 [
     [ "inaDet", "structina_det.html#a2b76a0733906eff2af92e8f5fb129eab", null ],
-    [ "inaDet", "structina_det.html#ad0436ed38df2a05ecb1993028b7f69b7", null ],
+    [ "inaDet", "structina_det.html#afd7c7263108bf893c8a9af1540cd12e3", null ],
     [ "busVoltage_LSB", "structina_det.html#a63a0fcc75f488b0dce4c361c65d13763", null ],
     [ "busVoltageRegister", "structina_det.html#ad7824818ea3b803217d42b34df88a38c", null ],
     [ "current_LSB", "structina_det.html#a969bebe93f23c1edbc7bdd419b80f89d", null ],

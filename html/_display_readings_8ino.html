@@ -30,7 +30,7 @@
   <td id="projectlogo"><img alt="Logo" src="horizontal_narrow_small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">INA2xx
-   &#160;<span id="projectnumber">Version 1.0.13</span>
+   &#160;<span id="projectnumber">Version 1.0.14</span>
    </div>
    <div id="projectbrief">Arduino Library for INA2xx power measurement devices</div>
   </td>
@@ -105,24 +105,24 @@ Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:adc8430dea1bce949f10d9708742cca34"><td class="memItemLeft" align="right" valign="top"><a id="adc8430dea1bce949f10d9708742cca34"></a>
-const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#adc8430dea1bce949f10d9708742cca34">SERIAL_SPEED</a> = 115200</td></tr>
+const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#adc8430dea1bce949f10d9708742cca34">SERIAL_SPEED</a> {115200}</td></tr>
 <tr class="memdesc:adc8430dea1bce949f10d9708742cca34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use fast serial speed. <br /></td></tr>
 <tr class="separator:adc8430dea1bce949f10d9708742cca34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28f4918a8f25aa5f87a94cf58f17b54d"><td class="memItemLeft" align="right" valign="top"><a id="a28f4918a8f25aa5f87a94cf58f17b54d"></a>
-const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#a28f4918a8f25aa5f87a94cf58f17b54d">SHUNT_MICRO_OHM</a> = 100000</td></tr>
+const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#a28f4918a8f25aa5f87a94cf58f17b54d">SHUNT_MICRO_OHM</a> {100000}</td></tr>
 <tr class="memdesc:a28f4918a8f25aa5f87a94cf58f17b54d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shunt resistance in Micro-Ohm, e.g. 100000 is 0.1 Ohm. <br /></td></tr>
 <tr class="separator:a28f4918a8f25aa5f87a94cf58f17b54d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dd76387ed94d51895605354514bb8d2"><td class="memItemLeft" align="right" valign="top"><a id="a7dd76387ed94d51895605354514bb8d2"></a>
-const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#a7dd76387ed94d51895605354514bb8d2">MAXIMUM_AMPS</a> = 1</td></tr>
+const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#a7dd76387ed94d51895605354514bb8d2">MAXIMUM_AMPS</a> {1}</td></tr>
 <tr class="memdesc:a7dd76387ed94d51895605354514bb8d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max expected amps, clamped from 1A to a max of 1022A. <br /></td></tr>
 <tr class="separator:a7dd76387ed94d51895605354514bb8d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0f000280e2a18aef708e94ef8b7521f"><td class="memItemLeft" align="right" valign="top"><a id="ad0f000280e2a18aef708e94ef8b7521f"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#ad0f000280e2a18aef708e94ef8b7521f">devicesFound</a> = 0</td></tr>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#ad0f000280e2a18aef708e94ef8b7521f">devicesFound</a> {0}</td></tr>
 <tr class="memdesc:ad0f000280e2a18aef708e94ef8b7521f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of INAs found. <br /></td></tr>
 <tr class="separator:ad0f000280e2a18aef708e94ef8b7521f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67d666137ef9b3c8b6d60b6f1dbf6970"><td class="memItemLeft" align="right" valign="top"><a id="a67d666137ef9b3c8b6d60b6f1dbf6970"></a>
 <a class="el" href="class_i_n_a___class.html">INA_Class</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_display_readings_8ino.html#a67d666137ef9b3c8b6d60b6f1dbf6970">INA</a></td></tr>
-<tr class="memdesc:a67d666137ef9b3c8b6d60b6f1dbf6970"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA class instantiation. <br /></td></tr>
+<tr class="memdesc:a67d666137ef9b3c8b6d60b6f1dbf6970"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA class instantiation to use EEPROM. <br /></td></tr>
 <tr class="separator:a67d666137ef9b3c8b6d60b6f1dbf6970"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -147,6 +147,8 @@ Changelog</h1>
 <table class="doxtable">
 <tr>
 <th>Version </th><th>Date </th><th>Developer </th><th>Comments  </th></tr>
+<tr>
+<td>1.0.8 </td><td>2020-12-01 </td><td>SV-Zanshin </td><td>Issue #72, allow dynamic memory allocation instead of EEPROM </td></tr>
 <tr>
 <td>1.0.7 </td><td>2020-06-30 </td><td>SV-Zanshin </td><td>Issue #58, changed formatting to use clang-format </td></tr>
 <tr>

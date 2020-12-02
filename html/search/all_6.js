@@ -43,7 +43,7 @@ var searchData=
   ['ina_5falert_5fshunt_5funder_5fvolt_5fbit',['INA_ALERT_SHUNT_UNDER_VOLT_BIT',['../_i_n_a_8h.html#a1146c2608502212f1b005581464f48d6',1,'INA.h']]],
   ['ina_5fbus_5fvoltage_5fregister',['INA_BUS_VOLTAGE_REGISTER',['../_i_n_a_8h.html#a9ecde66edfcdca7aec3bd1abc9ec471a',1,'INA.h']]],
   ['ina_5fcalibration_5fregister',['INA_CALIBRATION_REGISTER',['../_i_n_a_8h.html#aec6bed22b43fa20e8220d289fe9a7c33',1,'INA.h']]],
-  ['ina_5fclass',['INA_Class',['../class_i_n_a___class.html',1,'INA_Class'],['../class_i_n_a___class.html#a36af91b502d9068b9e996f035b1be3b3',1,'INA_Class::INA_Class()']]],
+  ['ina_5fclass',['INA_Class',['../class_i_n_a___class.html',1,'INA_Class'],['../class_i_n_a___class.html#afe23f662710d5407cf4fb26fa29898ef',1,'INA_Class::INA_Class()']]],
   ['ina_5fconfig_5fmode_5fmask',['INA_CONFIG_MODE_MASK',['../_i_n_a_8h.html#a5371718e56ab8c42237599ca89e0bbda',1,'INA.h']]],
   ['ina_5fconfiguration_5fregister',['INA_CONFIGURATION_REGISTER',['../_i_n_a_8h.html#a684cf40c721767a617460a399de4e06d',1,'INA.h']]],
   ['ina_5fconversion_5fready_5fmask',['INA_CONVERSION_READY_MASK',['../_i_n_a_8h.html#a9636aad1855a6874fe905270a26fc973',1,'INA.h']]],
@@ -67,7 +67,7 @@ var searchData=
   ['ina_5fpower_5fregister',['INA_POWER_REGISTER',['../_i_n_a_8h.html#aea5a81fb82523a40483de7b422ca4248',1,'INA.h']]],
   ['ina_5freset_5fdevice',['INA_RESET_DEVICE',['../_i_n_a_8h.html#a72fbdc796e1d561ba632d28620bbe039',1,'INA.h']]],
   ['ina_5ftype',['ina_Type',['../_i_n_a_8h.html#aa5115d32b4fbf373eac12df21f148205',1,'INA.h']]],
-  ['inadet',['inaDet',['../structina_det.html',1,'inaDet'],['../structina_det.html#a2b76a0733906eff2af92e8f5fb129eab',1,'inaDet::inaDet()'],['../structina_det.html#ad0436ed38df2a05ecb1993028b7f69b7',1,'inaDet::inaDet(inaEEPROM inaEE)'],['../_i_n_a_8h.html#ab2deadb66c4e51402becbdc62b752d28',1,'inaDet():&#160;INA.h']]],
+  ['inadet',['inaDet',['../structina_det.html',1,'inaDet'],['../structina_det.html#a2b76a0733906eff2af92e8f5fb129eab',1,'inaDet::inaDet()'],['../structina_det.html#afd7c7263108bf893c8a9af1540cd12e3',1,'inaDet::inaDet(inaEEPROM &amp;inaEE)'],['../_i_n_a_8h.html#ab2deadb66c4e51402becbdc62b752d28',1,'inaDet():&#160;INA.h']]],
   ['inaeeprom',['inaEEPROM',['../structina_e_e_p_r_o_m.html',1,'']]],
   ['interrupthandler',['InterruptHandler',['../_background_read___e_s_p32_8ino.html#afa574fc31bdaf4fb92d355dbe0a2dbc1',1,'BackgroundRead_ESP32.ino']]],
   ['isr',['ISR',['../_background_read_8ino.html#aa64c6dce15e9de9105b4ae9533c9a267',1,'BackgroundRead.ino']]]
