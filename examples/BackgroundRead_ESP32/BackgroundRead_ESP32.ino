@@ -64,6 +64,7 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | --------
+ * 1.0.3   | 2020-12-02 | SV-Zanshin  | Corrected call to "AlertOnConversion()"
  * 1.0.2   | 2020-06-30 | SV-Zanshin  | Issue #58 - clang-formatted document
  * 1.0.1   | 2020-03-24 | SV-Zanshin  | Issue #53 - Doxygen documentation
  * 1.0.0   | 2019-02-17 | SV-Zanshin  | Cloned and adapted from "BackgroundRead.ino" program
@@ -143,7 +144,7 @@ void setup() {
   INA.setBusConversion(8244, deviceNumber);             // Maximum conversion time 8.244ms
   INA.setShuntConversion(8244, deviceNumber);           // Maximum conversion time 8.244ms
   INA.setMode(INA_MODE_CONTINUOUS_BOTH, deviceNumber);  // Bus/shunt measured continuously
-  INA.AlertOnConversion(true, deviceNumber);            // Make alert pin go low on finish
+  INA.alertOnConversion(true, deviceNumber);            // Make alert pin go low on finish
 }  // of method setup()
 
 void loop() {

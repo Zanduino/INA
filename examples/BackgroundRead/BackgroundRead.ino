@@ -63,6 +63,7 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | ------------------------------------------------------------
+ * 1.0.5   | 2020-12-01 | SV-Zanshin  | Corrected "alertOnConversion()" call
  * 1.0.4   | 2019-02-16 | SV-Zanshin  | ifdef so that sketch won't compile on incompatible platforms
  * 1.0.3   | 2019-01-09 | SV-Zanshin  | Cleaned up doxygen formatting
  * 1.0.2   | 2018-12-28 | SV-Zanshin  | Converted comments to doxygen format
@@ -133,7 +134,7 @@ void setup() {
 #ifdef __AVR_ATmega32U4__  // If this is a 32U4 processor, wait 2 seconds for initialization
   delay(2000);
 #endif
-  Serial.print(F("\n\nBackground INA Read V1.0.1\n"));
+  Serial.print(F("\n\nBackground INA Read V1.0.5\n"));
   uint8_t devicesFound = 0;
   while (deviceNumber == UINT8_MAX)  // Loop until we find the first device
   {
@@ -159,7 +160,7 @@ void setup() {
   INA.setBusConversion(8244, deviceNumber);             // Maximum conversion time 8.244ms
   INA.setShuntConversion(8244, deviceNumber);           // Maximum conversion time 8.244ms
   INA.setMode(INA_MODE_CONTINUOUS_BOTH, deviceNumber);  // Bus/shunt measured continuously
-  INA.AlertOnConversion(true, deviceNumber);            // Make alert pin go low on finish
+  INA.alertOnConversion(true, deviceNumber);            // Make alert pin go low on finish
 }  // of method setup()
 
 void loop() {

@@ -48,6 +48,7 @@
  *
  * Version | Date       | Developer   | Comments
  * ------- | ---------- | ----------- | --------
+ * 1.0.8   | 2020-12-01 | SV-Zanshin  | Issue #72, allow dynamic memory allocation instead of EEPROM
  * 1.0.7   | 2020-06-30 | SV-Zanshin  | Issue #58, changed formatting to use clang-format
  * 1.0.6   | 2020-06-29 | SV-Zanshin  | Issue #57, changed case of functions "Alert..."
  * 1.0.5   | 2020-05-03 | SV-Zanshin  | Moved setting of maxAmps and shunt to constants
@@ -78,11 +79,14 @@
 /**************************************************************************************************
 ** Declare program constants, global variables and instantiate INA class                         **
 **************************************************************************************************/
-const uint32_t SERIAL_SPEED    = 115200;  ///< Use fast serial speed
-const uint32_t SHUNT_MICRO_OHM = 100000;  ///< Shunt resistance in Micro-Ohm, e.g. 100000 is 0.1 Ohm
-const uint16_t MAXIMUM_AMPS    = 1;       ///< Max expected amps, values are 1 - clamped to max 1022
-uint8_t        devicesFound    = 0;       ///< Number of INAs found
-INA_Class      INA;                       ///< INA class instantiation
+const uint32_t SERIAL_SPEED{115200};     ///< Use fast serial speed
+const uint32_t SHUNT_MICRO_OHM{100000};  ///< Shunt resistance in Micro-Ohm, e.g. 100000 is 0.1 Ohm
+const uint16_t MAXIMUM_AMPS{1};          ///< Max expected amps, clamped from 1A to a max of 1022A
+uint8_t        devicesFound{0};          ///< Number of INAs found
+INA_Class      INA;                      ///< INA class instantiation to use EEPROM
+// INA_Class      INA(0);                 ///< INA class instantiation to use EEPROM
+// INA_Class      INA(5);                 ///< INA class instantiation to use dynamic memory rather
+//   than EEPROM. Allocate storage for up to (n) devices
 
 void setup() {
   /*!
@@ -98,22 +102,22 @@ void setup() {
 #ifdef __AVR_ATmega32U4__  // If a 32U4 processor, then wait 2 seconds to initialize
   delay(2000);
 #endif
-  Serial.print("\n\nDisplay INA Readings V1.0.7\n");
+  Serial.print("\n\nDisplay INA Readings V1.0.8\n");
   Serial.print(" - Searching & Initializing INA devices\n");
   /************************************************************************************************
   ** The INA.begin call initializes the device(s) found with an expected ±1 Amps maximum current **
   ** and for a 0.1Ohm resistor, and since no specific device is given as the 3rd parameter all   **
   ** devices are initially set to these values.                                                  **
   ************************************************************************************************/
-  devicesFound = INA.begin(
-      MAXIMUM_AMPS, SHUNT_MICRO_OHM);  // Set to the expected Amp maximum and shunt resistance
-  while (INA.begin(MAXIMUM_AMPS, SHUNT_MICRO_OHM) == 0) {
-    Serial.println("No INA device found, retrying in 10 seconds...");
-    delay(10000);  // Wait 10 seconds before retrying
-  }                // while no devices detected
-  Serial.print(" - Detected ");
+  devicesFound = INA.begin(MAXIMUM_AMPS, SHUNT_MICRO_OHM);  // Expected max Amp & shunt resistance
+  while (devicesFound == 0) {
+    Serial.println(F("No INA device found, retrying in 10 seconds..."));
+    delay(10000);                                             // Wait 10 seconds before retrying
+    devicesFound = INA.begin(MAXIMUM_AMPS, SHUNT_MICRO_OHM);  // Expected max Amp & shunt resistance
+  }                                                           // while no devices detected
+  Serial.print(F(" - Detected "));
   Serial.print(devicesFound);
-  Serial.println(" INA devices on the I2C bus");
+  Serial.println(F(" INA devices on the I2C bus"));
   INA.setBusConversion(8500);             // Maximum conversion time 8.244ms
   INA.setShuntConversion(8500);           // Maximum conversion time 8.244ms
   INA.setAveraging(128);                  // Average each reading n-times
@@ -134,8 +138,8 @@ void loop() {
   static char     sprintfBuffer[100];  // Buffer to format output
   static char     busChar[8], shuntChar[10], busMAChar[10], busMWChar[10];  // Output buffers
 
-  Serial.print("Nr Adr Type   Bus      Shunt       Bus         Bus\n");
-  Serial.print("== === ====== ======== =========== =========== ===========\n");
+  Serial.print(F("Nr Adr Type   Bus      Shunt       Bus         Bus\n"));
+  Serial.print(F("== === ====== ======== =========== =========== ===========\n"));
   for (uint8_t i = 0; i < devicesFound; i++)  // Loop through all devices
   {
     dtostrf(INA.getBusMilliVolts(i) / 1000.0, 7, 4, busChar);      // Convert floating point to char
@@ -148,7 +152,7 @@ void loop() {
   }  // for-next each INA device loop
   Serial.println();
   delay(10000);  // Wait 10 seconds before next reading
-  Serial.print("Loop iteration ");
+  Serial.print(F("Loop iteration "));
   Serial.print(++loopCounter);
-  Serial.print("\n\n");
+  Serial.print(F("\n\n"));
 }  // method loop()
