@@ -146,7 +146,7 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
     EEPROM.get(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Read EEPROM values
 #endif
 #else
-    inaEE =               _EEPROMEmulation[deviceNumber];
+    inaEE                          = _EEPROMEmulation[deviceNumber];
 #endif
   } else {
     inaEE = _DeviceArray[deviceNumber];
@@ -223,7 +223,7 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
     EEPROM.begin(_EEPROM_size + _EEPROM_offset);  // If ESP32 then allocate 512 Bytes
     maxDevices = (_EEPROM_size) / sizeof(inaEE);  // and compute number of devices
 #elif defined(__STM32F1__)                        // Emulated EEPROM for STM32F1
-    maxDevices = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
+    maxDevices                     = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
 #elif defined(CORE_TEENSY)                        // TEENSY doesn't have EEPROM.length
     maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
 #elif defined(__AVR__)

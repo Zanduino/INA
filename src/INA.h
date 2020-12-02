@@ -193,11 +193,11 @@ enum ina_Mode {
 ************************************************************************************************/
 #ifndef INA_I2C_MODES  // I2C related constants
 #define INA_I2C_MODES  // Guard code to prevent multiple defs
-const uint32_t INA_I2C_STANDARD_MODE{100000};     ///< Default normal I2C 100KHz speed
-const uint32_t INA_I2C_FAST_MODE{400000};         ///< Fast mode
-const uint32_t INA_I2C_FAST_MODE_PLUS{1000000};   ///< Really fast mode
-const uint32_t INA_I2C_HIGH_SPEED_MODE{3400000};  ///< Turbo mode
-#endif  //
+const uint32_t INA_I2C_STANDARD_MODE{100000};       ///< Default normal I2C 100KHz speed
+const uint32_t INA_I2C_FAST_MODE{400000};           ///< Fast mode
+const uint32_t INA_I2C_FAST_MODE_PLUS{1000000};     ///< Really fast mode
+const uint32_t INA_I2C_HIGH_SPEED_MODE{3400000};    ///< Turbo mode
+#endif                                              //
 const uint8_t  INA_CONFIGURATION_REGISTER{0};       ///< Configuration Register address
 const uint8_t  INA_BUS_VOLTAGE_REGISTER{2};         ///< Bus Voltage Register address
 const uint8_t  INA_POWER_REGISTER{3};               ///< Power Register address
