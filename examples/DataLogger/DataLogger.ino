@@ -26,7 +26,7 @@
  to those used in the INA226.
 
  Detailed documentation can be found on the GitHub Wiki pages at
- https://github.com/SV-Zanshin/INA/wiki
+ https://github.com/Zanduino/INA/wiki
 
  This example is for a INA226 set up to measure a 5-Volt load with a 0.1Ω resistor in place, this is
  the same setup that can be found in the Adafruit INA226 breakout board.  The complex calibration
@@ -74,7 +74,7 @@
  will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should
  have received a copy of the GNU General Public License along with this program (see
- https://github.com/SV-Zanshin/INA/blob/master/LICENSE).  If not, see
+ https://github.com/Zanduino/INA/blob/master/LICENSE).  If not, see
  <http://www.gnu.org/licenses/>.
 
  Vers.  Date       Developer  Comments
@@ -263,34 +263,34 @@ int16_t readDataFromArray(uint8_t dataArray[], uint16_t &nibbleIndex) {
     /**********************************************************************************************
     ** Declare interrupt service routine for TIMER1, which is set to trigger once every second   **
     **********************************************************************************************/
-    static int16_t  deltaBus, deltaShunt;                // Difference value from last      
-    static uint16_t arrayNibbleIndex = 0;                // Array index in Nibbles          
-    static int16_t  lastBusRaw       = 0;                // Value from last reading         
-    static int16_t  lastShuntRaw     = 0;                // Value from last reading         
-    static int16_t  baseBusRaw       = 0;                // Base value for delta readings   
-    static int16_t  baseShuntRaw     = 0;                // Base value for delta readings   
-    static uint16_t arrayReadings    = 0;                // Number of readings in array     
+    static int16_t  deltaBus, deltaShunt;                // Difference value from last
+    static uint16_t arrayNibbleIndex = 0;                // Array index in Nibbles
+    static int16_t  lastBusRaw       = 0;                // Value from last reading
+    static int16_t  lastShuntRaw     = 0;                // Value from last reading
+    static int16_t  baseBusRaw       = 0;                // Base value for delta readings
+    static int16_t  baseShuntRaw     = 0;                // Base value for delta readings
+    static uint16_t arrayReadings    = 0;                // Number of readings in array
     static uint8_t  dataArray[ARRAY_BYTES];              // Array for bus and shunt readings
-    if (arrayNibbleIndex == 0 && millis() < 3000) {      // Skip first 3 seconds            
-      baseBusRaw   = (int16_t)(sumBusRaw / readings);    // after startup to allow settings 
-      lastBusRaw   = baseBusRaw;                         // to settle                       
+    if (arrayNibbleIndex == 0 && millis() < 3000) {      // Skip first 3 seconds
+      baseBusRaw   = (int16_t)(sumBusRaw / readings);    // after startup to allow settings
+      lastBusRaw   = baseBusRaw;                         // to settle
       baseShuntRaw = (int16_t)(sumShuntRaw / readings);
-      lastShuntRaw = baseShuntRaw;                     
-      readings     = 0;                                  // then skip readings to let the   
-      sumBusRaw    = 0;                                  // sensor settle down              
-      sumShuntRaw  = 0;                                  // Reset values                    
-      return;                                  
+      lastShuntRaw = baseShuntRaw;
+      readings     = 0;                                  // then skip readings to let the
+      sumBusRaw    = 0;                                  // sensor settle down
+      sumShuntRaw  = 0;                                  // Reset values
+      return;
     }  // of if-then first second after startup
-    deltaBus   = ((int16_t)(sumBusRaw / readings) - lastBusRaw);      // Compute the delta bus 
+    deltaBus   = ((int16_t)(sumBusRaw / readings) - lastBusRaw);      // Compute the delta bus
     deltaShunt = ((int16_t)(sumShuntRaw / readings) - lastShuntRaw);  // Compute the delta shunt
     writeDataToArray(dataArray, arrayNibbleIndex, deltaBus);          // Add bus reading to array
     writeDataToArray(dataArray, arrayNibbleIndex, deltaShunt);        // Add shunt reading to array
     arrayReadings++;                        // increment the counter
-    lastBusRaw   = sumBusRaw / readings;    // Reset values         
-    lastShuntRaw = sumShuntRaw / readings;  // Reset values         
-    readings     = 0;                       // Reset values         
-    sumBusRaw    = 0;                       // Reset values         
-    sumShuntRaw  = 0;                       // Reset values         
+    lastBusRaw   = sumBusRaw / readings;    // Reset values
+    lastShuntRaw = sumShuntRaw / readings;  // Reset values
+    readings     = 0;                       // Reset values
+    sumBusRaw    = 0;                       // Reset values
+    sumShuntRaw  = 0;                       // Reset values
     /*****************************************************************************************************************
     ** Once the array could fill up on the next reading (2x max reading of 5 nibbles) then it is
     *time to flush the  **

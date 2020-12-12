@@ -1,0 +1,43 @@
+####################################################################################################
+## YAML file for github Actions that will perform project checking for adhering to doxygen        ##
+## documentation standards and to also deploy the generated HTML documentation to gh-pages        ##
+##                                                                                                ##
+##                                                                                                ##
+## Version Date       Developer      Comments                                                     ##
+## ======= ========== ============== ============================================================ ##
+## 1.0.0   2020-12-04 SV-Zanshin     Initial coding                                               ##
+##                                                                                                ##
+####################################################################################################
+name: 'Doxygen'
+
+####################################################################################################
+## Action runs when committing (push), doing a pull request, or a workflow_dispatch               ##
+####################################################################################################
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  doxygen:
+    name: 'Generate doxygen'
+    runs-on: ubuntu-latest
+    steps:
+       - name: 'Checkout the repository from github'
+         uses: actions/checkout@v2
+       - name: 'Checkout the "Zanduino/Common" repository from github'
+         uses: actions/checkout@v2
+         with:
+           repository: Zanduino/Common
+           path: Common
+       - name: 'Create doxygen html documentation'
+         env:
+          GH_REPO_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
+          ##########################################################################################
+          ## The following 5 lines need to be set here each project                               ##
+          ##########################################################################################
+          PRETTYNAME:     "INA2xx Arduino Library"
+          PROJECT_NAME:   "INA2xx"
+          PROJECT_NUMBER: "v1.1.0"
+          PROJECT_BRIEF:  "Arduino Library to read current, voltage and power data from one or more INA2xx device(s)"
+          PROJECT_LOGO:   ""
+         run: bash ${GITHUB_WORKSPACE}/Common/Scripts/doxy_gen_and_deploy.sh

@@ -15,7 +15,7 @@
  * platforms\n\n
  *
  * Detailed documentation can be found on the GitHub Wiki pages at
- * https://github.com/SV-Zanshin/INA/wiki \n\n Since the INA library allows multiple devices of
+ * https://github.com/Zanduino/INA/wiki \n\n Since the INA library allows multiple devices of
  * different types and this program demonstrates interrupts and background processing, it will limit
  * itself to using the first INA226 detected. This is easily changed in the if another device type
  * or device number to test is required.\n
@@ -53,7 +53,7 @@
  * will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.You should
  * have received a copy of the GNU General Public License along with this program(see
- * https://github.com/SV-Zanshin/INA/blob/master/LICENSE).  If not, see
+ * https://github.com/Zanduino/INA/blob/master/LICENSE).  If not, see
  * <http://www.gnu.org/licenses/>.
  *
  * @section BackgroundRead_ESP32_author Author

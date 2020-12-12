@@ -1,6 +1,8 @@
 <img src="../images/horizontal_narrow.png" alt="INA" align="right" height="40px">
 
-# INA2*xx* Devices<br>[![Build Status](https://travis-ci.org/SV-Zanshin/INA.svg?branch=master)](https://travis-ci.org/SV-Zanshin/INA) [![DOI](https://zenodo.org/badge/136879464.svg)](https://zenodo.org/badge/latestdoi/136879464) [![arduino-library-badge](https://www.ardu-badge.com/badge/INA2xx.svg?)](https://www.ardu-badge.com/INA2xx) [![Doxygen](https://github.com/SV-Zanshin/BME680/blob/master/Images/Doxygen-complete.svg)](https://sv-zanshin.github.io/INA/html/index.html) [![Wiki](https://github.com/SV-Zanshin/BME680/blob/master/Images/Documentation-wiki.svg)](https://github.com/SV-Zanshin/INA/wiki)
+[![License: GPL v3](https://zanduino.github.io/Badges/GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Build](https://github.com/Zanduino/INA/workflows/Build/badge.svg)](https://github.com/Zanduino/INA/actions?query=workflow%3ABuild) [![Format](https://github.com/Zanduino/INA/workflows/Format/badge.svg)](https://github.com/Zanduino/INA/actions?query=workflow%3AFormat) [![Wiki](https://zanduino.github.io/Badges/Documentation-Badge.svg)](https://github.com/Zanduino/INA/wiki) [![Doxygen](https://github.com/Zanduino/INA/workflows/Doxygen/badge.svg)](https://Zanduino.github.io/INA/html/index.html) [![arduino-library-badge](https://www.ardu-badge.com/badge/INA2XX.svg?)](https://www.ardu-badge.com/INA2XX)
+# INA2*xx* Devices<br>
+
 _Arduino_ library to access multiple INA2xx High-Side/Low-Side Bi-Directional I2C Current and Power Monitors at the same time.  Details of the library methods and example programs are to be found [at the INA wiki pages]
 
 
@@ -19,16 +21,16 @@ Texas Instruments produces this family of power monitors and the library support
 
 Texas Instruments has a document which documents and details additional differences between the various INA-devices, this PDF document can be read at [Digital Interfaces for Current Sensing Devices](http://www.ti.com/lit/an/sboa203/sboa203.pdf)
 ## Hardware layout
-<img src="https://github.com/SV-Zanshin/INA/blob/master/images/INA226.jpg" width="175" align="left"/>The packages are small and a lot of work to solder, but fortunately there are now several sources for breakout boards for the various devices which are worth it in time savings. My first test with a INA226 involved a blank breakout board, some solder paste, a frying pan, desoldering braid, a magnifying glass and quite a bit of time to set up the first breadboard.
+<img src="https://github.com/Zanduino/INA/blob/master/images/INA226.jpg" width="175" align="left"/>The packages are small and a lot of work to solder, but fortunately there are now several sources for breakout boards for the various devices which are worth it in time savings. My first test with a INA226 involved a blank breakout board, some solder paste, a frying pan, desoldering braid, a magnifying glass and quite a bit of time to set up the first breadboard.
 ## Library description
-The library locates all INA2xx devices on the I2C chain. Each unit can be individually configured with 2 setup parameters describing the expected maximum voltage, shunt/resistor values which then set the internal configuration registers is ready to begin accurate measurements.  The details of how to setup the library along with all of the publicly available methods can be found on the [INA wiki pages](https://github.com/SV-Zanshin/INA/wiki).
+The library locates all INA2xx devices on the I2C chain. Each unit can be individually configured with 2 setup parameters describing the expected maximum voltage, shunt/resistor values which then set the internal configuration registers is ready to begin accurate measurements.  The details of how to setup the library along with all of the publicly available methods can be found on the [INA wiki pages](https://github.com/Zanduino/INA/wiki).
 
-Great lengths have been taken to avoid the use of floating point in the library. This keeps the library size down because floating point support doesn't have to be compiled into the code. The results are returned as 32-bit integersTo keep the original level of precision without loss but to allow the full range of voltages and amperes to be returned the amperage .
+Great lengths have been taken to avoid the use of floating point in the library. This keeps the library size down because floating point support doesn't have to be compiled into the code. The results are returned as 32-bit integers to keep the original level of precision without loss but to allow the full range of voltages and amperes to be returned the amperage .
 
 Since the functionality differs between the supported devices there are some functions which will only work for certain devices.
 
 ## Documentation
-The documentation has been done using Doxygen and can be found at [doxygen documentation](https://sv-zanshin.github.io/INA/html/index.html)
+The documentation has been done using Doxygen and can be found at [doxygen documentation](https://Zanduino.github.io/INA/html/index.html)
 
 [![Zanshin Logo](https://zanduino.github.io/Images/zanshinkanjitiny.gif) <img src="https://zanduino.github.io/Images/zanshintext.gif" width="75"/>](https://www.sv-zanshin.com)
-<img src="https://github.com/SV-Zanshin/INA/blob/master/images/horizontal_narrow.png" alt="INA" align="left" height="50px">
+<img src="https://github.com/Zanduino/INA/blob/master/images/horizontal_narrow.png" alt="INA" align="left" height="50px">

@@ -1,0 +1,35 @@
+####################################################################################################
+## YAML file for github Actions that will attempt to compile the c++ artefacts using the Arduino  ##
+## CLI for various platforms.                                                                     ##
+##                                                                                                ##
+## Version Date       Developer      Comments                                                     ##
+## ======= ========== ============== ============================================================ ##
+## 1.0.1   2020-12-07 SV-Zanshin     Changed name to a short text                                 ##
+## 1.0.0   2020-12-05 SV-Zanshin     Initial coding                                               ##
+##                                                                                                ##
+####################################################################################################
+name: 'Build'
+on: 
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  compile-on-platforms:
+    name: 'Compile using Arduino IDE on selected platforms'
+    runs-on: ubuntu-latest
+    steps:
+       - name: 'Install "python 3.x" package'
+         uses: actions/setup-python@v1
+         with:
+            python-version: '3.x'
+       - name: 'Checkout the repository from github'
+         uses: actions/checkout@v2
+       - name: 'Checkout the "Zanduino/Common" repository from github'
+         uses: actions/checkout@v2
+         with:
+           repository: Zanduino/Common
+           path: Common
+       - name: 'Install Arduino CLI package'
+         run: bash ${GITHUB_WORKSPACE}/Common/Scripts/install_arduino_cli.sh
+       - name: 'Run master compile python program'
+         run: python3 ${GITHUB_WORKSPACE}/Common/Python/build_platform.py zanshin_platforms

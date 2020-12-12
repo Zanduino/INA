@@ -12,7 +12,7 @@
  * the power measurements (bus voltage and current) for all devices.\n\n
  *
  * Detailed documentation can be found on the GitHub Wiki pages at
- * https://github.com/SV-Zanshin/INA/wiki \n\n This example is for a INA set up to measure a 5-Volt
+ * https://github.com/Zanduino/INA/wiki \n\n This example is for a INA set up to measure a 5-Volt
  * load with a 0.1 Ohm resistor in place, this is the same setup that can be found in the Adafruit
  * INA219 breakout board.  The complex calibration options are done at runtime using the 2
  * parameters specified in the "begin()" call and the library has gone to great lengths to avoid the
@@ -37,7 +37,7 @@
  * will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.You should
  * have received a copy of the GNU General Public License along with this program(see
- * https://github.com/SV-Zanshin/INA/blob/master/LICENSE).  If not, see
+ * https://github.com/Zanduino/INA/blob/master/LICENSE).  If not, see
  * <http://www.gnu.org/licenses/>.
  *
  * @section DisplayReadings_author Author

@@ -4,9 +4,9 @@
 # the "Arduino" language was chosen, but that is no longer considered  #
 # a language so everything has been reverted to "c++"                  #
 #                                                                      #
-# Date       Author                        Comments                    #
-# ========== ============================= =========================== #
-# 2018-06-24 https://github.com/SV-Zanshin Changed file                #
+# Date       Author     Comments                                       #
+# ========== ========== ============================================== #
+# 2018-06-24 SV-Zanshin Changed file                                   #
 #                                                                      #
 ########################################################################
 examples/ linguist-documentation=false

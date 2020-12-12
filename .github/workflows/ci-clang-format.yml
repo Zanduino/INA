@@ -1,0 +1,38 @@
+####################################################################################################
+## YAML file for the github Action that performs "clang-format" to check the c++ source files for ##
+## adherence to the defined standards. If no ".clang-format" file is defined at the root of the   ##
+## project then the standard file is copied there. The default clang-format style is "Google",    ##
+## with a couple of minor tweaks.                                                                 ##
+##                                                                                                ##
+##                                                                                                ##
+## Version Date       Developer      Comments                                                     ##
+## ======= ========== ============== ============================================================ ##
+## 1.0.1   2020-12-07 SV-Zanshin     Shortened name to "Format"                                   ##
+## 1.0.0   2020-12-06 SV-Zanshin     Initial coding                                               ##
+##                                                                                                ##
+####################################################################################################
+name: 'Format'
+on: 
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  source-checks:
+    name: 'clang-format'
+    runs-on: ubuntu-latest
+    steps:
+       - name: 'Install "Python"'
+         uses: actions/setup-python@v1
+         with:
+              python-version: '3.x'
+       - name: 'Checkout the repository'
+         uses: actions/checkout@v2
+       - name: 'Checkout the "Zanduino/Common" repository'
+         uses: actions/checkout@v2
+         with:
+           repository: Zanduino/Common
+           path: Common
+       - name: 'Install "clang-format"'
+         run: bash ${GITHUB_WORKSPACE}/Common/Scripts/install_clang_actions.sh
+       - name: 'Check formatting of all c++ files'
+         run: python3 ${GITHUB_WORKSPACE}/Common/Python/run-clang-format.py -e "ci/*" -e "bin/*" -r .
