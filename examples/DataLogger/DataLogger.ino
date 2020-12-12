@@ -210,227 +210,229 @@ int16_t readDataFromArray(uint8_t dataArray[], uint16_t &nibbleIndex) {
   ** tion of writeDataToArray() for details                                                      **
   ************************************************************************************************/
 
-    int16_t outValue    = 0;                                     // Declare return variable
-    uint8_t controlBits = readNibble(dataArray, nibbleIndex++);  // Read the header nibble
-    if (controlBits >> 3 == 0)  // ----------------0xxx   3 bits data - 4  to     3
+  int16_t outValue    = 0;                                     // Declare return variable
+  uint8_t controlBits = readNibble(dataArray, nibbleIndex++);  // Read the header nibble
+  if (controlBits >> 3 == 0)  // ----------------0xxx   3 bits data - 4  to     3
+  {
+    outValue = controlBits & B111;  // mask High Bit
+    if (outValue >> 2 & B1) {
+      outValue |= 0xFFF8;
+    }  // If it is a negative number
+  } else {
+    if (controlBits >> 2 == B10)  // ------------10xxxxxx   6 bits data - 16 to    15
     {
-      outValue = controlBits & B111;  // mask High Bit
-      if (outValue >> 2 & B1) {
-        outValue |= 0xFFF8;
+      outValue = (controlBits & B11) << 4;               // mask 2 High Bits
+      outValue |= readNibble(dataArray, nibbleIndex++);  // move in 4 LSB
+      if (outValue >> 5 & B1) {
+        outValue |= 0xFFE0;
       }  // If it is a negative number
     } else {
-      if (controlBits >> 2 == B10)  // ------------10xxxxxx   6 bits data - 16 to    15
+      if (controlBits >> 1 == B110)  // --------110xxxxxxxxx   9 bits data - 256 to   255
       {
-        outValue = (controlBits & B11) << 4;               // mask 2 High Bits
-        outValue |= readNibble(dataArray, nibbleIndex++);  // move in 4 LSB
-        if (outValue >> 5 & B1) {
-          outValue |= 0xFFE0;
+        outValue = (controlBits & B1) << 8;                     // mask 2 High Bits
+        outValue |= readNibble(dataArray, nibbleIndex++) << 4;  // move in 4 middle bits
+        outValue |= readNibble(dataArray, nibbleIndex++);       // move in 4 LSB
+        if (outValue >> 8 & B1) {
+          outValue |= 0xFE00;
         }  // If it is a negative number
       } else {
-        if (controlBits >> 1 == B110)  // --------110xxxxxxxxx   9 bits data - 256 to   255
+        if (controlBits == B1110)  // ----1110xxxxxxxxxxxx  12 bits data - 2048 to  2047
         {
-          outValue = (controlBits & B1) << 8;                     // mask 2 High Bits
+          outValue = readNibble(dataArray, nibbleIndex++) << 8;   // move in 4 high bits
           outValue |= readNibble(dataArray, nibbleIndex++) << 4;  // move in 4 middle bits
-          outValue |= readNibble(dataArray, nibbleIndex++);       // move in 4 LSB
-          if (outValue >> 8 & B1) {
-            outValue |= 0xFE00;
+          outValue |= readNibble(dataArray, nibbleIndex++);       // move in 4 low bits
+          if (outValue >> 11 & B1) {
+            outValue |= 0xF000;
           }  // If it is a negative number
         } else {
-          if (controlBits == B1110)  // ----1110xxxxxxxxxxxx  12 bits data - 2048 to  2047
+          if (controlBits == B1111)  // 1111xxxxxxxxxxxxxxxx  16 bits data - 16384 to 16383
           {
-            outValue = readNibble(dataArray, nibbleIndex++) << 8;   // move in 4 high bits
+            outValue = readNibble(dataArray, nibbleIndex++) << 12;  // move in 4 high bits
+            outValue |= readNibble(dataArray, nibbleIndex++) << 8;  // move in 4 middle bits
             outValue |= readNibble(dataArray, nibbleIndex++) << 4;  // move in 4 middle bits
             outValue |= readNibble(dataArray, nibbleIndex++);       // move in 4 low bits
-            if (outValue >> 11 & B1) {
-              outValue |= 0xF000;
-            }  // If it is a negative number
-          } else {
-            if (controlBits == B1111)  // 1111xxxxxxxxxxxxxxxx  16 bits data - 16384 to 16383
-            {
-              outValue = readNibble(dataArray, nibbleIndex++) << 12;  // move in 4 high bits
-              outValue |= readNibble(dataArray, nibbleIndex++) << 8;  // move in 4 middle bits
-              outValue |= readNibble(dataArray, nibbleIndex++) << 4;  // move in 4 middle bits
-              outValue |= readNibble(dataArray, nibbleIndex++);       // move in 4 low bits
-            }                                                         // if-then 5 nibbles
-          }                                                           // if-then-else 4 nibbles
-        }                                                             // if-then-else 3 nibbles
-      }                                                               // if-then-else 2 nibbles
-    }                                                                 // if-then-else 1 nibble
-    return (outValue);
-  }  // of method "readDataFromArray()"
+          }                                                         // if-then 5 nibbles
+        }                                                           // if-then-else 4 nibbles
+      }                                                             // if-then-else 3 nibbles
+    }                                                               // if-then-else 2 nibbles
+  }                                                                 // if-then-else 1 nibble
+  return (outValue);
+}  // of method "readDataFromArray()"
 
-  ISR(TIMER1_COMPA_vect) {
-    /**********************************************************************************************
-    ** Declare interrupt service routine for TIMER1, which is set to trigger once every second   **
-    **********************************************************************************************/
-    static int16_t  deltaBus, deltaShunt;                // Difference value from last
-    static uint16_t arrayNibbleIndex = 0;                // Array index in Nibbles
-    static int16_t  lastBusRaw       = 0;                // Value from last reading
-    static int16_t  lastShuntRaw     = 0;                // Value from last reading
-    static int16_t  baseBusRaw       = 0;                // Base value for delta readings
-    static int16_t  baseShuntRaw     = 0;                // Base value for delta readings
-    static uint16_t arrayReadings    = 0;                // Number of readings in array
-    static uint8_t  dataArray[ARRAY_BYTES];              // Array for bus and shunt readings
-    if (arrayNibbleIndex == 0 && millis() < 3000) {      // Skip first 3 seconds
-      baseBusRaw   = (int16_t)(sumBusRaw / readings);    // after startup to allow settings
-      lastBusRaw   = baseBusRaw;                         // to settle
-      baseShuntRaw = (int16_t)(sumShuntRaw / readings);
-      lastShuntRaw = baseShuntRaw;
-      readings     = 0;                                  // then skip readings to let the
-      sumBusRaw    = 0;                                  // sensor settle down
-      sumShuntRaw  = 0;                                  // Reset values
-      return;
-    }  // of if-then first second after startup
-    deltaBus   = ((int16_t)(sumBusRaw / readings) - lastBusRaw);      // Compute the delta bus
-    deltaShunt = ((int16_t)(sumShuntRaw / readings) - lastShuntRaw);  // Compute the delta shunt
-    writeDataToArray(dataArray, arrayNibbleIndex, deltaBus);          // Add bus reading to array
-    writeDataToArray(dataArray, arrayNibbleIndex, deltaShunt);        // Add shunt reading to array
-    arrayReadings++;                        // increment the counter
-    lastBusRaw   = sumBusRaw / readings;    // Reset values
-    lastShuntRaw = sumShuntRaw / readings;  // Reset values
-    readings     = 0;                       // Reset values
-    sumBusRaw    = 0;                       // Reset values
-    sumShuntRaw  = 0;                       // Reset values
-    /*****************************************************************************************************************
-    ** Once the array could fill up on the next reading (2x max reading of 5 nibbles) then it is
-    *time to flush the  **
-    ** the accumulated readings. **
-    *****************************************************************************************************************/
-    if ((arrayNibbleIndex + 10) / 2 >= ARRAY_BYTES)  //                                 //
-    {                                                //                                 //
-      int16_t  busValue        = 0;                  // Contains current bus value      //
-      int16_t  shuntValue      = 0;                  // Contains current shunt value    //
-      uint16_t workNibbleIndex = 0;                  // Index into array for reading    //
-      /***************************************************************************************************************
-      ** If there is a FRAM memory board attached, then copy the array contents to it **
-      ***************************************************************************************************************/
-      if (chips_detected > 0)  // Only execute if there is memory //
-      {                        //                                 //
-        if ((framIndex + sizeof(dataArray) <
-             FRAM.totalBytes()))               // Only write when space available //
-        {                                      //                                 //
-          cli();                               // Enable interrupts temporarily   //
-          Serial.print(millis() / 1000 / 60);  //                                 //
-          Serial.print(" ");                   //                                 //
-          Serial.print(F("Writing "));         //                                 //
-          Serial.print(sizeof(dataArray));     //                                 //
-          Serial.print(" Bytes to memory @");  //                                 //
-          Serial.print(framIndex);             //                                 //
-          Serial.print(".\n");                 //                                 //
-          sei();                               // Disable interrupts again        //
-          FRAM.write(framIndex, dataArray);    // Write the whole array to FRAM   //
-          framIndex += sizeof(dataArray);      // set index to new location       //
-        }  // of if-then there is space in the EEPROM                             // //
-      }    // of if-then we have at least one EEPROM attached to the I2C bus        // //
-      for (uint16_t readingNo = 1; readingNo <= arrayReadings;
-           readingNo++)  // Process every reading in array  //
-      {                  //                                 //
-        busValue =
-            readDataFromArray(dataArray, workNibbleIndex);  // Get next bus value from array   //
-        baseBusRaw += busValue;                             // apply delta value to bus base   //
-        shuntValue =
-            readDataFromArray(dataArray, workNibbleIndex);  // Get shunt next value from array //
-        baseShuntRaw += shuntValue;                         // apply delta value to shunt base //
-        /*************************************************************************************************************
-        ** Insert code here to save data to static RAM or to a SD-Card or elsewhere **
-        *************************************************************************************************************/
+ISR(TIMER1_COMPA_vect) {
+  /**********************************************************************************************
+  ** Declare interrupt service routine for TIMER1, which is set to trigger once every second   **
+  **********************************************************************************************/
+  static int16_t  deltaBus, deltaShunt;              // Difference value from last
+  static uint16_t arrayNibbleIndex = 0;              // Array index in Nibbles
+  static int16_t  lastBusRaw       = 0;              // Value from last reading
+  static int16_t  lastShuntRaw     = 0;              // Value from last reading
+  static int16_t  baseBusRaw       = 0;              // Base value for delta readings
+  static int16_t  baseShuntRaw     = 0;              // Base value for delta readings
+  static uint16_t arrayReadings    = 0;              // Number of readings in array
+  static uint8_t  dataArray[ARRAY_BYTES];            // Array for bus and shunt readings
+  if (arrayNibbleIndex == 0 && millis() < 3000) {    // Skip first 3 seconds
+    baseBusRaw   = (int16_t)(sumBusRaw / readings);  // after startup to allow settings
+    lastBusRaw   = baseBusRaw;                       // to settle
+    baseShuntRaw = (int16_t)(sumShuntRaw / readings);
+    lastShuntRaw = baseShuntRaw;
+    readings     = 0;  // then skip readings to let the
+    sumBusRaw    = 0;  // sensor settle down
+    sumShuntRaw  = 0;  // Reset values
+    return;
+  }  // of if-then first second after startup
+  deltaBus   = ((int16_t)(sumBusRaw / readings) - lastBusRaw);      // Compute the delta bus
+  deltaShunt = ((int16_t)(sumShuntRaw / readings) - lastShuntRaw);  // Compute the delta shunt
+  writeDataToArray(dataArray, arrayNibbleIndex, deltaBus);          // Add bus reading to array
+  writeDataToArray(dataArray, arrayNibbleIndex, deltaShunt);        // Add shunt reading to array
+  arrayReadings++;                                                  // increment the counter
+  lastBusRaw   = sumBusRaw / readings;                              // Reset values
+  lastShuntRaw = sumShuntRaw / readings;                            // Reset values
+  readings     = 0;                                                 // Reset values
+  sumBusRaw    = 0;                                                 // Reset values
+  sumShuntRaw  = 0;                                                 // Reset values
+  /*****************************************************************************************************************
+  ** Once the array could fill up on the next reading (2x max reading of 5 nibbles) then it is
+  *time to flush the  **
+  ** the accumulated readings. **
+  *****************************************************************************************************************/
+  if ((arrayNibbleIndex + 10) / 2 >= ARRAY_BYTES)  //                                 //
+  {                                                //                                 //
+    int16_t  busValue        = 0;                  // Contains current bus value      //
+    int16_t  shuntValue      = 0;                  // Contains current shunt value    //
+    uint16_t workNibbleIndex = 0;                  // Index into array for reading    //
+    /***************************************************************************************************************
+    ** If there is a FRAM memory board attached, then copy the array contents to it **
+    ***************************************************************************************************************/
+    if (chips_detected > 0)  // Only execute if there is memory //
+    {                        //                                 //
+      if ((framIndex + sizeof(dataArray) <
+           FRAM.totalBytes()))               // Only write when space available //
+      {                                      //                                 //
+        cli();                               // Enable interrupts temporarily   //
+        Serial.print(millis() / 1000 / 60);  //                                 //
+        Serial.print(" ");                   //                                 //
+        Serial.print(F("Writing "));         //                                 //
+        Serial.print(sizeof(dataArray));     //                                 //
+        Serial.print(" Bytes to memory @");  //                                 //
+        Serial.print(framIndex);             //                                 //
+        Serial.print(".\n");                 //                                 //
+        sei();                               // Disable interrupts again        //
+        FRAM.write(framIndex, dataArray);    // Write the whole array to FRAM   //
+        framIndex += sizeof(dataArray);      // set index to new location       //
+      }  // of if-then there is space in the EEPROM                             // //
+    }    // of if-then we have at least one EEPROM attached to the I2C bus        // //
+    for (uint16_t readingNo = 1; readingNo <= arrayReadings;
+         readingNo++)  // Process every reading in array  //
+    {                  //                                 //
+      busValue = readDataFromArray(dataArray, workNibbleIndex);  // Get next bus value from array //
+      baseBusRaw += busValue;  // apply delta value to bus base   //
+      shuntValue =
+          readDataFromArray(dataArray, workNibbleIndex);  // Get shunt next value from array //
+      baseShuntRaw += shuntValue;                         // apply delta value to shunt base //
+      /*************************************************************************************************************
+      ** Insert code here to save data to static RAM or to a SD-Card or elsewhere **
+      *************************************************************************************************************/
 
-        cli();  // Enable interrupts temporarily   //
-        Serial.print(millis() / 1000);
-        Serial.print(" ");
-        Serial.print(readingNo);
-        Serial.print(" ");
-        Serial.print(baseBusRaw * 0.00125, 4);
-        Serial.print("V ");
-        Serial.print(0.0025 * baseShuntRaw);
-        Serial.println("mA");
-        sei();  // Disable interrupts again        //
+      cli();  // Enable interrupts temporarily   //
+      Serial.print(millis() / 1000);
+      Serial.print(" ");
+      Serial.print(readingNo);
+      Serial.print(" ");
+      Serial.print(baseBusRaw * 0.00125, 4);
+      Serial.print("V ");
+      Serial.print(0.0025 * baseShuntRaw);
+      Serial.println("mA");
+      sei();  // Disable interrupts again        //
 
-      }  // of for-next each array reading                                        // //
-      arrayNibbleIndex = 0;  // reset                           //
-      arrayReadings    = 0;  // reset                           //
-    }  // of if-then the internal array is full                                   // //
-  }    // of ISR "TIMER1_COMPA_vect"                                                // //
-
-  /*******************************************************************************************************************
-  ** Method Setup(). This is an Arduino IDE method which is called first upon initial boot or
-  *restart. It is only   **
-  ** called one time and all of the variables and other initialization calls are done here prior to
-  *entering the    **
-  ** main loop for data measurement. **
-  *******************************************************************************************************************/
-  void setup()                             //                                  //
-  {                                        //                                  //
-    pinMode(GREEN_LED_PIN, OUTPUT);        // Define the green LED as an output//
-    digitalWrite(GREEN_LED_PIN, true);     // Turn on the LED                  //
-    pinMode(INA_ALERT_PIN, INPUT_PULLUP);  // Declare pin with pull-up resistor//
-    *digitalPinToPCMSK(INA_ALERT_PIN) |=
-        bit(digitalPinToPCMSKbit(INA_ALERT_PIN));       // Enable PCMSK pin                 //
-    PCIFR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));  // clear any outstanding interrupt  //
-    PCICR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));  // enable interrupt for the group   //
-    Serial.begin(SERIAL_SPEED);                         // Start serial communications      //
-#ifdef __AVR_ATmega32U4__                               // If this is a 32U4 processor,     //
-    delay(2000);                                                              // wait 3 seconds for serial port   //
-  #endif                                                                      // interface to initialize          //
-  Serial.print(F("\n\nINA Data Logging with interrupts V1.0.3\n"));           // Display program information      //
-  uint8_t devicesFound = 0;                                                   // Number of INA2xx found on I2C    //
-  while (deviceNumber==UINT8_MAX)                                             // Loop until we find devices       //
-  {                                                                           //                                  //
-    devicesFound = INA.begin(1,100000);                                       // ±1Amps maximum for 0.1Ω resistor //
-    for (uint8_t i=0;i<devicesFound;i++)                                      // the first INA226 device found    //
-    {                                                                         // Change "INA226" to "INA260" or   //
-                                                                              // whichever INA2xx to measure      //
-      if (strcmp(INA.getDeviceName(i),"INA226")==0)                           // Set deviceNumber appropriately   //
-      {                                                                       //                                  //
-        deviceNumber = i;                                                     //                                  //
-        INA.reset(deviceNumber);                                              // Reset device to default settings //
-        break;                                                                //                                  //
-      } // of if-then we have found an INA226                                 //                                  //
-    } // of for-next loop through all devices found                           //                                  //
-    if (deviceNumber==UINT8_MAX)                                              // Try again if no device found     //
-    {                                                                         //                                  //
-      Serial.print(F("No INA226 found. Waiting 5s.\n"));                      //                                  //
-      delay(5000);                                                            //                                  //
-    } // of if-then no INA226 found                                           //                                  //
-  } // of if-then no device found                                             //                                  //
-  Serial.print(F("Found INA226 at device number "));                          //                                  //
-  Serial.println(deviceNumber);                                               //                                  //
-  Serial.println();                                                           //                                  //
-  INA.setAveraging(64,deviceNumber);                                          // Average each reading 64 times    //
-  INA.setAveraging(8, deviceNumber);                                          // Average each reading 4 times     //
-  INA.setBusConversion(82440,deviceNumber);                                   // Maximum conversion time 8.244ms  //
-  INA.setShuntConversion(82440,deviceNumber);                                 // Maximum conversion time 8.244ms  //
-  INA.setMode(INA_MODE_CONTINUOUS_BOTH,deviceNumber);                         // Bus/shunt measured continuously  //
-  INA.AlertOnConversion(true,deviceNumber);                                   // Make alert pin go low on finish  //
-  chips_detected = FRAM.begin();                                              // return number of memories        //
-  if (chips_detected > 0) {                                                   //                                  //
-    Serial.print(F("Found "));                                                //                                  //
-    Serial.print(chips_detected);                                             //                                  //
-    Serial.print(F(" FRAM with a total of "));                                //                                  //
-    uint32_t totalMemory = 0;                                                 //                                  //
-    for (uint8_t i = 0; i < chips_detected; i++) {                            //                                  //
-      totalMemory += FRAM.memSize(i);                                         // Add memory of chip to total      //
-    } // of for-next each memory                                              //                                  //
-    Serial.print(totalMemory/1024);                                           //                                  //
-    Serial.println(F("KB memory."));                                          //                                  //
-  } // if-then we have found a FRAM memory                                    //                                  //
-  cli();                                                                      // disable interrupts while setting //
-  TCCR1A =     0;                                                             // TCCR1A register reset            //
-  TCCR1B =     0;                                                             // TCCR1B register reset            //
-  TCNT1  =     0;                                                             // initialize counter               //
-  OCR1A  = 15624;                                                             // ((16*10^6) / (1*1024)) - 1       //
-  TCCR1B |= (1 << WGM12);                                                     // Enable CTC mode                  //
-  TCCR1B |= (1 << CS12) | (1 << CS10);                                        // CS10 & CS12 for 1024 prescaler   //
-  TIMSK1 |= (1 << OCIE1A);                                                    // Enable timer compare interrupt   //
-  sei();                                                                      // re-enable interrupts             //
-} // of method setup()                                                        //                                  //
+    }  // of for-next each array reading                                        // //
+    arrayNibbleIndex = 0;  // reset                           //
+    arrayReadings    = 0;  // reset                           //
+  }  // of if-then the internal array is full                                   // //
+}  // of ISR "TIMER1_COMPA_vect"                                                // //
 
 /*******************************************************************************************************************
-** This is the main program for the Arduino IDE, it is called in an infinite loop. The INA226 measurements are    **
-** triggered by the interrupt handler each time a conversion is ready, and another interrupt is triggered every   **
-** second to store the collected readings. Thus the main program is free to do other tasks.                       **
+** Method Setup(). This is an Arduino IDE method which is called first upon initial boot or
+*restart. It is only   **
+** called one time and all of the variables and other initialization calls are done here prior to
+*entering the    **
+** main loop for data measurement. **
 *******************************************************************************************************************/
-void loop()                                                                   //                                  //
-{                                                                             //                                  //
+void setup()                             //                                  //
+{                                        //                                  //
+  pinMode(GREEN_LED_PIN, OUTPUT);        // Define the green LED as an output//
+  digitalWrite(GREEN_LED_PIN, true);     // Turn on the LED                  //
+  pinMode(INA_ALERT_PIN, INPUT_PULLUP);  // Declare pin with pull-up resistor//
+  *digitalPinToPCMSK(INA_ALERT_PIN) |=
+      bit(digitalPinToPCMSKbit(INA_ALERT_PIN));       // Enable PCMSK pin                 //
+  PCIFR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));  // clear any outstanding interrupt  //
+  PCICR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));  // enable interrupt for the group   //
+  Serial.begin(SERIAL_SPEED);                         // Start serial communications      //
+#ifdef __AVR_ATmega32U4__                             // If this is a 32U4 processor,     //
+  delay(2000);  // wait 3 seconds for serial port   //
+#endif          // interface to initialize          //
+  Serial.print(
+      F("\n\nINA Data Logging with interrupts V1.0.3\n"));  // Display program information      //
+  uint8_t devicesFound = 0;                                 // Number of INA2xx found on I2C    //
+  while (deviceNumber == UINT8_MAX)                         // Loop until we find devices       //
+  {                                                         //                                  //
+    devicesFound = INA.begin(1, 100000);                    // ±1Amps maximum for 0.1Ω resistor //
+    for (uint8_t i = 0; i < devicesFound; i++)              // the first INA226 device found    //
+    {                                                       // Change "INA226" to "INA260" or   //
+                                                            // whichever INA2xx to measure      //
+      if (strcmp(INA.getDeviceName(i), "INA226") == 0)      // Set deviceNumber appropriately   //
+      {                                                     //                                  //
+        deviceNumber = i;                                   //                                  //
+        INA.reset(deviceNumber);                            // Reset device to default settings //
+        break;                                              //                                  //
+      }  // of if-then we have found an INA226                                 // //
+    }    // of for-next loop through all devices found                           // //
+    if (deviceNumber == UINT8_MAX)                        // Try again if no device found     //
+    {                                                     //                                  //
+      Serial.print(F("No INA226 found. Waiting 5s.\n"));  //                                  //
+      delay(5000);                                        //                                  //
+    }  // of if-then no INA226 found                                           // //
+  }    // of if-then no device found                                             // //
+  Serial.print(F("Found INA226 at device number "));    //                                  //
+  Serial.println(deviceNumber);                         //                                  //
+  Serial.println();                                     //                                  //
+  INA.setAveraging(64, deviceNumber);                   // Average each reading 64 times    //
+  INA.setAveraging(8, deviceNumber);                    // Average each reading 4 times     //
+  INA.setBusConversion(82440, deviceNumber);            // Maximum conversion time 8.244ms  //
+  INA.setShuntConversion(82440, deviceNumber);          // Maximum conversion time 8.244ms  //
+  INA.setMode(INA_MODE_CONTINUOUS_BOTH, deviceNumber);  // Bus/shunt measured continuously  //
+  INA.AlertOnConversion(true, deviceNumber);            // Make alert pin go low on finish  //
+  chips_detected = FRAM.begin();                        // return number of memories        //
+  if (chips_detected > 0) {                             //                                  //
+    Serial.print(F("Found "));                          //                                  //
+    Serial.print(chips_detected);                       //                                  //
+    Serial.print(F(" FRAM with a total of "));          //                                  //
+    uint32_t totalMemory = 0;                           //                                  //
+    for (uint8_t i = 0; i < chips_detected; i++) {      //                                  //
+      totalMemory += FRAM.memSize(i);                   // Add memory of chip to total      //
+    }  // of for-next each memory                                              // //
+    Serial.print(totalMemory / 1024);  //                                  //
+    Serial.println(F("KB memory."));   //                                  //
+  }                // if-then we have found a FRAM memory                                    // //
+  cli();           // disable interrupts while setting //
+  TCCR1A = 0;      // TCCR1A register reset            //
+  TCCR1B = 0;      // TCCR1B register reset            //
+  TCNT1  = 0;      // initialize counter               //
+  OCR1A  = 15624;  // ((16*10^6) / (1*1024)) - 1       //
+  TCCR1B |= (1 << WGM12);               // Enable CTC mode                  //
+  TCCR1B |= (1 << CS12) | (1 << CS10);  // CS10 & CS12 for 1024 prescaler   //
+  TIMSK1 |= (1 << OCIE1A);              // Enable timer compare interrupt   //
+  sei();                                // re-enable interrupts             //
+}  // of method setup()                                                        // //
+
+/*******************************************************************************************************************
+** This is the main program for the Arduino IDE, it is called in an infinite loop. The INA226
+*measurements are    **
+** triggered by the interrupt handler each time a conversion is ready, and another interrupt is
+*triggered every   **
+** second to store the collected readings. Thus the main program is free to do other tasks. **
+*******************************************************************************************************************/
+void loop()  //                                  //
+{            //                                  //
   delay(10000);
-} // of method loop                                                           //----------------------------------//
+}  // of method loop //----------------------------------//
