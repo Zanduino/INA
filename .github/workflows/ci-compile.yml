@@ -9,7 +9,7 @@
 ##                                                                                                ##
 ####################################################################################################
 name: 'Build'
-on: 
+on:
   push:
   pull_request:
   workflow_dispatch:
@@ -32,4 +32,4 @@ jobs:
        - name: 'Install Arduino CLI package'
          run: bash ${GITHUB_WORKSPACE}/Common/Scripts/install_arduino_cli.sh
        - name: 'Run master compile python program'
-         run: python3 ${GITHUB_WORKSPACE}/Common/Python/build_platform.py zanshin_platforms
+         run: python3 ${GITHUB_WORKSPACE}/Common/Python/build_platform.py uno leonardo mega2560 arduino_zero_native esp8266 esp32
