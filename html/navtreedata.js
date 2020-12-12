@@ -10,6 +10,8 @@ var NAVTREE =
         [ "Comment Format", "index.html#comments", null ],
         [ "IDE", "index.html#ide", null ]
       ] ],
+      [ "doxygen configuration", "index.html#doxygen", null ],
+      [ "clang-format", "index.html#clang-format", null ],
       [ "GNU General Public License v3.0", "index.html#license", null ],
       [ "Author", "index.html#author", null ],
       [ "Changelog", "index.html#versions", null ]

@@ -27,12 +27,11 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="horizontal_narrow_small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">INA2xx
-   &#160;<span id="projectnumber">Version 1.0.14</span>
+   &#160;<span id="projectnumber">v1.1.0</span>
    </div>
-   <div id="projectbrief">Arduino Library for INA2xx power measurement devices</div>
+   <div id="projectbrief">Arduino Library to read current, voltage and power data from one or more INA2xx device(s)</div>
   </td>
  </tr>
  </tbody>
@@ -146,7 +145,7 @@ Description</h1>
 <br />
  This example program is designed for the ESP32/ESP8266 and will not function on other platforms<br />
 <br />
- Detailed documentation can be found on the GitHub Wiki pages at <a href="https://github.com/SV-Zanshin/INA/wiki">https://github.com/SV-Zanshin/INA/wiki</a> <br />
+ Detailed documentation can be found on the GitHub Wiki pages at <a href="https://github.com/Zanduino/INA/wiki">https://github.com/Zanduino/INA/wiki</a> <br />
 <br />
  Since the INA library allows multiple devices of different types and this program demonstrates interrupts and background processing, it will limit itself to using the first INA226 detected. This is easily changed in the if another device type or device number to test is required.<br />
  This example is for a INA226 set up to measure a 5-Volt load with a 0.1Ohm resistor in place, this is the same setup that can be found in the Adafruit INA226 breakout board. The complex calibration options are done at runtime using the 2 parameters specified in the "begin()" call and the library has gone to great lengths to avoid the use of floating point to conserve space and minimize runtime. This demo program uses floating point only to convert and display the data conveniently. The INA226 uses 15 bits of precision, and even though the current and watt information is returned using 32-bit integers the precision remains the same.<br />
@@ -156,7 +155,7 @@ Description</h1>
  </p>
 <h1><a class="anchor" id="BackgroundRead_ESP32_license"></a>
 GNU General Public License v3.0</h1>
-<p>This program is free software : you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.You should have received a copy of the GNU General Public License along with this program(see <a href="https://github.com/SV-Zanshin/INA/blob/master/LICENSE">https://github.com/SV-Zanshin/INA/blob/master/LICENSE</a>). If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+<p>This program is free software : you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.You should have received a copy of the GNU General Public License along with this program(see <a href="https://github.com/Zanduino/INA/blob/master/LICENSE">https://github.com/Zanduino/INA/blob/master/LICENSE</a>). If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
 <h1><a class="anchor" id="BackgroundRead_ESP32_author"></a>
 Author</h1>
 <p>Written by Arnd@SV-Zanshin</p>
