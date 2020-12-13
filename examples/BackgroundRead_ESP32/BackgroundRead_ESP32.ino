@@ -58,7 +58,7 @@
  *
  * @section BackgroundRead_ESP32_author Author
  *
-* Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
+ * Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
  *
  * @section BackgroundRead_ESP32_versions Changelog
  *
