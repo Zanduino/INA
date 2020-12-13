@@ -57,7 +57,7 @@
  *
  * @section BackgroundRead_author Author
  *
- * Written by Arnd\@SV-Zanshin
+ * Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
  *
  * @section BackgroundRead_versions Changelog
  *
