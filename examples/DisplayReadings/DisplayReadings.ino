@@ -1,15 +1,15 @@
 /*!
  @file DisplayReadings.ino
- 
+
  @brief Example program for the INA Library demonstrating reading an INA device and displaying
  results
- 
+
  @section DisplayReadings_section Description
- 
+
  Program to demonstrate the INA library for the Arduino. When started, the library searches the
  I2C bus for all INA2xx devices. Then the example program goes into an infinite loop and displays
  the power measurements (bus voltage and current) for all devices.\n\n
- 
+
  Detailed documentation can be found on the GitHub Wiki pages at
  https://github.com/Zanduino/INA/wiki \n\n This example is for a INA set up to measure a 5-Volt
  load with a 0.1 Ohm resistor in place, this is the same setup that can be found in the Adafruit
@@ -19,7 +19,7 @@
  point only to convert and display the data conveniently. The INA devices have 15 bits of
  precision, and even though the current and watt information is returned using 32-bit integers the
  precision remains the same.\n\n
- 
+
  The library supports multiple INA devices and multiple INA device types. The Atmel's EEPROM is
  used to store the 96 bytes of static information per device using
  https://www.arduino.cc/en/Reference/EEPROM function calls. Although up to 16 devices could
@@ -27,9 +27,9 @@
  ATmega328 UNO has 1024k so can support up to 10 devices but the ATmega168 only has 512 bytes
  which limits it to supporting at most 5 INAs. Support has been added for the ESP32 based
  Arduinos, these use the EEPROM calls differently and need specific code.
- 
+
  @section DisplayReadings_license GNU General Public License v3.0
- 
+
  This program is free software : you can redistribute it and/or modify it under the terms of the
  GNU General Public License as published by the Free Software Foundation, either version 3 of the
  License, or (at your option) any later version.This program is distributed in the hope that it
@@ -38,13 +38,13 @@
  have received a copy of the GNU General Public License along with this program(see
  https://github.com/Zanduino/INA/blob/master/LICENSE).  If not, see
  <http://www.gnu.org/licenses/>.
- 
+
  @section DisplayReadings_author Author
- 
+
  Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
- 
+
  @section DisplayReadings_versions Changelog
- 
+
  | Version | Date       | Developer  | Comments                                                    |
  | ------- | ---------- | -----------| ----------------------------------------------------------- |
  | 1.0.8   | 2020-12-01 | SV-Zanshin | Issue #72. Allow dynamic RAM allocation instead of EEPROM   |
