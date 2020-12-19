@@ -1,67 +1,65 @@
 /*!
- *
- * @file DisplayReadings.ino
- *
- * @brief Example program for the INA Library demonstrating reading an INA device and displaying
- * results
- *
- * @section DisplayReadings_section Description
- *
- * Program to demonstrate the INA library for the Arduino. When started, the library searches the
- * I2C bus for all INA2xx devices. Then the example program goes into an infinite loop and displays
- * the power measurements (bus voltage and current) for all devices.\n\n
- *
- * Detailed documentation can be found on the GitHub Wiki pages at
- * https://github.com/Zanduino/INA/wiki \n\n This example is for a INA set up to measure a 5-Volt
- * load with a 0.1 Ohm resistor in place, this is the same setup that can be found in the Adafruit
- * INA219 breakout board.  The complex calibration options are done at runtime using the 2
- * parameters specified in the "begin()" call and the library has gone to great lengths to avoid the
- * use of floating point to conserve space and minimize runtime.  This demo program uses floating
- * point only to convert and display the data conveniently. The INA devices have 15 bits of
- * precision, and even though the current and watt information is returned using 32-bit integers the
- * precision remains the same.\n\n
- *
- * The library supports multiple INA devices and multiple INA device types. The Atmel's EEPROM is
- * used to store the 96 bytes of static information per device using
- * https://www.arduino.cc/en/Reference/EEPROM function calls. Although up to 16 devices could
- * theoretically be present on the I2C bus the actual limit is determined by the available EEPROM -
- * ATmega328 UNO has 1024k so can support up to 10 devices but the ATmega168 only has 512 bytes
- * which limits it to supporting at most 5 INAs. Support has been added for the ESP32 based
- * Arduinos, these use the EEPROM calls differently and need specific code.
- *
- * @section DisplayReadings_license GNU General Public License v3.0
- *
- * This program is free software : you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.This program is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.You should
- * have received a copy of the GNU General Public License along with this program(see
- * https://github.com/Zanduino/INA/blob/master/LICENSE).  If not, see
- * <http://www.gnu.org/licenses/>.
- *
- * @section DisplayReadings_author Author
- *
- * Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
- *
- * @section DisplayReadings_versions Changelog
- *
- * Version | Date       | Developer   | Comments
- * ------- | ---------- | ----------- | --------
- * 1.0.8   | 2020-12-01 | SV-Zanshin  | Issue #72, allow dynamic memory allocation instead of EEPROM
- * 1.0.7   | 2020-06-30 | SV-Zanshin  | Issue #58, changed formatting to use clang-format
- * 1.0.6   | 2020-06-29 | SV-Zanshin  | Issue #57, changed case of functions "Alert..."
- * 1.0.5   | 2020-05-03 | SV-Zanshin  | Moved setting of maxAmps and shunt to constants
- * 1.0.4   | 2019-02-16 | SV-Zanshin  | Reformatted and refactored for legibility and clarity
- * 1.0.3   | 2019-02-10 | SV-Zanshin  | Issue #38. Made pretty-print columns line up
- * 1.0.3   | 2019-02-09 | SV-Zanshin  | Issue #38. Added device number to display
- * 1.0.2   | 2018-12-29 | SV-Zanshin  | Converted comments to doxygen format
- * 1.0.1   | 2018-09-22 | SV-Zanshin  | Comments corrected, added INA wait loop, removed F("") calls
- * 1.0.0   | 2018-06-22 | SV-Zanshin  | Initial release
- * 1.0.0b  | 2018-06-17 | SV-Zanshin  | INA219 and INA226 completed, including testing
- * 1.0.0a  | 2018-06-10 | SV-Zanshin  | Initial coding
- *
- */
+ @file DisplayReadings.ino
+ 
+ @brief Example program for the INA Library demonstrating reading an INA device and displaying
+ results
+ 
+ @section DisplayReadings_section Description
+ 
+ Program to demonstrate the INA library for the Arduino. When started, the library searches the
+ I2C bus for all INA2xx devices. Then the example program goes into an infinite loop and displays
+ the power measurements (bus voltage and current) for all devices.\n\n
+ 
+ Detailed documentation can be found on the GitHub Wiki pages at
+ https://github.com/Zanduino/INA/wiki \n\n This example is for a INA set up to measure a 5-Volt
+ load with a 0.1 Ohm resistor in place, this is the same setup that can be found in the Adafruit
+ INA219 breakout board.  The complex calibration options are done at runtime using the 2
+ parameters specified in the "begin()" call and the library has gone to great lengths to avoid the
+ use of floating point to conserve space and minimize runtime.  This demo program uses floating
+ point only to convert and display the data conveniently. The INA devices have 15 bits of
+ precision, and even though the current and watt information is returned using 32-bit integers the
+ precision remains the same.\n\n
+ 
+ The library supports multiple INA devices and multiple INA device types. The Atmel's EEPROM is
+ used to store the 96 bytes of static information per device using
+ https://www.arduino.cc/en/Reference/EEPROM function calls. Although up to 16 devices could
+ theoretically be present on the I2C bus the actual limit is determined by the available EEPROM -
+ ATmega328 UNO has 1024k so can support up to 10 devices but the ATmega168 only has 512 bytes
+ which limits it to supporting at most 5 INAs. Support has been added for the ESP32 based
+ Arduinos, these use the EEPROM calls differently and need specific code.
+ 
+ @section DisplayReadings_license GNU General Public License v3.0
+ 
+ This program is free software : you can redistribute it and/or modify it under the terms of the
+ GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.This program is distributed in the hope that it
+ will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.You should
+ have received a copy of the GNU General Public License along with this program(see
+ https://github.com/Zanduino/INA/blob/master/LICENSE).  If not, see
+ <http://www.gnu.org/licenses/>.
+ 
+ @section DisplayReadings_author Author
+ 
+ Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
+ 
+ @section DisplayReadings_versions Changelog
+ 
+ | Version | Date       | Developer  | Comments                                                    |
+ | ------- | ---------- | -----------| ----------------------------------------------------------- |
+ | 1.0.8   | 2020-12-01 | SV-Zanshin | Issue #72. Allow dynamic RAM allocation instead of EEPROM   |
+ | 1.0.7   | 2020-06-30 | SV-Zanshin | Issue #58. Changed formatting to use clang-format           |
+ | 1.0.6   | 2020-06-29 | SV-Zanshin | Issue #57. Changed case of functions "Alert..."             |
+ | 1.0.5   | 2020-05-03 | SV-Zanshin | Moved setting of maxAmps and shunt to constants             |
+ | 1.0.4   | 2019-02-16 | SV-Zanshin | Reformatted and refactored for legibility and clarity       |
+ | 1.0.3   | 2019-02-10 | SV-Zanshin | Issue #38. Made pretty-print columns line up                |
+ | 1.0.3   | 2019-02-09 | SV-Zanshin | Issue #38. Added device number to display                   |
+ | 1.0.2   | 2018-12-29 | SV-Zanshin | Converted comments to doxygen format                        |
+ | 1.0.1   | 2018-09-22 | SV-Zanshin | Comments corrected, add INA wait loop, removed F("") calls  |
+ | 1.0.0   | 2018-06-22 | SV-Zanshin | Initial release                                             |
+ | 1.0.0b  | 2018-06-17 | SV-Zanshin | INA219 and INA226 completed, including testing              |
+ | 1.0.0a  | 2018-06-10 | SV-Zanshin | Initial coding                                              |
+*/
 
 #if ARDUINO >= 100  // Arduino IDE versions before 100 need to use the older library
 #include "Arduino.h"
