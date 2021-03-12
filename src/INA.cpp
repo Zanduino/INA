@@ -477,7 +477,7 @@ void INA_Class::setShuntConversion(const uint32_t convTime, const uint8_t device
           else
             convRate = 0;
           configRegister &= ~INA219_CONFIG_SADC_MASK;  // zero out the averages part
-          configRegister |= convRate << 3;             // shift in the BADC averages
+          configRegister |= convRate << 3;             // shift in the SADC averages
           break;
         case INA226:
         case INA230:
