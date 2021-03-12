@@ -150,11 +150,10 @@ Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
 | 1.0.0b  | 2018-06-17 | SV-Zanshin  | Continued coding, tested on INA219 and INA226
 | 1.0.0a  | 2018-06-10 | SV-Zanshin  | Initial coding began
 */
-// clang-format on
 #if ARDUINO >= 100 /* Use old library if IDE is prior to V1.0 */
-#include "Arduino.h"
+  #include "Arduino.h"
 #else
-#include "WProgram.h"
+  #include "WProgram.h"
 #endif
 
 #ifndef INA__Class_h
@@ -262,6 +261,7 @@ const uint16_t INA3221_SHUNT_VOLTAGE_LSB{400};      ///< INA3221 LSB in uV *10  
 const uint16_t INA3221_CONFIG_BADC_MASK{0x01C0};    ///< INA3221 Bits 7-10  masked
 const uint8_t  INA3221_MASK_REGISTER{0xF};          ///< INA32219 Mask register
 const uint8_t  I2C_DELAY{10};                       ///< Microsecond delay on I2C writes
+// clang-format on
 
 class INA_Class {
   /*!
