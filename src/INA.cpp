@@ -135,7 +135,7 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
   if (deviceNumber == _currentINA || deviceNumber > _DeviceCount) return;  // Skip if correct device
   if (_expectedDevices == 0) {
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__                                            // STM32F1 has no built-in EEPROM
+#ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
     uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
     uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
     for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.get template
@@ -146,7 +146,7 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
     EEPROM.get(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Read EEPROM values
 #endif
 #else
-    inaEE                          = _EEPROMEmulation[deviceNumber];
+    inaEE = _EEPROMEmulation[deviceNumber];
 #endif
   } else {
     inaEE = _DeviceArray[deviceNumber];
@@ -162,7 +162,7 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
   inaEE = ina;  // only save relevant part of ina to EEPROM
   if (_expectedDevices == 0) {
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__                                            // STM32F1 has no built-in EEPROM
+#ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
     uint16_t        e   = deviceNumber * sizeof(inaEE);       // it uses flash memory to emulate
     const uint16_t *ptr = (const uint16_t *)&inaEE;           // "EEPROM" calls are uint16_t type
     for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.put template
@@ -172,7 +172,7 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
 #else
     EEPROM.put(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Write the structure
 #ifdef ESP32
-    EEPROM.commit();                                                     // Force write to EEPROM when ESP32
+    EEPROM.commit();  // Force write to EEPROM when ESP32
 #endif
 #endif
 #else
@@ -222,9 +222,9 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
 #if defined(ESP32) || defined(ESP8266)
     EEPROM.begin(_EEPROM_size + _EEPROM_offset);  // If ESP32 then allocate 512 Bytes
     maxDevices = (_EEPROM_size) / sizeof(inaEE);  // and compute number of devices
-#elif defined(__STM32F1__)                        // Emulated EEPROM for STM32F1
-    maxDevices                     = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
-#elif defined(CORE_TEENSY)                        // TEENSY doesn't have EEPROM.length
+#elif defined(__STM32F1__)  // Emulated EEPROM for STM32F1
+    maxDevices = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
+#elif defined(CORE_TEENSY)  // TEENSY doesn't have EEPROM.length
     maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
 #elif defined(__AVR__)
     maxDevices = (EEPROM.length() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible

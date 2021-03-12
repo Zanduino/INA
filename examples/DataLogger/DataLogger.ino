@@ -369,8 +369,8 @@ void setup()                             //                                  //
   PCICR |= bit(digitalPinToPCICRbit(INA_ALERT_PIN));  // enable interrupt for the group   //
   Serial.begin(SERIAL_SPEED);                         // Start serial communications      //
 #ifdef __AVR_ATmega32U4__                             // If this is a 32U4 processor,     //
-  delay(2000);                                        // wait 3 seconds for serial port   //
-#endif                                                // interface to initialize          //
+  delay(2000);  // wait 3 seconds for serial port   //
+#endif          // interface to initialize          //
   Serial.print(
       F("\n\nINA Data Logging with interrupts V1.0.3\n"));  // Display program information      //
   uint8_t devicesFound = 0;                                 // Number of INA2xx found on I2C    //
