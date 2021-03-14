@@ -19,7 +19,7 @@ Texas Instruments produces this family of power monitors and the library support
 | [INA260](http://www.ti.com/product/INA260) ([datasheet](http://www.ti.com/lit/ds/symlink/ina260.pdf)) | 36V | TSSOP 16p | n.a. | 2 mΩ shunt, ±15A             | Yes |
 | [INA3221](http://www.ti.com/product/INA3221) ([datasheet](http://www.ti.com/lit/ds/symlink/ina3221.pdf)) | 26V | VQFN(16) | ±163.8mV | 3 concurrent circuits | Yes |
 
-Texas Instruments has a document which documents and details additional differences between the various INA-devices, this PDF document can be read at [Digital Interfaces for Current Sensing Devices](http://www.ti.com/lit/an/sboa203/sboa203.pdf)
+Texas Instruments has a document which describes and details the differences between the various INA-devices, this PDF document can be read at [Digital Interfaces for Current Sensing Devices](http://www.ti.com/lit/an/sboa203/sboa203.pdf)
 ## Hardware layout
 <img src="https://github.com/Zanduino/INA/blob/master/images/INA226.jpg" width="175" align="left"/>The packages are small and a lot of work to solder, but fortunately there are now several sources for breakout boards for the various devices which are worth it in time savings. My first test with a INA226 involved a blank breakout board, some solder paste, a frying pan, desoldering braid, a magnifying glass and quite a bit of time to set up the first breadboard.
 ## Library description
