@@ -899,7 +899,7 @@ bool INA_Class::alertOnBusOverVoltage(const bool alertState, const int32_t milli
                                       const uint8_t deviceNumber) {
   /*!
   @brief     configures the INA devices which support this functionality to pull the ALERT pin low
-             when the bus current goes aboe the value given in the parameter in millivolts
+             when the bus current goes above the value given in the parameter in millivolts
   @details   This call is ignored and returns false when called for an invalid device
   @param[in] alertState Boolean true or false to denote the requested setting
   @param[in] milliVolts alert level at which to trigger the alarm
