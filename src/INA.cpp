@@ -134,7 +134,7 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
       @param[in] deviceNumber Index to device array */
   if (deviceNumber == _currentINA || deviceNumber > _DeviceCount) return;  // Skip if correct device
   if (_expectedDevices == 0) {
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
+#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || defined(__STM32F1__)
 #ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
     uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
     uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
@@ -161,7 +161,7 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
       @param[in] deviceNumber Index to device array */
   inaEE = ina;  // only save relevant part of ina to EEPROM
   if (_expectedDevices == 0) {
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
+#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || defined(__STM32F1__)
 #ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
     uint16_t        e   = deviceNumber * sizeof(inaEE);       // it uses flash memory to emulate
     const uint16_t *ptr = (const uint16_t *)&inaEE;           // "EEPROM" calls are uint16_t type
