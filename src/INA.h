@@ -150,6 +150,9 @@ Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
 | 1.0.0b  | 2018-06-17 | SV-Zanshin  | Continued coding, tested on INA219 and INA226
 | 1.0.0a  | 2018-06-10 | SV-Zanshin  | Initial coding began
 */
+#ifndef ARDUINO
+#define ARDUINO 0
+#endif
 #if ARDUINO >= 100 /* Use old library if IDE is prior to V1.0 */
   #include "Arduino.h"
 #else
