@@ -222,8 +222,8 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
 #if defined(ESP32) || defined(ESP8266)
     EEPROM.begin(_EEPROM_size + _EEPROM_offset);  // If ESP32 then allocate 512 Bytes
     maxDevices = (_EEPROM_size) / sizeof(inaEE);  // and compute number of devices
-#elif defined(__STM32F1__)  // Emulated EEPROM for STM32F1
-    maxDevices = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
+#elif defined(__STM32F1__)                        // Emulated EEPROM for STM32F1
+    maxDevices                     = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
 #elif defined(CORE_TEENSY)  // TEENSY doesn't have EEPROM.length
     maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
 #elif defined(__AVR__)
@@ -719,8 +719,7 @@ bool INA_Class::conversionFinished(const uint8_t deviceNumber) {
     case INA3221_0:
     case INA3221_1:
     case INA3221_2: cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1; break;
-    default:
-      cvBits = 1;
+    default: cvBits = 1;
   }  // of switch type
   if (cvBits != 0)
     return (true);
@@ -754,7 +753,9 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber) {
           case INA226:
           case INA230:
           case INA231:
-          case INA260: cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8; break;
+          case INA260: 
+            cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8; 
+            break;
           case INA3221_0:
           case INA3221_1:
           case INA3221_2: cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1; break;
@@ -792,8 +793,7 @@ bool INA_Class::alertOnConversion(const bool alertState, const uint8_t deviceNum
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);      // Write back
           returnCode = true;
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -832,8 +832,7 @@ bool INA_Class::alertOnShuntOverVoltage(const bool alertState, const int32_t mil
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           returnCode = true;
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -871,8 +870,7 @@ bool INA_Class::alertOnShuntUnderVoltage(const bool alertState, const int32_t mi
           }  // of if we are setting a value
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -913,8 +911,7 @@ bool INA_Class::alertOnBusOverVoltage(const bool alertState, const int32_t milli
           }  // of if we are setting a value
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -954,8 +951,7 @@ bool INA_Class::alertOnBusUnderVoltage(const bool alertState, const int32_t mill
           }  // of if we are setting a value
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -995,8 +991,7 @@ bool INA_Class::alertOnPowerOverLimit(const bool alertState, const int32_t milli
           }  // of if we are setting a value
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
