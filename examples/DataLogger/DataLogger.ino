@@ -214,36 +214,28 @@ int16_t readDataFromArray(uint8_t dataArray[], uint16_t &nibbleIndex) {
   uint8_t controlBits = readNibble(dataArray, nibbleIndex++);  // Read the header nibble
   if (controlBits >> 3 == 0)  // ----------------0xxx   3 bits data - 4  to     3
   {
-    outValue = controlBits & B111;  // mask High Bit
-    if (outValue >> 2 & B1) {
-      outValue |= 0xFFF8;
-    }  // If it is a negative number
+    outValue = controlBits & B111;                   // mask High Bit
+    if (outValue >> 2 & B1) { outValue |= 0xFFF8; }  // If it is a negative number
   } else {
     if (controlBits >> 2 == B10)  // ------------10xxxxxx   6 bits data - 16 to    15
     {
       outValue = (controlBits & B11) << 4;               // mask 2 High Bits
       outValue |= readNibble(dataArray, nibbleIndex++);  // move in 4 LSB
-      if (outValue >> 5 & B1) {
-        outValue |= 0xFFE0;
-      }  // If it is a negative number
+      if (outValue >> 5 & B1) { outValue |= 0xFFE0; }    // If it is a negative number
     } else {
       if (controlBits >> 1 == B110)  // --------110xxxxxxxxx   9 bits data - 256 to   255
       {
         outValue = (controlBits & B1) << 8;                     // mask 2 High Bits
         outValue |= readNibble(dataArray, nibbleIndex++) << 4;  // move in 4 middle bits
         outValue |= readNibble(dataArray, nibbleIndex++);       // move in 4 LSB
-        if (outValue >> 8 & B1) {
-          outValue |= 0xFE00;
-        }  // If it is a negative number
+        if (outValue >> 8 & B1) { outValue |= 0xFE00; }         // If it is a negative number
       } else {
         if (controlBits == B1110)  // ----1110xxxxxxxxxxxx  12 bits data - 2048 to  2047
         {
           outValue = readNibble(dataArray, nibbleIndex++) << 8;   // move in 4 high bits
           outValue |= readNibble(dataArray, nibbleIndex++) << 4;  // move in 4 middle bits
           outValue |= readNibble(dataArray, nibbleIndex++);       // move in 4 low bits
-          if (outValue >> 11 & B1) {
-            outValue |= 0xF000;
-          }  // If it is a negative number
+          if (outValue >> 11 & B1) { outValue |= 0xF000; }        // If it is a negative number
         } else {
           if (controlBits == B1111)  // 1111xxxxxxxxxxxxxxxx  16 bits data - 16384 to 16383
           {
