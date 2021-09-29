@@ -71,7 +71,7 @@
  *
  */
 #if !defined(ESP32)
-#error Example program only functions on the ESP32 / ESP8266 platforms
+  #error Example program only functions on the ESP32 / ESP8266 platforms
 #endif
 
 /**************************************************************************************************

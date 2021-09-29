@@ -68,11 +68,11 @@
  * 1.0.3   | 2019-01-09 | SV-Zanshin  | Cleaned up doxygen formatting
  * 1.0.2   | 2018-12-28 | SV-Zanshin  | Converted comments to doxygen format
  * 1.0.0   | 2018-06-23 | SV-Zanshin  | Cloned and adapted example from old deprecated INA226
- *                                                         library
+ *                                      library
  *
  */
 #if !defined(__AVR__)
-#error Example program only functions on Atmel AVR-Based platforms
+  #error Example program only functions on Atmel AVR-Based platforms
 #endif
 
 /**************************************************************************************************
