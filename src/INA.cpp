@@ -134,7 +134,7 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
   if (_expectedDevices == 0) {
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
     defined(__STM32F1__)
-  #ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
+  #ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
     uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
     uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
     for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.get template
@@ -162,7 +162,7 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
   if (_expectedDevices == 0) {
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
     defined(__STM32F1__)
-  #ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
+  #ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
     uint16_t        e   = deviceNumber * sizeof(inaEE);       // it uses flash memory to emulate
     const uint16_t *ptr = (const uint16_t *)&inaEE;           // "EEPROM" calls are uint16_t type
     for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.put template
@@ -171,9 +171,9 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
     }                              // for-next
   #else
     EEPROM.put(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Write the structure
-  #ifdef ESP32
-    EEPROM.commit();  // Force write to EEPROM when ESP32
-  #endif
+    #ifdef ESP32
+    EEPROM.commit();                                                     // Force write to EEPROM when ESP32
+    #endif
   #endif
 #else
     _EEPROMEmulation[deviceNumber] = inaEE;
@@ -220,16 +220,16 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
 ** runtime to allocate sufficient space for 32 devices.                                           **
 ***************************************************************************************************/
 #if defined(ESP32) || defined(ESP8266)
-  EEPROM.begin(_EEPROM_size + _EEPROM_offset);  // If ESP32 then allocate 512 Bytes
-  maxDevices = (_EEPROM_size) / sizeof(inaEE);  // and compute number of devices
+    EEPROM.begin(_EEPROM_size + _EEPROM_offset);  // If ESP32 then allocate 512 Bytes
+    maxDevices = (_EEPROM_size) / sizeof(inaEE);  // and compute number of devices
 #elif defined(__STM32F1__)  // Emulated EEPROM for STM32F1
-  maxDevices = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
+    maxDevices = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
 #elif defined(CORE_TEENSY)  // TEENSY doesn't have EEPROM.length
-  maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
+    maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
 #elif defined(__AVR__)
-  maxDevices = (EEPROM.length() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
+    maxDevices = (EEPROM.length() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
 #else
-  maxDevices = 32;
+    maxDevices = 32;
 #endif
     Wire.begin();
 
@@ -351,8 +351,7 @@ void INA_Class::initDevice(const uint8_t deviceNumber) {
     case INA260:
     case INA3221_0:
     case INA3221_1:
-    case INA3221_2:
-      break;
+    case INA3221_2: break;
   }  // of switch type
 }  // of method initDevice()
 void INA_Class::setBusConversion(const uint32_t convTime, const uint8_t deviceNumber) {
@@ -531,10 +530,8 @@ const char *INA_Class::getDeviceName(const uint8_t deviceNumber) {
     case INA260: return ("INA260");
     case INA3221_0:
     case INA3221_1:
-    case INA3221_2:
-      return ("INA3221");
-    default:
-      return ("UNKNOWN");
+    case INA3221_2: return ("INA3221");
+    default: return ("UNKNOWN");
   }  // of switch type
 }  // of method getDeviceName()
 uint8_t INA_Class::getDeviceAddress(const uint8_t deviceNumber) {
@@ -718,14 +715,10 @@ bool INA_Class::conversionFinished(const uint8_t deviceNumber) {
     case INA226:
     case INA230:
     case INA231:
-    case INA260:
-      cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8;
-      break;
+    case INA260: cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8; break;
     case INA3221_0:
     case INA3221_1:
-    case INA3221_2:
-      cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1;
-      break;
+    case INA3221_2: cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1; break;
     default:
       cvBits = 1;
   }  // of switch type
@@ -761,16 +754,11 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber) {
           case INA226:
           case INA230:
           case INA231:
-          case INA260:
-            cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8;
-            break;
+          case INA260: cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8; break;
           case INA3221_0:
           case INA3221_1:
-          case INA3221_2:
-            cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1;
-            break;
-          default:
-            cvBits = 1;
+          case INA3221_2: cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1; break;
+          default: cvBits = 1;
         }  // of switch type
       }    // of while the conversion hasn't finished
     }      // of if this device needs to be set
