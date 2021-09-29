@@ -224,7 +224,7 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
     maxDevices = (_EEPROM_size) / sizeof(inaEE);  // and compute number of devices
 #elif defined(__STM32F1__)                        // Emulated EEPROM for STM32F1
     maxDevices                     = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
-#elif defined(CORE_TEENSY)  // TEENSY doesn't have EEPROM.length
+#elif defined(CORE_TEENSY)                        // TEENSY doesn't have EEPROM.length
     maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
 #elif defined(__AVR__)
     maxDevices = (EEPROM.length() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
@@ -753,12 +753,14 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber) {
           case INA226:
           case INA230:
           case INA231:
-          case INA260: 
-            cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8; 
+          case INA260:
+            cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8;
             break;
           case INA3221_0:
           case INA3221_1:
-          case INA3221_2: cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1; break;
+          case INA3221_2:
+            cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1;
+            break;
           default: cvBits = 1;
         }  // of switch type
       }    // of while the conversion hasn't finished
