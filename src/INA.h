@@ -305,9 +305,9 @@ class INA_Class {
   bool        alertOnPowerOverLimit(const bool alertState, const int32_t milliAmps,
                                     const uint8_t deviceNumber = UINT8_MAX);
   uint16_t    _EEPROM_offset = 0;  ///< Offset to all EEPROM addresses, GitHub issue #41
-#if defined(ESP32) || defined(ESP8266)
+  #if defined(ESP32) || defined(ESP8266)
   uint16_t _EEPROM_size = 512;  ///< Default EEPROM reserved space for ESP32 and ESP8266
-#endif
+  #endif
  private:
   int16_t    readWord(const uint8_t addr, const uint8_t deviceAddress) const;
   void       writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress) const;

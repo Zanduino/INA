@@ -62,16 +62,16 @@
 */
 
 #if ARDUINO >= 100  // Arduino IDE versions before 100 need to use the older library
-#include "Arduino.h"
+  #include "Arduino.h"
 #else
-#include "WProgram.h"
+  #include "WProgram.h"
 #endif
 #include <INA.h>  // Zanshin INA Library
 
 #if defined(_SAM3XA_) || defined(ARDUINO_ARCH_SAMD)
-// The SAM3XA architecture needs to include this library, it is already included automatically on
-// other platforms //
-#include <avr/dtostrf.h>  // Needed for the SAM3XA (Arduino Zero)
+  // The SAM3XA architecture needs to include this library, it is already included automatically on
+  // other platforms //
+  #include <avr/dtostrf.h>  // Needed for the SAM3XA (Arduino Zero)
 #endif
 
 /**************************************************************************************************
