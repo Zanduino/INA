@@ -11,7 +11,7 @@
 #include <Wire.h>  ///< I2C Library definition
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
     defined(STM32F1)
-#include <EEPROM.h>  ///< Include the EEPROM library for AVR-Boards
+  #include <EEPROM.h>  ///< Include the EEPROM library for AVR-Boards
 #endif
 inaDet::inaDet() {}  ///< constructor for INA Detail class
 inaDet::inaDet(inaEEPROM &inaEE) {
@@ -94,9 +94,7 @@ INA_Class::~INA_Class() {
   @details If dynamic memory has been allocated for device storage rather than the default EEPROM,
            then that memory is freed here; otherwise the destructor does nothing
   */
-  if (_expectedDevices) {
-    delete[] _DeviceArray;
-  }  // if-then use memory rather than EEPROM
+  if (_expectedDevices) { delete[] _DeviceArray; }  // if-then use memory rather than EEPROM
 }  // of class destructor
 int16_t INA_Class::readWord(const uint8_t addr, const uint8_t deviceAddress) const {
   /*! @brief     Read one word (2 bytes) from the specified I2C address
@@ -134,17 +132,18 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
       @param[in] deviceNumber Index to device array */
   if (deviceNumber == _currentINA || deviceNumber > _DeviceCount) return;  // Skip if correct device
   if (_expectedDevices == 0) {
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || defined(__STM32F1__)
-#ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
+#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
+    defined(__STM32F1__)
+  #ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
     uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
     uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
     for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.get template
     {
       EEPROM.read(e++, ptr++);  // for ina (inaDet type)
     }                           // of for-next each byte
-#else
+  #else
     EEPROM.get(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Read EEPROM values
-#endif
+  #endif
 #else
     inaEE = _EEPROMEmulation[deviceNumber];
 #endif

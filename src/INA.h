@@ -323,7 +323,7 @@ class INA_Class {
   #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
       defined(__STM32F1__)
   #else
-    inaEEPROM _EEPROMEmulation[32];  ///< Actual array of up to 32 devices
+  inaEEPROM _EEPROMEmulation[32];  ///< Actual array of up to 32 devices
   #endif
 };  // of INA_Class definition
 #endif
