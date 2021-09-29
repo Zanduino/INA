@@ -7,5 +7,6 @@ var searchData=
   ['alertonpoweroverlimit',['alertOnPowerOverLimit',['../class_i_n_a___class.html#a0eabc635868133070c3b57f21d4e7d6f',1,'INA_Class']]],
   ['alertonshuntovervoltage',['alertOnShuntOverVoltage',['../class_i_n_a___class.html#ac2da465b38307daadef070ffccda4402',1,'INA_Class']]],
   ['alertonshuntundervoltage',['alertOnShuntUnderVoltage',['../class_i_n_a___class.html#a30604fca947f2fab11ca965bd9b8c8cc',1,'INA_Class']]],
+  ['arduino',['ARDUINO',['../_i_n_a_8h.html#a5deccebbf24e21ddc073c8774179f1b3',1,'INA.h']]],
   ['arduino_20library_20to_20support_20the_20inaxxx_20family_20of_20current_20sensors',['Arduino library to support the INAxxx family of current sensors',['../index.html',1,'']]]
 ];

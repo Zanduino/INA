@@ -52,6 +52,7 @@ var searchData=
   ['ina_5fi2c_5ffast_5fmode',['INA_I2C_FAST_MODE',['../_i_n_a_8h.html#a3a88a20a25080a376b1fba6c4a8019fb',1,'INA.h']]],
   ['ina_5fi2c_5ffast_5fmode_5fplus',['INA_I2C_FAST_MODE_PLUS',['../_i_n_a_8h.html#a655bb81de92feefca86ad918fb082a59',1,'INA.h']]],
   ['ina_5fi2c_5fhigh_5fspeed_5fmode',['INA_I2C_HIGH_SPEED_MODE',['../_i_n_a_8h.html#a52cce845af8d08b5d9b7fccd097b8b2c',1,'INA.h']]],
+  ['ina_5fi2c_5fmodes',['INA_I2C_MODES',['../_i_n_a_8h.html#a7858cf7f9918f9a951b5cfa5e612c9bf',1,'INA.h']]],
   ['ina_5fi2c_5fstandard_5fmode',['INA_I2C_STANDARD_MODE',['../_i_n_a_8h.html#a99c6a78789562c55c045aa5cb55e02a7',1,'INA.h']]],
   ['ina_5fmanufacturer_5fid_5fregister',['INA_MANUFACTURER_ID_REGISTER',['../_i_n_a_8h.html#a28af2040966c3a7a8cc6b813040df8b4',1,'INA.h']]],
   ['ina_5fmask_5fenable_5fregister',['INA_MASK_ENABLE_REGISTER',['../_i_n_a_8h.html#a00bb2053dc74c2c473b1fd63925e869c',1,'INA.h']]],
