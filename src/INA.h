@@ -151,6 +151,7 @@ Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
 | 1.0.0a  | 2018-06-10 | SV-Zanshin  | Initial coding began
 */
 #ifndef ARDUINO
+/*! Define macro if not defined yet */
 #define ARDUINO 0
 #endif
 #if ARDUINO >= 100 /* Use old library if IDE is prior to V1.0 */
@@ -210,7 +211,7 @@ enum ina_Mode {
 ** Declare constants used in the class                                                         **
 ************************************************************************************************/
 #ifndef INA_I2C_MODES                             // I2C related constants
-#define INA_I2C_MODES                             // Guard code to prevent multiple defs
+#define INA_I2C_MODES                             ///< Guard code to prevent multiple defs
 const uint32_t INA_I2C_STANDARD_MODE{100000};     ///< Default normal I2C 100KHz speed
 const uint32_t INA_I2C_FAST_MODE{400000};         ///< Fast mode
 const uint32_t INA_I2C_FAST_MODE_PLUS{1000000};   ///< Really fast mode
