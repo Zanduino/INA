@@ -132,8 +132,8 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
       @param[in] deviceNumber Index to device array */
   if (deviceNumber == _currentINA || deviceNumber > _DeviceCount) return;  // Skip if correct device
   if (_expectedDevices == 0) {
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
-    defined(__STM32F1__)
+  #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
+      defined(__STM32F1__)
   #ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
     uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
     uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
@@ -145,7 +145,7 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
     EEPROM.get(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Read EEPROM values
   #endif
 #else
-    inaEE = _EEPROMEmulation[deviceNumber];
+    inaEE                       = _EEPROMEmulation[deviceNumber];
 #endif
   } else {
     inaEE = _DeviceArray[deviceNumber];
@@ -160,20 +160,21 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
       @param[in] deviceNumber Index to device array */
   inaEE = ina;  // only save relevant part of ina to EEPROM
   if (_expectedDevices == 0) {
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || defined(__STM32F1__)
-#ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
+  #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
+      defined(__STM32F1__)
+    #ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
     uint16_t        e   = deviceNumber * sizeof(inaEE);       // it uses flash memory to emulate
     const uint16_t *ptr = (const uint16_t *)&inaEE;           // "EEPROM" calls are uint16_t type
     for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.put template
     {
       EEPROM.update(e++, *ptr++);  // for ina (inaDet type)
     }                              // for-next
-#else
+  #else
     EEPROM.put(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Write the structure
-#ifdef ESP32
+  #ifdef ESP32
     EEPROM.commit();  // Force write to EEPROM when ESP32
-#endif
-#endif
+  #endif
+  #endif
 #else
     _EEPROMEmulation[deviceNumber] = inaEE;
 #endif
