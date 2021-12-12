@@ -1,13 +1,13 @@
 // clang-format off
 /*!
  @file INA.h
- 
+
  @brief INA Class library header file
- 
+
  @mainpage Arduino library to support the INAxxx family of current sensors
- 
+
  @section Library_intro_section Description
- 
+
  Class definition header for the INA class. This library gives a common interface to various INA
  power monitor devices, see https://github.com/Zanduino/INA/wiki or the code below for a full
  list of currently supported devices.  The INA devices have a 3-5V power supply and, depending
@@ -22,7 +22,7 @@
  amperage passing across the circuit.  This value, coupled with the voltage measurement, allows
  the amperage and wattage to be computed by the INA device and these values can be read from the
  devices using the industry standard I2C protocol.
- 
+
  @section Style Programming
  @subsection Coding Coding and comments
  OK, I admit that I'm "old school" when it comes to programming style. I am used to using a full
@@ -30,7 +30,7 @@
  helps me remember what I did when I revisit code after several months (or years).  I make use of
  the full width (which I've limited to 112 characters here) and put my comments at the end of
  lines.  I prefer to use descriptive variable names, which means that they tend to be long.
- 
+
  @subsection StyleGuide Style Guide
  Different languages have different coding styles. For the Arduino c++ language I've opted to go
  with one of the big players in the industry and have adopted the coding and style rules that
@@ -38,18 +38,18 @@
  Guide](https://google.github.io/styleguide/cppguide.html). I have chosen to put braces on their
  own lines and include braces for even 1-liners. End braces are always commented so that
  convoluted code is more easily untangled.
- 
+
  @subsection Documentation
  The comments have been formatted for use with [Doxygen](doxygen.nl), one of the leading
  documentation systems which is not only free but covers just about anything worth documenting.
  The Doxygen system parses the source files of a package and creates documentation. The default
  output is a set of HTML pages although it can produce single documents.
- 
+
  @subsection comments Comment Format
  This package uses [Markdown](https://en.wikipedia.org/wiki/Markdown) syntax for formatting
  comments, which makes for easy reading directly in the source code and well-formatted
  pretty-print in postprocessing.
- 
+
  @subsection ide IDE
  I've opted for using Microsoft Visual Studio (version 16.2.5) for development, the community
  version can be downloaded for free at [Microsoft
@@ -57,7 +57,7 @@
  Micro](https://www.visualmicro.com/) package which give the Arduino IDE inside Visual Studio. The
  base version is free or becomes only slightly annoying nagware after 90 days, but the software is
  inexpensive and the price is well worth it for supporting continued development.
- 
+
  @section doxygen doxygen configuration
 
  This library is built with the standard "Doxyfile", which is located at
@@ -151,6 +151,10 @@ Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
 | 1.0.0b  | 2018-06-17 | SV-Zanshin  | Continued coding, tested on INA219 and INA226
 | 1.0.0a  | 2018-06-10 | SV-Zanshin  | Initial coding began
 */
+#ifndef ARDUINO
+/*! Define macro if not defined yet */
+#define ARDUINO 0
+#endif
 #if ARDUINO >= 100 /* Use old library if IDE is prior to V1.0 */
   #include "Arduino.h"
 #else
@@ -209,7 +213,7 @@ enum ina_Mode {
 ** Declare constants used in the class                                                         **
 ************************************************************************************************/
 #ifndef INA_I2C_MODES                             // I2C related constants
-#define INA_I2C_MODES                             // Guard code to prevent multiple defs
+#define INA_I2C_MODES                             ///< Guard code to prevent multiple defs
 const uint32_t INA_I2C_STANDARD_MODE{100000};     ///< Default normal I2C 100KHz speed
 const uint32_t INA_I2C_FAST_MODE{400000};         ///< Fast mode
 const uint32_t INA_I2C_FAST_MODE_PLUS{1000000};   ///< Really fast mode
@@ -331,7 +335,7 @@ class INA_Class {
   inaEEPROM  inaEE;                   ///< INA device structure
   inaDet     ina;                     ///< INA device structure
   #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
-      (__STM32F1__)
+      defined(__STM32F1__)
   #else
   inaEEPROM _EEPROMEmulation[32];  ///< Actual array of up to 32 devices
   #endif
