@@ -127,15 +127,16 @@ Enumerations</h2></td></tr>
 <tr class="memitem:aa5115d32b4fbf373eac12df21f148205"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#aa5115d32b4fbf373eac12df21f148205">ina_Type</a> { <br />
 &#160;&#160;<b>INA219</b>, 
 <b>INA226</b>, 
+<b>INA228</b>, 
 <b>INA230</b>, 
-<b>INA231</b>, 
 <br />
-&#160;&#160;<b>INA260</b>, 
+&#160;&#160;<b>INA231</b>, 
+<b>INA260</b>, 
 <b>INA3221_0</b>, 
 <b>INA3221_1</b>, 
-<b>INA3221_2</b>, 
 <br />
-&#160;&#160;<b>INA_UNKNOWN</b>
+&#160;&#160;<b>INA3221_2</b>, 
+<b>INA_UNKNOWN</b>
 <br />
  }</td></tr>
 <tr class="separator:aa5115d32b4fbf373eac12df21f148205"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -319,6 +320,42 @@ const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#aca8b93df1751dc580eb01391d26800da">INA226_CONFIG_SADC_MASK</a> {0x0038}</td></tr>
 <tr class="memdesc:aca8b93df1751dc580eb01391d26800da"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA226 Bits 3-4. <br /></td></tr>
 <tr class="separator:aca8b93df1751dc580eb01391d26800da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed8ec4f427a00a1702f2a74df481dbbb"><td class="memItemLeft" align="right" valign="top"><a id="aed8ec4f427a00a1702f2a74df481dbbb"></a>
+const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#aed8ec4f427a00a1702f2a74df481dbbb">INA228_DIE_ID_REGISTER</a> {0x3F}</td></tr>
+<tr class="memdesc:aed8ec4f427a00a1702f2a74df481dbbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA228 Device_ID Register. <br /></td></tr>
+<tr class="separator:aed8ec4f427a00a1702f2a74df481dbbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5747d6bc130284736c0481b9d50e520"><td class="memItemLeft" align="right" valign="top"><a id="ad5747d6bc130284736c0481b9d50e520"></a>
+const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#ad5747d6bc130284736c0481b9d50e520">INA228_DIE_ID_VALUE</a> {0x2280}</td></tr>
+<tr class="memdesc:ad5747d6bc130284736c0481b9d50e520"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA228 Hard-coded Die ID for INA228. <br /></td></tr>
+<tr class="separator:ad5747d6bc130284736c0481b9d50e520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca1a3fd5953f0fdd73f066b0277adcc4"><td class="memItemLeft" align="right" valign="top"><a id="aca1a3fd5953f0fdd73f066b0277adcc4"></a>
+const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#aca1a3fd5953f0fdd73f066b0277adcc4">INA228_BUS_VOLTAGE_REGISTER</a> {0x5}</td></tr>
+<tr class="memdesc:aca1a3fd5953f0fdd73f066b0277adcc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA228 Bus Voltage Register. <br /></td></tr>
+<tr class="separator:aca1a3fd5953f0fdd73f066b0277adcc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bf81af7543b48a73aa8c081eda37180"><td class="memItemLeft" align="right" valign="top"><a id="a4bf81af7543b48a73aa8c081eda37180"></a>
+const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#a4bf81af7543b48a73aa8c081eda37180">INA228_BUS_VOLTAGE_LSB</a> {195}</td></tr>
+<tr class="memdesc:a4bf81af7543b48a73aa8c081eda37180"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA228 LSB in uV *100 1953125uV, extra code. <br /></td></tr>
+<tr class="separator:a4bf81af7543b48a73aa8c081eda37180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a350e60f754441ef5a6dcc5c38cf1c925"><td class="memItemLeft" align="right" valign="top"><a id="a350e60f754441ef5a6dcc5c38cf1c925"></a>
+const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#a350e60f754441ef5a6dcc5c38cf1c925">INA228_SHUNT_VOLTAGE_REGISTER</a> {4}</td></tr>
+<tr class="memdesc:a350e60f754441ef5a6dcc5c38cf1c925"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA228 Shunt Voltage Register. <br /></td></tr>
+<tr class="separator:a350e60f754441ef5a6dcc5c38cf1c925"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fa532f6e93dc73931f803413e7e9c68"><td class="memItemLeft" align="right" valign="top"><a id="a1fa532f6e93dc73931f803413e7e9c68"></a>
+const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#a1fa532f6e93dc73931f803413e7e9c68">xINA228_CURRENT_REGISTER</a> {4}</td></tr>
+<tr class="memdesc:a1fa532f6e93dc73931f803413e7e9c68"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA228 Current Register. <br /></td></tr>
+<tr class="separator:a1fa532f6e93dc73931f803413e7e9c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a885dbb061523752470b19de5c620244c"><td class="memItemLeft" align="right" valign="top"><a id="a885dbb061523752470b19de5c620244c"></a>
+const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#a885dbb061523752470b19de5c620244c">xINA228_CONFIG_AVG_MASK</a> {0x0E00}</td></tr>
+<tr class="memdesc:a885dbb061523752470b19de5c620244c"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA228 Bits 9-11. <br /></td></tr>
+<tr class="separator:a885dbb061523752470b19de5c620244c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6de0e859034f5998e69cba32d09d7d26"><td class="memItemLeft" align="right" valign="top"><a id="a6de0e859034f5998e69cba32d09d7d26"></a>
+const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#a6de0e859034f5998e69cba32d09d7d26">xINA228_CONFIG_BADC_MASK</a> {0x01C0}</td></tr>
+<tr class="memdesc:a6de0e859034f5998e69cba32d09d7d26"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA228 Bits 6-8 masked. <br /></td></tr>
+<tr class="separator:a6de0e859034f5998e69cba32d09d7d26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46761cde75e0d55b1f154a26949075c2"><td class="memItemLeft" align="right" valign="top"><a id="a46761cde75e0d55b1f154a26949075c2"></a>
+const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#a46761cde75e0d55b1f154a26949075c2">xINA228_CONFIG_SADC_MASK</a> {0x0038}</td></tr>
+<tr class="memdesc:a46761cde75e0d55b1f154a26949075c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA228 Bits 3-4. <br /></td></tr>
+<tr class="separator:a46761cde75e0d55b1f154a26949075c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8e83e4488d7273b2b97637eaccfe92c"><td class="memItemLeft" align="right" valign="top"><a id="ad8e83e4488d7273b2b97637eaccfe92c"></a>
 const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_i_n_a_8h.html#ad8e83e4488d7273b2b97637eaccfe92c">INA260_SHUNT_VOLTAGE_REGISTER</a> {0}</td></tr>
 <tr class="memdesc:ad8e83e4488d7273b2b97637eaccfe92c"><td class="mdescLeft">&#160;</td><td class="mdescRight">INA260 Register doesn't exist. <br /></td></tr>

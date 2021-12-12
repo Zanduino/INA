@@ -19,6 +19,7 @@ var _i_n_a_8h =
     [ "ina_Type", "_i_n_a_8h.html#aa5115d32b4fbf373eac12df21f148205", [
       [ "INA219", "_i_n_a_8h.html#aa5115d32b4fbf373eac12df21f148205a982e800dc88f34f1c85a0e8bd926b5ba", null ],
       [ "INA226", "_i_n_a_8h.html#aa5115d32b4fbf373eac12df21f148205a1458139ed49f00534b7f2f7ff3886b69", null ],
+      [ "INA228", "_i_n_a_8h.html#aa5115d32b4fbf373eac12df21f148205a80221e17c41f5a4d5785ce8bb01f3cfe", null ],
       [ "INA230", "_i_n_a_8h.html#aa5115d32b4fbf373eac12df21f148205a8919b1a4450b5499e5c0439f28ac7f6c", null ],
       [ "INA231", "_i_n_a_8h.html#aa5115d32b4fbf373eac12df21f148205a52eca0485a0f640b92334efa9eda5f5b", null ],
       [ "INA260", "_i_n_a_8h.html#aa5115d32b4fbf373eac12df21f148205a2ce868772b57043527407a7bdb14f3c2", null ],
@@ -46,6 +47,11 @@ var _i_n_a_8h =
     [ "INA226_DIE_ID_VALUE", "_i_n_a_8h.html#aa993152e6413cd8f84aa9130f62289b0", null ],
     [ "INA226_SHUNT_VOLTAGE_LSB", "_i_n_a_8h.html#abfed87f081a15672549ffc3d651050df", null ],
     [ "INA226_SHUNT_VOLTAGE_REGISTER", "_i_n_a_8h.html#aa39bfa03ced37917d337f0b1e0de06dc", null ],
+    [ "INA228_BUS_VOLTAGE_LSB", "_i_n_a_8h.html#a4bf81af7543b48a73aa8c081eda37180", null ],
+    [ "INA228_BUS_VOLTAGE_REGISTER", "_i_n_a_8h.html#aca1a3fd5953f0fdd73f066b0277adcc4", null ],
+    [ "INA228_DIE_ID_REGISTER", "_i_n_a_8h.html#aed8ec4f427a00a1702f2a74df481dbbb", null ],
+    [ "INA228_DIE_ID_VALUE", "_i_n_a_8h.html#ad5747d6bc130284736c0481b9d50e520", null ],
+    [ "INA228_SHUNT_VOLTAGE_REGISTER", "_i_n_a_8h.html#a350e60f754441ef5a6dcc5c38cf1c925", null ],
     [ "INA260_BUS_VOLTAGE_LSB", "_i_n_a_8h.html#a2fc8a491106352479054b6986133a28c", null ],
     [ "INA260_CONFIG_BADC_MASK", "_i_n_a_8h.html#a9a9b4960b6472eac11941c3cb6d309de", null ],
     [ "INA260_CONFIG_SADC_MASK", "_i_n_a_8h.html#addae37509aa66e84aba1d19cf0a1dc59", null ],
@@ -78,5 +84,9 @@ var _i_n_a_8h =
     [ "INA_MANUFACTURER_ID_REGISTER", "_i_n_a_8h.html#a28af2040966c3a7a8cc6b813040df8b4", null ],
     [ "INA_MASK_ENABLE_REGISTER", "_i_n_a_8h.html#a00bb2053dc74c2c473b1fd63925e869c", null ],
     [ "INA_POWER_REGISTER", "_i_n_a_8h.html#aea5a81fb82523a40483de7b422ca4248", null ],
-    [ "INA_RESET_DEVICE", "_i_n_a_8h.html#a72fbdc796e1d561ba632d28620bbe039", null ]
+    [ "INA_RESET_DEVICE", "_i_n_a_8h.html#a72fbdc796e1d561ba632d28620bbe039", null ],
+    [ "xINA228_CONFIG_AVG_MASK", "_i_n_a_8h.html#a885dbb061523752470b19de5c620244c", null ],
+    [ "xINA228_CONFIG_BADC_MASK", "_i_n_a_8h.html#a6de0e859034f5998e69cba32d09d7d26", null ],
+    [ "xINA228_CONFIG_SADC_MASK", "_i_n_a_8h.html#a46761cde75e0d55b1f154a26949075c2", null ],
+    [ "xINA228_CURRENT_REGISTER", "_i_n_a_8h.html#a1fa532f6e93dc73931f803413e7e9c68", null ]
 ];
