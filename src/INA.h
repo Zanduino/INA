@@ -94,6 +94,7 @@ Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
 
 | Version | Date       | Developer   | Comments
 | ------- | ---------- | ----------- | --------
+| 1.1.2   | 2021-05-13 | SV-Zanshin  | Issue #77. Add support for INA228
 | 1.1.1   | 2021-03-12 | x3mEr       | Issue #79. Documentation Update
 | 1.0.14  | 2020-12-01 | SV-Zanshin  | Issue #72. Allow INA structures to be in memory rather than EEPROM
 | 1.0.14  | 2020-11-30 | johntaves   | Issue #64. begin() does not set values on subsequent calls
@@ -184,6 +185,7 @@ typedef struct inaDet : inaEEPROM {
 enum ina_Type {
   INA219,
   INA226,
+  INA228,
   INA230,
   INA231,
   INA260,
@@ -250,6 +252,17 @@ const uint16_t INA226_CONFIG_AVG_MASK{0x0E00};      ///< INA226 Bits 9-11
 const uint16_t INA226_DIE_ID_VALUE{0x2260};         ///< INA226 Hard-coded Die ID for INA226
 const uint16_t INA226_CONFIG_BADC_MASK{0x01C0};     ///< INA226 Bits 6-8 masked
 const uint16_t INA226_CONFIG_SADC_MASK{0x0038};     ///< INA226 Bits 3-4
+
+const uint8_t  INA228_DIE_ID_REGISTER{0x3F};        ///< INA228 Device_ID  Register
+const uint16_t INA228_DIE_ID_VALUE{0x2280};         ///< INA228 Hard-coded Die ID for INA228
+const uint8_t  INA228_BUS_VOLTAGE_REGISTER{0x5};    ///< INA228 Bus Voltage Register
+const uint16_t INA228_BUS_VOLTAGE_LSB{195};           ///< INA228 LSB in uV *100 1953125uV, extra code
+const uint8_t  INA228_SHUNT_VOLTAGE_REGISTER{4};    ///< INA228 Shunt Voltage Register
+const uint8_t  xINA228_CURRENT_REGISTER{4};          ///< INA228 Current Register
+const uint16_t xINA228_CONFIG_AVG_MASK{0x0E00};      ///< INA228 Bits 9-11
+const uint16_t xINA228_CONFIG_BADC_MASK{0x01C0};     ///< INA228 Bits 6-8 masked
+const uint16_t xINA228_CONFIG_SADC_MASK{0x0038};     ///< INA228 Bits 3-4
+
 const uint8_t  INA260_SHUNT_VOLTAGE_REGISTER{0};    ///< INA260 Register doesn't exist
 const uint8_t  INA260_CURRENT_REGISTER{1};          ///< INA260 Current Register
 const uint16_t INA260_BUS_VOLTAGE_LSB{125};         ///< INA260 LSB in uV *100 1.25mV
@@ -279,9 +292,9 @@ class INA_Class {
   void        setBusConversion(const uint32_t convTime, const uint8_t deviceNumber = UINT8_MAX);
   void        setShuntConversion(const uint32_t convTime, const uint8_t deviceNumber = UINT8_MAX);
   uint16_t    getBusMilliVolts(const uint8_t deviceNumber = 0);
-  uint16_t    getBusRaw(const uint8_t deviceNumber = 0);
+  uint32_t    getBusRaw(const uint8_t deviceNumber = 0);
   int32_t     getShuntMicroVolts(const uint8_t deviceNumber = 0);
-  int16_t     getShuntRaw(const uint8_t deviceNumber = 0);
+  int32_t     getShuntRaw(const uint8_t deviceNumber = 0);
   int32_t     getBusMicroAmps(const uint8_t deviceNumber = 0);
   int64_t     getBusMicroWatts(const uint8_t deviceNumber = 0);
   const char* getDeviceName(const uint8_t deviceNumber = 0);
@@ -301,11 +314,12 @@ class INA_Class {
   bool        alertOnPowerOverLimit(const bool alertState, const int32_t milliAmps,
                                     const uint8_t deviceNumber = UINT8_MAX);
   uint16_t    _EEPROM_offset = 0;  ///< Offset to all EEPROM addresses, GitHub issue #41
-#if defined(ESP32) || defined(ESP8266)
+  #if defined(ESP32) || defined(ESP8266)
   uint16_t _EEPROM_size = 512;  ///< Default EEPROM reserved space for ESP32 and ESP8266
-#endif
+  #endif
  private:
   int16_t    readWord(const uint8_t addr, const uint8_t deviceAddress) const;
+  int32_t    read3Bytes(const uint8_t addr, const uint8_t deviceAddress) const;
   void       writeWord(const uint8_t addr, const uint16_t data, const uint8_t deviceAddress) const;
   void       readInafromEEPROM(const uint8_t deviceNumber);
   void       writeInatoEEPROM(const uint8_t deviceNumber);
@@ -316,9 +330,10 @@ class INA_Class {
   inaEEPROM* _DeviceArray;            ///< Pointer to dynamic array of devices if not using EEPROM
   inaEEPROM  inaEE;                   ///< INA device structure
   inaDet     ina;                     ///< INA device structure
-#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#else
+  #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
+      (__STM32F1__)
+  #else
   inaEEPROM _EEPROMEmulation[32];  ///< Actual array of up to 32 devices
-#endif
+  #endif
 };  // of INA_Class definition
 #endif

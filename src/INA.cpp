@@ -11,7 +11,7 @@
 #include <Wire.h>  ///< I2C Library definition
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || \
     defined(STM32F1)
-#include <EEPROM.h>  ///< Include the EEPROM library for AVR-Boards
+  #include <EEPROM.h>  ///< Include the EEPROM library for AVR-Boards
 #endif
 inaDet::inaDet() {}  ///< constructor for INA Detail class
 inaDet::inaDet(inaEEPROM &inaEE) {
@@ -43,6 +43,17 @@ inaDet::inaDet(inaEEPROM &inaEE) {
       busVoltage_LSB       = INA226_BUS_VOLTAGE_LSB;
       shuntVoltage_LSB     = INA226_SHUNT_VOLTAGE_LSB;
       break;
+
+    case INA228:
+      power_LSB            = 0;  // TODO
+      busVoltageRegister   = INA228_BUS_VOLTAGE_REGISTER;
+      busVoltage_LSB       = INA228_BUS_VOLTAGE_LSB;
+      shuntVoltageRegister = INA228_SHUNT_VOLTAGE_REGISTER;
+
+      currentRegister  = INA226_CURRENT_REGISTER;
+      shuntVoltage_LSB = INA226_SHUNT_VOLTAGE_LSB;
+      break;
+
     case INA260:
       busVoltageRegister   = INA_BUS_VOLTAGE_REGISTER;
       shuntVoltageRegister = INA260_SHUNT_VOLTAGE_REGISTER;  // Register not present
@@ -67,7 +78,7 @@ inaDet::inaDet(inaEEPROM &inaEE) {
       } else {
         if (type == INA3221_2) {
           busVoltageRegister += 4;    // Reg for 3rd bus voltage
-          shuntVoltageRegister += 4;  // Regr for 3rd shunt voltage
+          shuntVoltageRegister += 4;  // Reg for 3rd shunt voltage
         }                             // of if-then INA322_2
       }                               // of if-then-else INA3221_1
       break;
@@ -87,16 +98,13 @@ INA_Class::INA_Class(uint8_t expectedDevices) : _expectedDevices(expectedDevices
     _DeviceArray = new inaEEPROM[_expectedDevices];
   }  // if-then use memory rather than EEPROM
 }  // of class constructor
-
 INA_Class::~INA_Class() {
   /*!
   @brief   Class destructor
   @details If dynamic memory has been allocated for device storage rather than the default EEPROM,
            then that memory is freed here; otherwise the destructor does nothing
   */
-  if (_expectedDevices) {
-    delete[] _DeviceArray;
-  }  // if-then use memory rather than EEPROM
+  if (_expectedDevices) { delete[] _DeviceArray; }  // if-then use memory rather than EEPROM
 }  // of class destructor
 int16_t INA_Class::readWord(const uint8_t addr, const uint8_t deviceAddress) const {
   /*! @brief     Read one word (2 bytes) from the specified I2C address
@@ -111,6 +119,20 @@ int16_t INA_Class::readWord(const uint8_t addr, const uint8_t deviceAddress) con
   delayMicroseconds(I2C_DELAY);                 // delay required for sync
   Wire.requestFrom(deviceAddress, (uint8_t)2);  // Request 2 consecutive bytes
   return ((uint16_t)Wire.read() << 8) | Wire.read();
+}  // of method readWord()
+int32_t INA_Class::read3Bytes(const uint8_t addr, const uint8_t deviceAddress) const {
+  /*! @brief     Read 3 bytes from the specified I2C address
+      @details   Standard I2C protocol is used, but a delay of I2C_DELAY microseconds has been
+                 added to let the INAxxx devices have sufficient time to get the return data ready
+      @param[in] addr I2C address to read from
+      @param[in] deviceAddress Address on the I2C device to read from
+      @return    integer value read from the I2C device */
+  Wire.beginTransmission(deviceAddress);        // Address the I2C device
+  Wire.write(addr);                             // Send register address to read
+  Wire.endTransmission();                       // Close transmission
+  delayMicroseconds(I2C_DELAY);                 // delay required for sync
+  Wire.requestFrom(deviceAddress, (uint8_t)3);  // Request 3 consecutive bytes
+  return ((uint32_t)Wire.read() << 16) | ((uint32_t)Wire.read() << 8) | ((uint32_t)Wire.read());
 }  // of method readWord()
 void INA_Class::writeWord(const uint8_t addr, const uint16_t data,
                           const uint8_t deviceAddress) const {
@@ -135,18 +157,18 @@ void INA_Class::readInafromEEPROM(const uint8_t deviceNumber) {
   if (deviceNumber == _currentINA || deviceNumber > _DeviceCount) return;  // Skip if correct device
   if (_expectedDevices == 0) {
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
+  #ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
     uint16_t  e   = deviceNumber * sizeof(inaEE);             // it uses flash memory to emulate
     uint16_t *ptr = (uint16_t *)&inaEE;                       // "EEPROM" calls are uint16_t type
     for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.get template
     {
       EEPROM.read(e++, ptr++);  // for ina (inaDet type)
     }                           // of for-next each byte
-#else
+  #else
     EEPROM.get(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Read EEPROM values
-#endif
+  #endif
 #else
-    inaEE = _EEPROMEmulation[deviceNumber];
+    inaEE                          = _EEPROMEmulation[deviceNumber];
 #endif
   } else {
     inaEE = _DeviceArray[deviceNumber];
@@ -162,19 +184,19 @@ void INA_Class::writeInatoEEPROM(const uint8_t deviceNumber) {
   inaEE = ina;  // only save relevant part of ina to EEPROM
   if (_expectedDevices == 0) {
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32) || defined(ESP8266) || (__STM32F1__)
-#ifdef __STM32F1__  // STM32F1 has no built-in EEPROM
+  #ifdef __STM32F1__                                          // STM32F1 has no built-in EEPROM
     uint16_t        e   = deviceNumber * sizeof(inaEE);       // it uses flash memory to emulate
     const uint16_t *ptr = (const uint16_t *)&inaEE;           // "EEPROM" calls are uint16_t type
     for (uint8_t n = sizeof(inaEE) + _EEPROM_offset; n; --n)  // Implement EEPROM.put template
     {
       EEPROM.update(e++, *ptr++);  // for ina (inaDet type)
     }                              // for-next
-#else
+  #else
     EEPROM.put(_EEPROM_offset + (deviceNumber * sizeof(inaEE)), inaEE);  // Write the structure
-#ifdef ESP32
-    EEPROM.commit();  // Force write to EEPROM when ESP32
-#endif
-#endif
+    #ifdef ESP32
+    EEPROM.commit();                                                     // Force write to EEPROM when ESP32
+    #endif
+  #endif
 #else
     _EEPROMEmulation[deviceNumber] = inaEE;
 #endif
@@ -222,9 +244,9 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
 #if defined(ESP32) || defined(ESP8266)
     EEPROM.begin(_EEPROM_size + _EEPROM_offset);  // If ESP32 then allocate 512 Bytes
     maxDevices = (_EEPROM_size) / sizeof(inaEE);  // and compute number of devices
-#elif defined(__STM32F1__)  // Emulated EEPROM for STM32F1
-    maxDevices = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
-#elif defined(CORE_TEENSY)  // TEENSY doesn't have EEPROM.length
+#elif defined(__STM32F1__)                        // Emulated EEPROM for STM32F1
+    maxDevices                     = (EEPROM.maxcount() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
+#elif defined(CORE_TEENSY)                        // TEENSY doesn't have EEPROM.length
     maxDevices = (2048 - _EEPROM_offset) / sizeof(inaEE);  // defined, so use 2Kb as value
 #elif defined(__AVR__)
     maxDevices = (EEPROM.length() - _EEPROM_offset) / sizeof(inaEE);  // Compute max possible
@@ -273,7 +295,11 @@ uint8_t INA_Class::begin(const uint16_t maxBusAmps, const uint32_t microOhmR,
                 if (tempRegister == 0x7127) {
                   inaEE.type = INA3221_0;
                 } else {
-                  inaEE.type = INA_UNKNOWN;
+                  if (tempRegister == 0x0) {
+                    inaEE.type = INA228;
+                  } else {
+                    inaEE.type = INA_UNKNOWN;
+                  }                       // of if-then-else it is an INA228
                 }                         // of if-then-else it is an INA3221
               }                           // of if-then-else it is an INA260
             }                             // of if-then-else it is an INA226, INA230, INA231
@@ -351,8 +377,7 @@ void INA_Class::initDevice(const uint8_t deviceNumber) {
     case INA260:
     case INA3221_0:
     case INA3221_1:
-    case INA3221_2:
-      break;
+    case INA3221_2: break;
   }  // of switch type
 }  // of method initDevice()
 void INA_Class::setBusConversion(const uint32_t convTime, const uint8_t deviceNumber) {
@@ -524,22 +549,16 @@ const char *INA_Class::getDeviceName(const uint8_t deviceNumber) {
   if (deviceNumber > _DeviceCount) return ("");
   readInafromEEPROM(deviceNumber);  // Load EEPROM to ina structure
   switch (ina.type) {
-    case INA219:
-      return ("INA219");
-    case INA226:
-      return ("INA226");
-    case INA230:
-      return ("INA230");
-    case INA231:
-      return ("INA231");
-    case INA260:
-      return ("INA260");
+    case INA219: return ("INA219");
+    case INA226: return ("INA226");
+    case INA228: return ("INA228");
+    case INA230: return ("INA230");
+    case INA231: return ("INA231");
+    case INA260: return ("INA260");
     case INA3221_0:
     case INA3221_1:
-    case INA3221_2:
-      return ("INA3221");
-    default:
-      return ("UNKNOWN");
+    case INA3221_2: return ("INA3221");
+    default: return ("UNKNOWN");
   }  // of switch type
 }  // of method getDeviceName()
 uint8_t INA_Class::getDeviceAddress(const uint8_t deviceNumber) {
@@ -558,22 +577,33 @@ uint16_t INA_Class::getBusMilliVolts(const uint8_t deviceNumber) {
                  the next conversion is started
       @param[in] deviceNumber to return the device bus millivolts for
       @return uint16_t unsigned integer for the bus millivoltage */
-  uint16_t busVoltage = getBusRaw(deviceNumber);  // Get raw voltage from device
-  busVoltage          = (uint32_t)busVoltage * ina.busVoltage_LSB / 100;  // conversion to get mV
+  uint32_t busVoltage = getBusRaw(deviceNumber);  // Get raw voltage from device
+  if (ina.type == INA228) {
+    // The accuracy is 20bits and 195.3125uv is the LSB
+    busVoltage = (uint64_t)busVoltage * 1953125 / 10000000;  // conversion to get mV
+  } else {
+    busVoltage = busVoltage * ina.busVoltage_LSB / 100;  // conversion to get mV
+  }                                                      // if-then-else an INA228
   return (busVoltage);
 }  // of method getBusMilliVolts()
-uint16_t INA_Class::getBusRaw(const uint8_t deviceNumber) {
+uint32_t INA_Class::getBusRaw(const uint8_t deviceNumber) {
   /*! @brief     returns the raw unconverted bus voltage reading from the device
       @details   The raw measured value is returned and if the device is in triggered mode the next
                  conversion is started
       @param[in] deviceNumber to return the raw device bus voltage reading
       @return    Raw bus measurement */
-  readInafromEEPROM(deviceNumber);                               // Load EEPROM from EEPROM
-  uint16_t raw = readWord(ina.busVoltageRegister, ina.address);  // Get the raw value from register
-  if (ina.type == INA3221_0 || ina.type == INA3221_1 || ina.type == INA3221_2 ||
-      ina.type == INA219) {
-    raw = raw >> 3;  // INA219 & INA3221 - the 3 LSB unused, so shift right
-  }                  // of if-then an INA219 or INA3221
+  readInafromEEPROM(deviceNumber);  // Load EEPROM from EEPROM
+  uint32_t raw{0};                  // define the return variable
+  if (ina.type == INA228) {
+    raw = read3Bytes(ina.busVoltageRegister, ina.address);  // Get the raw value from register
+    raw = raw >> 4;
+  } else {
+    raw = readWord(ina.busVoltageRegister, ina.address);  // Get the raw value from register
+    if (ina.type == INA3221_0 || ina.type == INA3221_1 || ina.type == INA3221_2 ||
+        ina.type == INA219) {
+      raw = raw >> 3;  // INA219 & INA3221 - the 3 LSB unused, so shift right
+    }                  // of if-then an INA219 or INA3221
+  }                    // if-then a 3byte bus voltage buffer
   if (!bitRead(ina.operatingMode, 2) && bitRead(ina.operatingMode, 1))  // Triggered & bus active
   {
     int16_t configRegister =
@@ -595,24 +625,39 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber) {
     int32_t busMicroAmps = getBusMicroAmps(deviceNumber);  // Get the amps on the bus from device
     shuntVoltage         = busMicroAmps / 200;             // 2mOhm resistor, convert wiht Ohm's law
   } else {
-    shuntVoltage = shuntVoltage * ina.shuntVoltage_LSB / 10;  // Convert to microvolts
-  }                                                           // of if-then-else an INA260
+    if (ina.type == INA228) {
+      shuntVoltage = shuntVoltage * ina.shuntVoltage_LSB / 10;  // Convert to microvolts
+    } else {
+      shuntVoltage = shuntVoltage * ina.shuntVoltage_LSB / 10;  // Convert to microvolts
+    }  // if-then a INA228 with 20 bit accuracy
+  }    // of if-then-else an INA260
   return (shuntVoltage);
 }  // of method getShuntMicroVolts()
-int16_t INA_Class::getShuntRaw(const uint8_t deviceNumber) {
+int32_t INA_Class::getShuntRaw(const uint8_t deviceNumber) {
   /*! @brief     Returns the raw shunt reading
       @details   The raw reading is returned and if the device is in triggered mode the next
                  conversion is started
       @param[in] deviceNumber to return the value for
       @return    Raw shunt reading */
-  int16_t raw;
+  int32_t raw;
   readInafromEEPROM(deviceNumber);  // Load EEPROM to ina structure
   if (ina.type == INA260)           // INA260 has a built-in shunt
   {
     int32_t busMicroAmps = getBusMicroAmps(deviceNumber);  // Get the amps on the bus
     raw                  = busMicroAmps / 200 / 1000;      // 2mOhm resistor, apply Ohm's law
   } else {
-    raw = readWord(ina.shuntVoltageRegister, ina.address);  // Get the raw value from register
+    if (ina.type == INA228)  // INA228 has 24 bit accuracy
+    {
+      raw = read3Bytes(ina.shuntVoltageRegister, ina.address);  // Get the raw value from register
+      // The number is two's complement, so if negative we need to pad when shifting //
+      if (raw & 0x800000) {
+        raw = (raw >> 4) | 0xFFF00000;  // first 12 bits are "1"
+      } else {
+        raw = raw >> 4;
+      }  // if-then negative
+    } else {
+      raw = readWord(ina.shuntVoltageRegister, ina.address);  // Get the raw value from register
+    }                                                         // if-then a 24 bit register
     if (ina.type == INA3221_0 || ina.type == INA3221_1 ||
         ina.type == INA3221_2)  // Doesn't use 3 LSB
     {
@@ -723,16 +768,11 @@ bool INA_Class::conversionFinished(const uint8_t deviceNumber) {
     case INA226:
     case INA230:
     case INA231:
-    case INA260:
-      cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8;
-      break;
+    case INA260: cvBits = readWord(INA_MASK_ENABLE_REGISTER, ina.address) & (uint16_t)8; break;
     case INA3221_0:
     case INA3221_1:
-    case INA3221_2:
-      cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1;
-      break;
-    default:
-      cvBits = 1;
+    case INA3221_2: cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1; break;
+    default: cvBits = 1;
   }  // of switch type
   if (cvBits != 0)
     return (true);
@@ -774,8 +814,7 @@ void INA_Class::waitForConversion(const uint8_t deviceNumber) {
           case INA3221_2:
             cvBits = readWord(INA3221_MASK_REGISTER, ina.address) & (uint16_t)1;
             break;
-          default:
-            cvBits = 1;
+          default: cvBits = 1;
         }  // of switch type
       }    // of while the conversion hasn't finished
     }      // of if this device needs to be set
@@ -809,8 +848,7 @@ bool INA_Class::alertOnConversion(const bool alertState, const uint8_t deviceNum
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);      // Write back
           returnCode = true;
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -849,8 +887,7 @@ bool INA_Class::alertOnShuntOverVoltage(const bool alertState, const int32_t mil
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           returnCode = true;
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -888,8 +925,7 @@ bool INA_Class::alertOnShuntUnderVoltage(const bool alertState, const int32_t mi
           }  // of if we are setting a value
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -930,8 +966,7 @@ bool INA_Class::alertOnBusOverVoltage(const bool alertState, const int32_t milli
           }  // of if we are setting a value
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -971,8 +1006,7 @@ bool INA_Class::alertOnBusUnderVoltage(const bool alertState, const int32_t mill
           }  // of if we are setting a value
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop
@@ -1012,8 +1046,7 @@ bool INA_Class::alertOnPowerOverLimit(const bool alertState, const int32_t milli
           }  // of if we are setting a value
           writeWord(INA_MASK_ENABLE_REGISTER, alertRegister, ina.address);  // Write register back
           break;
-        default:
-          returnCode = false;
+        default: returnCode = false;
       }  // of switch type
     }    // of if this device needs to be set
   }      // for-next each device loop

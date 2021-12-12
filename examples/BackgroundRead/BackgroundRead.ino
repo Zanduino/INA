@@ -72,7 +72,7 @@
  *
  */
 #if !defined(__AVR__)
-#error Example program only functions on Atmel AVR-Based platforms
+  #error Example program only functions on Atmel AVR-Based platforms
 #endif
 
 /**************************************************************************************************
