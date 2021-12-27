@@ -97,7 +97,7 @@ void setup() {
    * @return   void
    */
   Serial.begin(SERIAL_SPEED);
-#ifdef __AVR_ATmega32U4__  // If a 32U4 processor, then wait 2 seconds to initialize
+#ifdef __AVR_ATmega32U4__  // If a 32U4 processor, then wait 2 seconds to initialize serial port
   delay(2000);
 #endif
   Serial.print("\n\nDisplay INA Readings V1.0.8\n");
