@@ -623,7 +623,7 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber) {
   if (ina.type == INA260)  // INA260 has a built-in shunt
   {
     int32_t busMicroAmps = getBusMicroAmps(deviceNumber);  // Get the amps on the bus from device
-    shuntVoltage         = busMicroAmps / 200;             // 2mOhm resistor, convert wiht Ohm's law
+    shuntVoltage         = busMicroAmps / 200;             // 2mOhm resistor, convert with Ohm's law
   } else {
     if (ina.type == INA228) {
       shuntVoltage = shuntVoltage * ina.shuntVoltage_LSB / 10;  // Convert to microvolts
@@ -709,6 +709,7 @@ int64_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {
   } else {
     microWatts =
         (int64_t)readWord(INA_POWER_REGISTER, ina.address) * (int64_t)ina.power_LSB / (int64_t)1000;
+    if (getShuntRaw(deviceNumber) < 0) microWatts *= -1; // Invert if negative voltage
   }  // of if-then-else an INA3221
   return (microWatts);
 }  // of method getBusMicroWatts()

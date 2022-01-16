@@ -94,7 +94,7 @@ Written by Arnd <Arnd@Zanduino.Com> at https://www.github.com/SV-Zanshin
 
 | Version | Date       | Developer   | Comments
 | ------- | ---------- | ----------- | --------
-| 1.1.2   | 2021-05-13 | SV-Zanshin  | Issue #77. Add support for INA228
+| 1.1.2   | 2022-01-16 | Oleg-Sob    | Issue #87. getBusMicroWatts() only returns positive values
 | 1.1.1   | 2021-03-12 | x3mEr       | Issue #79. Documentation Update
 | 1.0.14  | 2020-12-01 | SV-Zanshin  | Issue #72. Allow INA structures to be in memory rather than EEPROM
 | 1.0.14  | 2020-11-30 | johntaves   | Issue #64. begin() does not set values on subsequent calls
