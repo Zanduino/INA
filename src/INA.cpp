@@ -709,8 +709,8 @@ int64_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {
   } else {
     microWatts =
         (int64_t)readWord(INA_POWER_REGISTER, ina.address) * (int64_t)ina.power_LSB / (int64_t)1000;
-    if (getShuntRaw(deviceNumber) < 0) microWatts *= -1; // Invert if negative voltage
-  }                                                      // of if-then-else an INA3221
+    if (getShuntRaw(deviceNumber) < 0) microWatts *= -1;  // Invert if negative voltage
+  }                                                       // of if-then-else an INA3221
   return (microWatts);
 }  // of method getBusMicroWatts()
 void INA_Class::reset(const uint8_t deviceNumber) {
