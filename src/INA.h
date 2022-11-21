@@ -259,13 +259,19 @@ const uint16_t INA226_CONFIG_SADC_MASK{0x0038};     ///< INA226 Bits 3-4
 
 const uint8_t  INA228_DIE_ID_REGISTER{0x3F};        ///< INA228 Device_ID  Register
 const uint16_t INA228_DIE_ID_VALUE{0x2280};         ///< INA228 Hard-coded Die ID for INA228
+const uint8_t  INA228_CALIBRATION_REGISTER{0x2};    ///< INA228 Calibration Register
 const uint8_t  INA228_BUS_VOLTAGE_REGISTER{0x5};    ///< INA228 Bus Voltage Register
-const uint16_t INA228_BUS_VOLTAGE_LSB{195};           ///< INA228 LSB in uV *100 1953125uV, extra code
-const uint8_t  INA228_SHUNT_VOLTAGE_REGISTER{4};    ///< INA228 Shunt Voltage Register
-const uint8_t  xINA228_CURRENT_REGISTER{4};          ///< INA228 Current Register
-const uint16_t xINA228_CONFIG_AVG_MASK{0x0E00};      ///< INA228 Bits 9-11
-const uint16_t xINA228_CONFIG_BADC_MASK{0x01C0};     ///< INA228 Bits 6-8 masked
-const uint16_t xINA228_CONFIG_SADC_MASK{0x0038};     ///< INA228 Bits 3-4
+const uint32_t INA228_BUS_VOLTAGE_LSB{1953125};     ///< INA228 LSB in pV * 100 195.3125uV
+const uint8_t  INA228_SHUNT_VOLTAGE_REGISTER{0x4};  ///< INA228 Shunt Voltage Register
+const uint16_t INA228_SHUNT_VOLTAGE_LSB{3125};      ///< INA228 LSB in nV * 10 312.5nV
+const uint8_t  INA228_CURRENT_REGISTER{0x7};        ///< INA228 Current Register
+const uint8_t  INA228_POWER_REGISTER{0x8};          ///< INA228 Power Register
+const uint8_t  INA228_CONFIGURATION_REGISTER{0x1};  ///< INA228 Configuration Register address
+const uint16_t INA228_CONFIG_MODE_MASK{0xF000};     ///< INA228 Bits 12-15
+const uint16_t INA228_CONFIG_BADC_MASK{0x0E00};     ///< INA228 Bits 9-11
+const uint16_t INA228_CONFIG_SADC_MASK{0x01C0};     ///< INA228 Bits 6-8
+const uint16_t INA228_CONFIG_TADC_MASK{0x0038};     ///< INA228 Bits 3-5
+const uint16_t INA228_CONFIG_AVG_MASK{0x0007};      ///< INA228 Bits 0-2
 
 const uint8_t  INA260_SHUNT_VOLTAGE_REGISTER{0};    ///< INA260 Register doesn't exist
 const uint8_t  INA260_CURRENT_REGISTER{1};          ///< INA260 Current Register
