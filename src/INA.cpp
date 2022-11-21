@@ -701,7 +701,7 @@ int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {
       raw = raw >> 4;
     }  // if-then negative
 
-    microAmps = ((int64_t)raw * (int64_t)ina.current_LSB) / 1000ULL;
+    microAmps = ((int64_t)raw * (int64_t)ina.current_LSB) / 1000LL;
     break;
   default:
     microAmps = (int64_t)readWord(ina.currentRegister, ina.address) * (int64_t)ina.current_LSB /
