@@ -45,13 +45,12 @@ inaDet::inaDet(inaEEPROM &inaEE) {
       break;
 
     case INA228:
-      power_LSB            = 0;  // TODO
       busVoltageRegister   = INA228_BUS_VOLTAGE_REGISTER;
-      busVoltage_LSB       = INA228_BUS_VOLTAGE_LSB;
       shuntVoltageRegister = INA228_SHUNT_VOLTAGE_REGISTER;
-
-      currentRegister  = INA226_CURRENT_REGISTER;
-      shuntVoltage_LSB = INA226_SHUNT_VOLTAGE_LSB;
+      shuntVoltage_LSB     = INA228_SHUNT_VOLTAGE_LSB;
+      currentRegister      = INA228_CURRENT_REGISTER;
+      current_LSB          = ((uint64_t)maxBusAmps * 1000000000ULL) / 524288ULL;
+      power_LSB            = 34 * current_LSB;
       break;
 
     case INA260:
@@ -366,6 +365,11 @@ void INA_Class::initDevice(const uint8_t deviceNumber) {
       bitSet(tempRegister, INA219_BRNG_BIT);                    // set to 1 for 0-32 volts
       writeWord(INA_CONFIGURATION_REGISTER, tempRegister, ina.address);  // Write to config register
       break;
+    case INA228:
+      // Compute calibration register
+      calibration = (131072ULL * (int64_t)ina.current_LSB * (int64_t)ina.microOhmR) / 10000000000ULL;
+      writeWord(INA228_CALIBRATION_REGISTER, calibration, ina.address);  // Write calibration
+      break;
     case INA226:
     case INA230:
     case INA231:
@@ -377,7 +381,8 @@ void INA_Class::initDevice(const uint8_t deviceNumber) {
     case INA260:
     case INA3221_0:
     case INA3221_1:
-    case INA3221_2: break;
+    case INA3221_2:
+      break;
   }  // of switch type
 }  // of method initDevice()
 void INA_Class::setBusConversion(const uint32_t convTime, const uint8_t deviceNumber) {
@@ -580,7 +585,7 @@ uint16_t INA_Class::getBusMilliVolts(const uint8_t deviceNumber) {
   uint32_t busVoltage = getBusRaw(deviceNumber);  // Get raw voltage from device
   if (ina.type == INA228) {
     // The accuracy is 20bits and 195.3125uv is the LSB
-    busVoltage = (uint64_t)busVoltage * 1953125 / 10000000;  // conversion to get mV
+    busVoltage = ((uint64_t)busVoltage * (uint64_t)INA228_BUS_VOLTAGE_LSB) / 10000000ULL;  // conversion to get mV
   } else {
     busVoltage = busVoltage * ina.busVoltage_LSB / 100;  // conversion to get mV
   }                                                      // if-then-else an INA228
@@ -626,7 +631,7 @@ int32_t INA_Class::getShuntMicroVolts(const uint8_t deviceNumber) {
     shuntVoltage         = busMicroAmps / 200;             // 2mOhm resistor, convert with Ohm's law
   } else {
     if (ina.type == INA228) {
-      shuntVoltage = shuntVoltage * ina.shuntVoltage_LSB / 10;  // Convert to microvolts
+      shuntVoltage = ((uint32_t)shuntVoltage * (uint32_t)ina.shuntVoltage_LSB) / 10000UL;  // Convert to microvolts
     } else {
       shuntVoltage = shuntVoltage * ina.shuntVoltage_LSB / 10;  // Convert to microvolts
     }  // if-then a INA228 with 20 bit accuracy
@@ -679,15 +684,31 @@ int32_t INA_Class::getBusMicroAmps(const uint8_t deviceNumber) {
       @return    int32_t signed integer for computed microamps on the bus */
   readInafromEEPROM(deviceNumber);  // Load EEPROM to ina structure
   int32_t microAmps = 0;
-  if (ina.type == INA3221_0 || ina.type == INA3221_1 ||
-      ina.type == INA3221_2)  // Doesn't compute Amps
-  {
+  int32_t raw = 0;
+  switch (ina.type) {
+  case INA3221_0: // Doesn't compute Amps
+  case INA3221_1:
+  case INA3221_2:
     microAmps =
         (int64_t)getShuntMicroVolts(deviceNumber) * ((int64_t)1000000 / (int64_t)ina.microOhmR);
-  } else {
+    break;
+  case INA228:
+    raw = read3Bytes(ina.currentRegister, ina.address);
+    // The number is two's complement, so if negative we need to pad when shifting //
+    if (raw & 0x800000) {
+      raw = (raw >> 4) | 0xFFF00000;  // first 12 bits are "1"
+    } else {
+      raw = raw >> 4;
+    }  // if-then negative
+
+    microAmps = ((int64_t)raw * (int64_t)ina.current_LSB) / 1000ULL;
+    break;
+  default:
     microAmps = (int64_t)readWord(ina.currentRegister, ina.address) * (int64_t)ina.current_LSB /
                 (int64_t)1000;
-  }  // of if-then-else an INA3221
+    break;
+  }
+
   return (microAmps);
 }  // of method getBusMicroAmps()
 int64_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {
@@ -699,17 +720,27 @@ int64_t INA_Class::getBusMicroWatts(const uint8_t deviceNumber) {
   @return    int64_t signed integer for computed microwatts on the bus
   */
   int64_t microWatts = 0;
+  int32_t raw = 0;
+
   readInafromEEPROM(deviceNumber);  // Load EEPROM to ina structure
-  if (ina.type == INA3221_0 || ina.type == INA3221_1 ||
-      ina.type == INA3221_2)  // Doesn't compute Amps
-  {
+  switch (ina.type) {
+  case INA3221_0: // Doesn't compute Amps
+  case INA3221_1:
+  case INA3221_2:
     microWatts =
         ((int64_t)getShuntMicroVolts(deviceNumber) * (int64_t)1000000 / (int64_t)ina.microOhmR) *
         (int64_t)getBusMilliVolts(deviceNumber) / (int64_t)1000;
-  } else {
+    break;
+  case INA228:
+    raw = read3Bytes(INA228_POWER_REGISTER, ina.address);
+
+    microWatts = ((int64_t)raw * (int64_t)ina.power_LSB) / 10000ULL;
+    break;
+  default:
     microWatts =
         (int64_t)readWord(INA_POWER_REGISTER, ina.address) * (int64_t)ina.power_LSB / (int64_t)1000;
     if (getShuntRaw(deviceNumber) < 0) microWatts *= -1;  // Invert if negative voltage
+    break;
   }                                                       // of if-then-else an INA3221
   return (microWatts);
 }  // of method getBusMicroWatts()
@@ -1068,9 +1099,9 @@ void INA_Class::setAveraging(const uint16_t averages, const uint8_t deviceNumber
         deviceNumber % _DeviceCount == i)  // If this device needs setting
     {
       readInafromEEPROM(i);                                                // Load EEPROM to struct
-      configRegister = readWord(INA_CONFIGURATION_REGISTER, ina.address);  // Get current register
       switch (ina.type) {
         case INA219:
+          configRegister = readWord(INA_CONFIGURATION_REGISTER, ina.address);  // Get current register
           if (averages >= 128)
             averageIndex = 15;
           else if (averages >= 64)
@@ -1090,6 +1121,7 @@ void INA_Class::setAveraging(const uint16_t averages, const uint8_t deviceNumber
           configRegister &= ~INA219_CONFIG_AVG_MASK;  // zero out the averages part
           configRegister |= averageIndex << 3;        // shift in the SADC averages
           configRegister |= averageIndex << 7;        // shift in the BADC averages
+          writeWord(INA_CONFIGURATION_REGISTER, configRegister, ina.address);  // Save new value
           break;
         case INA226:
         case INA230:
@@ -1098,6 +1130,7 @@ void INA_Class::setAveraging(const uint16_t averages, const uint8_t deviceNumber
         case INA3221_1:
         case INA3221_2:
         case INA260:
+          configRegister = readWord(INA_CONFIGURATION_REGISTER, ina.address);  // Get current register
           if (averages >= 1024)
             averageIndex = 7;
           else if (averages >= 512)
@@ -1116,9 +1149,31 @@ void INA_Class::setAveraging(const uint16_t averages, const uint8_t deviceNumber
             averageIndex = 0;
           configRegister &= ~INA226_CONFIG_AVG_MASK;  // zero out the averages part
           configRegister |= averageIndex << 9;        // shift in the averages to reg
+          writeWord(INA_CONFIGURATION_REGISTER, configRegister, ina.address);  // Save new value
+          break;
+        case INA228:
+          configRegister = readWord(INA228_CONFIGURATION_REGISTER, ina.address);  // Get current register
+          if (averages >= 1024)
+            averageIndex = 7;
+          else if (averages >= 512)
+            averageIndex = 6;
+          else if (averages >= 256)
+            averageIndex = 5;
+          else if (averages >= 128)
+            averageIndex = 4;
+          else if (averages >= 64)
+            averageIndex = 3;
+          else if (averages >= 16)
+            averageIndex = 2;
+          else if (averages >= 4)
+            averageIndex = 1;
+          else
+            averageIndex = 0;
+          configRegister &= ~INA228_CONFIG_AVG_MASK;  // zero out the averages part
+          configRegister |= averageIndex;        // shift in the averages to reg
+          writeWord(INA228_CONFIGURATION_REGISTER, configRegister, ina.address);  // Save new value
           break;
       }                                                                    // of switch type
-      writeWord(INA_CONFIGURATION_REGISTER, configRegister, ina.address);  // Save new value
     }  // of if this device needs to be set
   }    // for-next each device loop
 }  // of method setAveraging()
